@@ -1,73 +1,57 @@
-# React + TypeScript + Vite
+# Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This folder contains the main UI for Algorithmic Explorers.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 19
+- TypeScript
+- Vite
+- Tailwind CSS v4
+- ESLint
 
-## React Compiler
+## Run Locally
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The Vite dev server will print a local URL in the terminal, usually `http://localhost:5173`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Available Scripts
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- `npm run dev` - start the development server
+- `npm run build` - type-check and build production assets
+- `npm run lint` - run ESLint
+- `npm run preview` - preview the production build
+
+## Folder Structure
+
+- `src/main.tsx` - React entry point
+- `src/App.tsx` - root app component
+- `src/pages/` - page-level screens
+- `src/components/ui/` - shared UI elements such as `Navbar` and `Footer`
+- `src/components/shared/` - reusable shared pieces
+- `src/assets/` - static assets
+- `src/index.css` - global styles and theme tokens
+
+## Current App Flow
+
+The app currently mounts `HomePage` directly from `App.tsx`. If routing is added later, this is the place where the main navigation structure should be introduced.
+
+## Design Reference
+
+Figma file: [ALGORITHMIC EXPLORERS WEBSITE](https://www.figma.com/design/DyTuPXcfnYue1igNIR8TKc/ALGORITHMIC-EXPLORERS-WEBSITE?node-id=0-1)
+
+## Notes
+
+- Keep UI components focused on presentation.
+- Keep page files thin and move reusable behavior into hooks or shared utilities.
+
+## Contributing
+
+- Read the root [README.md](../README.md) before making changes so the workspace setup and contributor expectations stay aligned.
+- Keep UI changes tied to the Figma reference and avoid introducing unrelated layout changes.
+- Run `npm run lint` and `npm run build` before opening a pull request.
+- Keep reusable UI in `src/components/` and page-specific logic inside `src/pages/`.
