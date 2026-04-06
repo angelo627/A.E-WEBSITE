@@ -1,45 +1,78 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 
+import { asyncHandler } from "../../shared/utils/async-handler";
+import { optionalString, requireParam } from "../../shared/validation/request";
+import { UserRole, UserStatus } from "../../shared/constants/auth";
+import { AppError } from "../../shared/errors/app-error";
 import { usersService } from "./users.service";
 
-export const usersController = {
-  listUsers: async (_req: Request, res: Response, next: NextFunction) => {
-    try {
-      const users = await usersService.getAllUsers();
-
-      return res.status(200).json({
-        message: "Users fetched successfully.",
-        data: users
-      });
-    } catch (error) {
-      return next(error);
-    }
-  },
-
-  createUser: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { name, email } = req.body as { name?: string; email?: string };
-
-      if (!name || !email) {
-        return res.status(400).json({
-          message: "Both name and email are required."
-        });
-      }
-
-      const createdUser = await usersService.createUser({ name, email });
-
-      return res.status(201).json({
-        message: "User created successfully.",
-        data: createdUser
-      });
-    } catch (error) {
-      if (usersService.isDuplicateEmailError(error)) {
-        return res.status(409).json({
-          message: "This email is already in use."
-        });
-      }
-
-      return next(error);
-    }
+function parseRole(value: string | undefined): UserRole | undefined {
+  if (!value) {
+    return undefined;
   }
+
+  const normalized = value.toUpperCase() as UserRole;
+  const roles: UserRole[] = ["STUDENT", "ADMIN", "SUPER_ADMIN"];
+
+  if (!roles.includes(normalized)) {
+    throw new AppError(400, "role is invalid.", "VALIDATION_ERROR");
+  }
+
+  return normalized;
+}
+
+function parseStatus(value: string | undefined): UserStatus | undefined {
+  if (!value) {
+    return undefined;
+  }
+
+  const normalized = value.toUpperCase() as UserStatus;
+  const statuses: UserStatus[] = [
+    "PENDING_VERIFICATION",
+    "ACTIVE",
+    "SUSPENDED",
+    "DEACTIVATED"
+  ];
+
+  if (!statuses.includes(normalized)) {
+    throw new AppError(400, "status is invalid.", "VALIDATION_ERROR");
+  }
+
+  return normalized;
+}
+
+export const usersController = {
+  listUsers: asyncHandler(async (_req: Request, res: Response) => {
+    const users = await usersService.listUsers();
+
+    return res.status(200).json({
+      message: "Users fetched successfully.",
+      data: users
+    });
+  }),
+
+  getUser: asyncHandler(async (req: Request, res: Response) => {
+    const user = await usersService.getUserById({
+      userId: requireParam(req.params.userId, "userId")
+    });
+
+    return res.status(200).json({
+      message: "User fetched successfully.",
+      data: user
+    });
+  }),
+
+  updateUserAccess: asyncHandler(async (req: Request, res: Response) => {
+    const body = req.body as Record<string, unknown>;
+    const user = await usersService.updateUserAccess({
+      userId: requireParam(req.params.userId, "userId"),
+      role: parseRole(optionalString(body.role)),
+      status: parseStatus(optionalString(body.status))
+    });
+
+    return res.status(200).json({
+      message: "User access updated successfully.",
+      data: user
+    });
+  })
 };

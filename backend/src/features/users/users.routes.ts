@@ -5,6 +5,7 @@ import { usersController } from "./users.controller";
 const usersRouter = Router();
 
 usersRouter.get("/", usersController.listUsers);
-usersRouter.post("/", usersController.createUser);
+usersRouter.get("/:userId", usersController.getUser);
+usersRouter.patch("/:userId/access", usersController.updateUserAccess);
 
 export { usersRouter };
