@@ -1,12 +1,16 @@
 import React from "react";
 import type { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router-dom";
+import type { UserRole } from "../../context/AuthContext";
 import { useAuth } from "../../context/useAuth";
 
 interface ProtectedRouteProps {
   children: ReactNode;
   requireAdmin?: boolean;
 }
+
+const hasAdminAccess = (role?: UserRole): role is Extract<UserRole, "ADMIN" | "SUPER_ADMIN"> =>
+  role === "ADMIN" || role === "SUPER_ADMIN";
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin = false }) => {
   const { user, isLoading, isLoggedIn } = useAuth();
@@ -20,14 +24,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin 
     );
   }
 
-  console.log("ProtectedRoute status:", { isLoggedIn, user: user?.username, path: location.pathname });
-
   if (!isLoggedIn) {
-    console.warn("User not logged in, redirecting to login from:", location.pathname);
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (requireAdmin && user?.role !== "ADMIN" && user?.role !== "SUPER_ADMIN") {
+  if (requireAdmin && !hasAdminAccess(user?.role)) {
     return <Navigate to="/dashboard" replace />;
   }
 

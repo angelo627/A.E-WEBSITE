@@ -11,6 +11,7 @@ function Navbar() {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
   const isAdmin = user?.role === "ADMIN" || user?.role === "SUPER_ADMIN";
+  const dashboardPath = isAdmin ? "/admin" : "/dashboard";
 
   const publicLinks = [
     { to: "/", label: "Home" },
@@ -29,7 +30,17 @@ function Navbar() {
     ...(isAdmin ? [{ to: "/admin", label: "Admin" }] : []),
   ];
 
-  const navLinks = isLoggedIn ? authenticatedLinks : publicLinks;
+  const adminLinks = [
+    { to: "/admin", label: "Admin Dashboard" },
+    { to: "/admin/modules", label: "Modules" },
+    { to: "/admin/quizzes", label: "Quizzes" },
+    { to: "/admin/products", label: "Products" },
+    { to: "/admin/testimonials", label: "Testimonials" },
+    { to: "/admin/team", label: "Team" },
+    { to: "/admin/users", label: "Users" },
+  ];
+
+  const navLinks = !isLoggedIn ? publicLinks : isAdmin ? adminLinks : authenticatedLinks;
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 flex justify-center px-4 pt-4">
@@ -64,8 +75,8 @@ function Navbar() {
                 </>
               ) : (
                 <>
-                  <Link to="/dashboard" className="text-sm text-gray-300 hover:text-white transition-colors">
-                    Dashboard
+                  <Link to={dashboardPath} className="text-sm text-gray-300 hover:text-white transition-colors">
+                    {isAdmin ? "Admin Dashboard" : "Dashboard"}
                   </Link>
                   <button
                     onClick={logout}
@@ -86,7 +97,7 @@ function Navbar() {
             </button>
 
             {isLoggedIn && (
-              <Link to="/dashboard" onClick={closeMenu} className="hidden sm:flex w-10 h-10 ml-2 rounded-full bg-purple-600 items-center justify-center cursor-pointer hover:bg-purple-500 transition-colors">
+              <Link to={dashboardPath} onClick={closeMenu} className="hidden sm:flex w-10 h-10 ml-2 rounded-full bg-purple-600 items-center justify-center cursor-pointer hover:bg-purple-500 transition-colors">
                 👤
               </Link>
             )}
@@ -116,7 +127,9 @@ function Navbar() {
               </div>
             ) : (
               <div className="flex flex-col gap-4">
-                <Link to="/dashboard" onClick={closeMenu} className="hover:text-white transition-colors">Dashboard</Link>
+                <Link to={dashboardPath} onClick={closeMenu} className="hover:text-white transition-colors">
+                  {isAdmin ? "Admin Dashboard" : "Dashboard"}
+                </Link>
                 <button
                   onClick={() => { logout(); closeMenu(); }}
                   className="text-left text-red-400 hover:text-red-300 transition-colors"

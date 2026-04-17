@@ -1,3 +1,8 @@
+import { Prisma } from "@prisma/client";
+
+import { prisma } from "../../config/prisma-client";
+import { AppError } from "../../shared/errors/app-error";
+
 export interface UpsertProductInput {
   name: string;
   slug: string;
@@ -7,23 +12,198 @@ export interface UpsertProductInput {
   isPublished?: boolean;
 }
 
+function isUniqueConstraintError(error: unknown): error is Prisma.PrismaClientKnownRequestError {
+  return (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === "P2002"
+  );
+}
+
 export const productsService = {
-  listPublicProducts: async () => "This is productsService.listPublicProducts endpoint.",
+  listPublicProducts: async () => {
+    return prisma.product.findMany({
+      where: {
+        isPublished: true
+      },
+      orderBy: [{ createdAt: "desc" }],
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        description: true,
+        link: true,
+        imageUrl: true,
+        isPublished: true,
+        createdAt: true,
+        updatedAt: true
+      }
+    });
+  },
 
-  getPublicProductBySlug: async (_input: { slug: string }) =>
-    "This is productsService.getPublicProductBySlug endpoint.",
+  getPublicProductBySlug: async (input: { slug: string }) => {
+    const product = await prisma.product.findFirst({
+      where: {
+        isPublished: true,
+        OR: [{ slug: input.slug }, { id: input.slug }]
+      },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        description: true,
+        link: true,
+        imageUrl: true,
+        isPublished: true,
+        createdAt: true,
+        updatedAt: true
+      }
+    });
 
-  listAdminProducts: async () => "This is productsService.listAdminProducts endpoint.",
+    if (!product) {
+      throw new AppError(404, "Product not found.", "PRODUCT_NOT_FOUND");
+    }
 
-  getAdminProductById: async (_input: { productId: string }) =>
-    "This is productsService.getAdminProductById endpoint.",
+    return product;
+  },
 
-  createProduct: async (_input: UpsertProductInput) =>
-    "This is productsService.createProduct endpoint.",
+  listAdminProducts: async () => {
+    return prisma.product.findMany({
+      orderBy: [{ createdAt: "desc" }],
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        description: true,
+        link: true,
+        imageUrl: true,
+        isPublished: true,
+        createdAt: true,
+        updatedAt: true
+      }
+    });
+  },
 
-  updateProduct: async (_input: { productId: string } & UpsertProductInput) =>
-    "This is productsService.updateProduct endpoint.",
+  getAdminProductById: async (input: { productId: string }) => {
+    const product = await prisma.product.findUnique({
+      where: {
+        id: input.productId
+      },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        description: true,
+        link: true,
+        imageUrl: true,
+        isPublished: true,
+        createdAt: true,
+        updatedAt: true
+      }
+    });
 
-  deleteProduct: async (_input: { productId: string }) =>
-    "This is productsService.deleteProduct endpoint."
+    if (!product) {
+      throw new AppError(404, "Product not found.", "PRODUCT_NOT_FOUND");
+    }
+
+    return product;
+  },
+
+  createProduct: async (input: UpsertProductInput) => {
+    try {
+      return await prisma.product.create({
+        data: {
+          name: input.name,
+          slug: input.slug,
+          description: input.description,
+          link: input.link,
+          imageUrl: input.imageUrl,
+          isPublished: input.isPublished ?? true
+        },
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          description: true,
+          link: true,
+          imageUrl: true,
+          isPublished: true,
+          createdAt: true,
+          updatedAt: true
+        }
+      });
+    } catch (error) {
+      if (isUniqueConstraintError(error)) {
+        throw new AppError(409, "Product slug already exists.", "DUPLICATE_SLUG");
+      }
+      throw error;
+    }
+  },
+
+  updateProduct: async (input: { productId: string } & UpsertProductInput) => {
+    const existing = await prisma.product.findUnique({
+      where: {
+        id: input.productId
+      },
+      select: {
+        id: true
+      }
+    });
+
+    if (!existing) {
+      throw new AppError(404, "Product not found.", "PRODUCT_NOT_FOUND");
+    }
+
+    try {
+      return await prisma.product.update({
+        where: {
+          id: input.productId
+        },
+        data: {
+          name: input.name,
+          slug: input.slug,
+          description: input.description,
+          link: input.link,
+          imageUrl: input.imageUrl,
+          isPublished: input.isPublished ?? true
+        },
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          description: true,
+          link: true,
+          imageUrl: true,
+          isPublished: true,
+          createdAt: true,
+          updatedAt: true
+        }
+      });
+    } catch (error) {
+      if (isUniqueConstraintError(error)) {
+        throw new AppError(409, "Product slug already exists.", "DUPLICATE_SLUG");
+      }
+      throw error;
+    }
+  },
+
+  deleteProduct: async (input: { productId: string }) => {
+    const existing = await prisma.product.findUnique({
+      where: {
+        id: input.productId
+      },
+      select: {
+        id: true
+      }
+    });
+
+    if (!existing) {
+      throw new AppError(404, "Product not found.", "PRODUCT_NOT_FOUND");
+    }
+
+    await prisma.product.delete({
+      where: {
+        id: input.productId
+      }
+    });
+  }
 };

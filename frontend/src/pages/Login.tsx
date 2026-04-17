@@ -26,7 +26,7 @@ const getErrorMessage = (error: unknown, fallback: string): string => {
 
 const Login = (): ReactElement => {
   const navigate = useNavigate();
-  const { login, isLoggedIn } = useAuth();
+  const { login, isLoggedIn, user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<LoginData>({
     username: "",
@@ -36,9 +36,10 @@ const Login = (): ReactElement => {
   // Redirect if already logged in
   useEffect(() => {
     if (isLoggedIn) {
-      navigate("/dashboard");
+      const isAdmin = user?.role === "ADMIN" || user?.role === "SUPER_ADMIN";
+      navigate(isAdmin ? "/admin" : "/dashboard");
     }
-  }, [isLoggedIn, navigate]);
+  }, [isLoggedIn, navigate, user?.role]);
 
   const handleLogin = async (e?: React.FormEvent): Promise<void> => {
     if (e) e.preventDefault();
@@ -58,12 +59,9 @@ const Login = (): ReactElement => {
         }),
       });
 
-      // Use centralized login from AuthContext
-      console.log("Login successful, updating context state...");
       login(result.user, result.accessToken);
-
-      console.log("Navigating to dashboard...");
-      navigate("/dashboard");
+      const isAdmin = result?.user?.role === "ADMIN" || result?.user?.role === "SUPER_ADMIN";
+      navigate(isAdmin ? "/admin" : "/dashboard");
     } catch (error: unknown) {
       console.error("Login attempt failed:", error);
       alert(getErrorMessage(error, "Login failed"));
