@@ -137,10 +137,22 @@ export const modulesController = {
     });
   }),
 
-  createModule: asyncHandler(async (req: Request, res: Response) => {
-    const moduleItem = await modulesService.createModule(
-      parseModulePayload(req.body as Record<string, unknown>)
-    );
+  createModule: asyncHandler(async (req: any, res: Response) => {
+    const payload = parseModulePayload(req.body as Record<string, unknown>);
+
+    // If a video was uploaded, add it as a resource
+    if (req.file) {
+      if (!payload.resources) payload.resources = [];
+      payload.resources.push({
+        title: "Main Video",
+        type: "VIDEO",
+        url: req.file.path,
+        content: undefined,
+        sortOrder: 0
+      });
+    }
+
+    const moduleItem = await modulesService.createModule(payload);
 
     return res.status(201).json({
       message: "Module created successfully.",
@@ -148,10 +160,24 @@ export const modulesController = {
     });
   }),
 
-  updateModule: asyncHandler(async (req: Request, res: Response) => {
+  updateModule: asyncHandler(async (req: any, res: Response) => {
+    const payload = parseModulePayload(req.body as Record<string, unknown>);
+
+    // If a video was uploaded, add it as a resource
+    if (req.file) {
+      if (!payload.resources) payload.resources = [];
+      payload.resources.push({
+        title: "Main Video",
+        type: "VIDEO",
+        url: req.file.path,
+        content: undefined,
+        sortOrder: 0
+      });
+    }
+
     const moduleItem = await modulesService.updateModule({
       moduleId: requireParam(req.params.moduleId, "moduleId"),
-      ...parseModulePayload(req.body as Record<string, unknown>)
+      ...payload
     });
 
     return res.status(200).json({
@@ -167,6 +193,19 @@ export const modulesController = {
 
     return res.status(200).json({
       message: "Module deleted successfully."
+    });
+  }),
+
+  uploadVideo: asyncHandler(async (req: any, res: Response) => {
+    if (!req.file) {
+      throw new AppError(400, "No video file uploaded.", "BAD_REQUEST");
+    }
+
+    return res.status(200).json({
+      message: "Video uploaded successfully.",
+      data: {
+        url: req.file.path
+      }
     });
   })
 };

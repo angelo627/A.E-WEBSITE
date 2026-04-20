@@ -67,5 +67,8 @@ export const env = {
   ),
   passwordResetTtlMinutes: Number(process.env.PASSWORD_RESET_TTL_MINUTES ?? 30),
   plunkApiKey: process.env.PLUNK_API_KEY ?? "",
-  refreshCookieName: process.env.REFRESH_COOKIE_NAME ?? "ae_refresh_token"
+  refreshCookieName: process.env.REFRESH_COOKIE_NAME ?? "ae_refresh_token",
+  cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME ?? "",
+  cloudinaryApiKey: process.env.CLOUDINARY_API_KEY ?? "",
+  cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET ?? ""
 } as const;

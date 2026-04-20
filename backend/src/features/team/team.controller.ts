@@ -53,10 +53,15 @@ export const teamController = {
     });
   }),
 
-  create: asyncHandler(async (req: Request, res: Response) => {
-    const member = await teamService.createTeamMember(
-      parseTeamMemberPayload(req.body as Record<string, unknown>)
-    );
+  create: asyncHandler(async (req: any, res: Response) => {
+    const payload = parseTeamMemberPayload(req.body as Record<string, unknown>);
+    
+    // If a file was uploaded, use its path as the imageUrl
+    if (req.file) {
+      payload.imageUrl = req.file.path;
+    }
+
+    const member = await teamService.createTeamMember(payload);
 
     return res.status(201).json({
       message: "Team member created successfully.",
@@ -64,10 +69,17 @@ export const teamController = {
     });
   }),
 
-  update: asyncHandler(async (req: Request, res: Response) => {
+  update: asyncHandler(async (req: any, res: Response) => {
+    const payload = parseTeamMemberPayload(req.body as Record<string, unknown>);
+    
+    // If a file was uploaded, use its path as the imageUrl
+    if (req.file) {
+      payload.imageUrl = req.file.path;
+    }
+
     const member = await teamService.updateTeamMember({
       teamMemberId: requireParam(req.params.teamMemberId, "teamMemberId"),
-      ...parseTeamMemberPayload(req.body as Record<string, unknown>)
+      ...payload
     });
 
     return res.status(200).json({

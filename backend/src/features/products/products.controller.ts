@@ -31,17 +31,15 @@ export const productsController = {
   }),
 
   getPublicProduct: asyncHandler(async (req: Request, res: Response) => {
-  const product = await productsService.getPublicProductBySlug({
-    slug: requireParam(req.params.slug, "slug")
-  });
+    const product = await productsService.getPublicProductBySlug({
+      slug: requireParam(req.params.slug, "slug")
+    });
 
-  
-
-  return res.status(200).json({
-    message: "Product fetched successfully.",
-    data: product
-  });
- }),
+    return res.status(200).json({
+      message: "Product fetched successfully.",
+      data: product
+    });
+  }),
 
   listAdminProducts: asyncHandler(async (_req: Request, res: Response) => {
     const products = await productsService.listAdminProducts();
@@ -57,7 +55,6 @@ export const productsController = {
       productId: requireParam(req.params.productId, "productId")
     });
 
-    
     return res.status(200).json({
       message: "Product fetched successfully.",
       data: product

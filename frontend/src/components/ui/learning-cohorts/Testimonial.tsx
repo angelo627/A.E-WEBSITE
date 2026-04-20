@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import image from "../learning-cohorts/images/Frame 46.png";
+import image from "../learning-cohorts/images/Frame 46.png"
 
 const testimonials = [
   {
@@ -25,23 +25,22 @@ const testimonials = [
 export default function Testimonial() {
   const [index, setIndex] = useState(0);
 
-  // ✅ FIXED INTERVAL (stable in React Strict Mode)
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % testimonials.length);
     }, 4000);
-
     return () => clearInterval(interval);
-  }, [index]); // 👈 important change
+  }, []);
 
   const prev = (index - 1 + testimonials.length) % testimonials.length;
   const next = (index + 1) % testimonials.length;
 
   return (
     <section className="py-32">
+
       <div className="max-w-7xl mx-auto px-6">
 
-        {/* TITLE */}
+        {/* ✅ TITLE (FORCED LEFT ALIGN) */}
         <div className="max-w-2xl mb-20 text-left">
           <h2 className="text-5xl md:text-6xl font-semibold leading-tight">
             What our{" "}
@@ -82,7 +81,6 @@ export default function Testimonial() {
               <div className="flex items-center justify-center gap-3">
                 <img
                   src={testimonials[index].image}
-                  alt={testimonials[index].name}
                   className="w-11 h-11 rounded-full object-cover"
                 />
                 <div className="text-left">

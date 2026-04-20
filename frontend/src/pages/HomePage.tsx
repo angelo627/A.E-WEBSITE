@@ -327,8 +327,8 @@ const HomePage = () => {
                   </p>
                 </div>
                 <div className="px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-5 w-full">
-                  <button className="flex flex-row justify-center items-center w-43 h-15 p-2.5 gap-[10px] rounded-[15px]
-                  bg-[linear-gradient(270deg,#A822DB_0%,#09003B_100%)] shadow-[inset_0_0_19.5px_rgba(0,121,221,0.7)] text-white
+                  <button className="flex flex-row justify-center items-center w-[172px] h-[60px] p-[10px] gap [10px] rounded-[15px] 
+                  bg-[linear-gradient(270deg,#A822DB_0%,#09003B_100%)] shadow-[inset_0_0_19.5px_rgba(0,121,221,0.7)] text-white 
                   text-base lg:text-xl font-normal transition-all duration-500 hover:-translate-y-1">
                     <ArrowUpRight size={15} className="sm:w-4 sm:h-4" />
                     Read More
