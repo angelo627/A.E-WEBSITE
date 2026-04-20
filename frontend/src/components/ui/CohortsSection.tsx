@@ -1,5 +1,6 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, FreeMode } from "swiper/modules";
 import { Search, ArrowRight, Palette, Server, Code, Brain, BarChart3, Binary } from "lucide-react";
@@ -44,7 +45,7 @@ export default function CohortsSection() {
         {/* Header */}
         <FadeInWhenVisible delay={0.2}>
           <header className="text-center mb-10 sm:mb-12 md:mb-16">
-            <h1 className="mx-auto mb-4 sm:mb-6 w-full max-w-134.5 text-center font-semibold font-['Plus_Jakarta_Sans'] text-4xl sm:text-5xl md:text-[72.8527px] md:leading-23 md:tracking-[-4.40297px] bg-[linear-gradient(270deg,#6635C4_0%,#050020_147.96%)] bg-clip-text text-transparent">
+            <h1 className="mx-auto mb-4 sm:mb-6 w-full max-w-134.5 text-center font-semibold text-4xl sm:text-5xl md:text-[72.8527px] md:leading-23 md:tracking-[-4.40297px] bg-[linear-gradient(270deg,#6635C4_0%,#050020_147.96%)] bg-clip-text text-transparent">
               Learning Cohorts
             </h1>
             <p className="text-white/90 text-xs sm:text-base md:text-xl max-w-2xl mx-auto leading-relaxed px-4">
@@ -122,12 +123,13 @@ export default function CohortsSection() {
                 </div>
               </div>
 
-              <button
-                className="mt-5 flex h-[54px] w-[176px] items-center justify-center gap-2.5 rounded-[16px] bg-linear-to-r from-[#951DC8] from-0% to-[#1C044E] to-100% px-3.5 font-['Plus_Jakarta_Sans'] text-[16px] font-normal leading-6 tracking-[-0.4px] text-white shadow-[inset_0_0_25.025px_rgba(0,121,221,0.7)] transition-transform hover:scale-[1.03] sm:mt-8.5 sm:h-19.25 sm:w-[220.73px] sm:gap-[12.83px] sm:rounded-[19.25px] sm:px-[12.83px] sm:text-[25.6714px] sm:leading-8 sm:tracking-[-0.641785px]"
+              <Link
+                to="/signup"
+                className="mt-5 flex h-[54px] w-[176px] items-center justify-center gap-2.5 rounded-[16px] bg-linear-to-r from-[#951DC8] from-0% to-[#1C044E] to-100% px-3.5 text-[16px] font-normal leading-6 tracking-[-0.4px] text-white shadow-[inset_0_0_25.025px_rgba(0,121,221,0.7)] transition-transform hover:scale-[1.03] sm:mt-8.5 sm:h-19.25 sm:w-[220.73px] sm:gap-[12.83px] sm:rounded-[19.25px] sm:px-[12.83px] sm:text-[25.6714px] sm:leading-8 sm:tracking-[-0.641785px]"
               >
                 Enroll now
                 <ArrowRight className="h-4 w-4 -rotate-45 stroke-[2.08807px] sm:h-[16.33px] sm:w-[16.33px]" />
-              </button>
+              </Link>
             </div>
 
             {/* Background moving slides */}

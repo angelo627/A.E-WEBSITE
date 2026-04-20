@@ -1,15 +1,46 @@
 import { useState } from "react";
 import favicon from "../learning-cohorts/images/favicon.png";
 import { Link } from "react-router-dom";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuth } from "../../../context/useAuth";
 import { HiMenu, HiX } from "react-icons/hi";
 
 function Navbar() {
-  const { isLoggedIn, logout } = useAuth();
+  const { isLoggedIn, user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
+  const isAdmin = user?.role === "ADMIN" || user?.role === "SUPER_ADMIN";
+  const dashboardPath = isAdmin ? "/admin" : "/dashboard";
+
+  const publicLinks = [
+    { to: "/", label: "Home" },
+    { to: "/about", label: "About Us" },
+    { to: "/cohorts", label: "Cohorts" },
+    { to: "/modules", label: "Modules" },
+    { to: "/products", label: "Products" },
+    { to: "/guru-circle", label: "Guru Circle" },
+    { to: "/testimonials", label: "Testimonials" },
+    { to: "/contact", label: "Contact" },
+  ];
+
+  const authenticatedLinks = [
+    { to: "/dashboard", label: "Dashboard" },
+    { to: "/leaderboard", label: "Leaderboard" },
+    ...(isAdmin ? [{ to: "/admin", label: "Admin" }] : []),
+  ];
+
+  const adminLinks = [
+    { to: "/admin", label: "Admin Dashboard" },
+    { to: "/admin/modules", label: "Modules" },
+    { to: "/admin/quizzes", label: "Quizzes" },
+    { to: "/admin/products", label: "Products" },
+    { to: "/admin/testimonials", label: "Testimonials" },
+    { to: "/admin/team", label: "Team" },
+    { to: "/admin/users", label: "Users" },
+  ];
+
+  const navLinks = !isLoggedIn ? publicLinks : isAdmin ? adminLinks : authenticatedLinks;
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 flex justify-center px-4 pt-4">
@@ -23,14 +54,11 @@ function Navbar() {
 
           {/* DESKTOP NAV LINKS */}
           <nav className="hidden lg:flex gap-8 text-sm text-gray-300">
-            <Link to="/" className="hover:text-white transition-colors">Home</Link>
-            <Link to="/about" className="hover:text-white transition-colors">About Us</Link>
-            <Link to="/cohorts" className="text-white font-medium hover:text-purple-400 transition-colors">Cohorts</Link>
-            <Link to="/modules" className="hover:text-white transition-colors">Modules</Link>
-            <Link to="/products" className="hover:text-white transition-colors">Products</Link>
-            <Link to="/guru-circle" className="hover:text-white transition-colors">Guru Circle</Link>
-            <Link to="/testimonials" className="hover:text-white transition-colors">Testimonials</Link>
-            <Link to="/contact" className="hover:text-white transition-colors">Contact</Link>
+            {navLinks.map((link) => (
+              <Link key={link.to} to={link.to} className="hover:text-white transition-colors">
+                {link.label}
+              </Link>
+            ))}
           </nav>
 
           {/* PROFILE / LOGIN / HAMBURGER */}
@@ -47,8 +75,8 @@ function Navbar() {
                 </>
               ) : (
                 <>
-                  <Link to="/dashboard" className="text-sm text-gray-300 hover:text-white transition-colors">
-                    Dashboard
+                  <Link to={dashboardPath} className="text-sm text-gray-300 hover:text-white transition-colors">
+                    {isAdmin ? "Admin Dashboard" : "Dashboard"}
                   </Link>
                   <button
                     onClick={logout}
@@ -68,23 +96,27 @@ function Navbar() {
               {isMenuOpen ? <HiX /> : <HiMenu />}
             </button>
 
-            <Link to="/dashboard" onClick={closeMenu} className="hidden sm:flex w-10 h-10 ml-2 rounded-full bg-purple-600 items-center justify-center cursor-pointer hover:bg-purple-500 transition-colors">
-              👤
-            </Link>
+            {isLoggedIn && (
+              <Link to={dashboardPath} onClick={closeMenu} className="hidden sm:flex w-10 h-10 ml-2 rounded-full bg-purple-600 items-center justify-center cursor-pointer hover:bg-purple-500 transition-colors">
+                👤
+              </Link>
+            )}
           </div>
         </div>
 
         {/* MOBILE MENU DROPDOWN */}
         {isMenuOpen && (
           <div className="absolute top-20 left-0 w-full bg-black/90 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 lg:hidden flex flex-col gap-6 text-lg text-gray-300 animate-in fade-in slide-in-from-top-4 duration-300 z-40">
-            <Link to="/" onClick={closeMenu} className="hover:text-white transition-colors">Home</Link>
-            <Link to="/about" onClick={closeMenu} className="hover:text-white transition-colors">About Us</Link>
-            <Link to="/cohorts" onClick={closeMenu} className="text-white font-medium hover:text-purple-400">Cohorts</Link>
-            <Link to="/modules" onClick={closeMenu} className="hover:text-white transition-colors">Modules</Link>
-            <Link to="/products" onClick={closeMenu} className="hover:text-white transition-colors">Products</Link>
-            <Link to="/guru-circle" onClick={closeMenu} className="hover:text-white transition-colors">Guru Circle</Link>
-            <Link to="/testimonials" onClick={closeMenu} className="hover:text-white transition-colors">Testimonials</Link>
-            <Link to="/contact" onClick={closeMenu} className="hover:text-white transition-colors">Contact</Link>
+            {navLinks.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                onClick={closeMenu}
+                className="hover:text-white transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
             
             <hr className="border-white/10" />
             
@@ -95,7 +127,9 @@ function Navbar() {
               </div>
             ) : (
               <div className="flex flex-col gap-4">
-                <Link to="/dashboard" onClick={closeMenu} className="hover:text-white transition-colors">Dashboard</Link>
+                <Link to={dashboardPath} onClick={closeMenu} className="hover:text-white transition-colors">
+                  {isAdmin ? "Admin Dashboard" : "Dashboard"}
+                </Link>
                 <button
                   onClick={() => { logout(); closeMenu(); }}
                   className="text-left text-red-400 hover:text-red-300 transition-colors"

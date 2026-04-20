@@ -15,24 +15,67 @@ export interface UpsertTeamMemberInput {
 export const teamService = {
   listPublicTeamMembers: async () => {
     return prisma.teamMember.findMany({
-      where: { isVisible: true },
-      orderBy: { sortOrder: "asc" }
+      where: {
+        isVisible: true
+      },
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+      select: {
+        id: true,
+        fullName: true,
+        roleTitle: true,
+        bio: true,
+        imageUrl: true,
+        linkedinUrl: true,
+        twitterUrl: true,
+        sortOrder: true,
+        isVisible: true,
+        createdAt: true,
+        updatedAt: true
+      }
     });
   },
 
   listAdminTeamMembers: async () => {
     return prisma.teamMember.findMany({
-      orderBy: { sortOrder: "asc" }
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+      select: {
+        id: true,
+        fullName: true,
+        roleTitle: true,
+        bio: true,
+        imageUrl: true,
+        linkedinUrl: true,
+        twitterUrl: true,
+        sortOrder: true,
+        isVisible: true,
+        createdAt: true,
+        updatedAt: true
+      }
     });
   },
 
   getTeamMemberById: async (input: { teamMemberId: string }) => {
     const member = await prisma.teamMember.findUnique({
-      where: { id: input.teamMemberId }
+      where: {
+        id: input.teamMemberId
+      },
+      select: {
+        id: true,
+        fullName: true,
+        roleTitle: true,
+        bio: true,
+        imageUrl: true,
+        linkedinUrl: true,
+        twitterUrl: true,
+        sortOrder: true,
+        isVisible: true,
+        createdAt: true,
+        updatedAt: true
+      }
     });
 
     if (!member) {
-      throw new AppError(404, "Team member not found.", "NOT_FOUND");
+      throw new AppError(404, "Team member not found.", "TEAM_MEMBER_NOT_FOUND");
     }
 
     return member;
@@ -49,16 +92,41 @@ export const teamService = {
         twitterUrl: input.twitterUrl,
         sortOrder: input.sortOrder ?? 0,
         isVisible: input.isVisible ?? true
+      },
+      select: {
+        id: true,
+        fullName: true,
+        roleTitle: true,
+        bio: true,
+        imageUrl: true,
+        linkedinUrl: true,
+        twitterUrl: true,
+        sortOrder: true,
+        isVisible: true,
+        createdAt: true,
+        updatedAt: true
       }
     });
   },
 
   updateTeamMember: async (input: { teamMemberId: string } & UpsertTeamMemberInput) => {
-    // Check if exists
-    await teamService.getTeamMemberById({ teamMemberId: input.teamMemberId });
+    const existing = await prisma.teamMember.findUnique({
+      where: {
+        id: input.teamMemberId
+      },
+      select: {
+        id: true
+      }
+    });
+
+    if (!existing) {
+      throw new AppError(404, "Team member not found.", "TEAM_MEMBER_NOT_FOUND");
+    }
 
     return prisma.teamMember.update({
-      where: { id: input.teamMemberId },
+      where: {
+        id: input.teamMemberId
+      },
       data: {
         fullName: input.fullName,
         roleTitle: input.roleTitle,
@@ -66,18 +134,43 @@ export const teamService = {
         imageUrl: input.imageUrl,
         linkedinUrl: input.linkedinUrl,
         twitterUrl: input.twitterUrl,
-        sortOrder: input.sortOrder,
-        isVisible: input.isVisible
+        sortOrder: input.sortOrder ?? 0,
+        isVisible: input.isVisible ?? true
+      },
+      select: {
+        id: true,
+        fullName: true,
+        roleTitle: true,
+        bio: true,
+        imageUrl: true,
+        linkedinUrl: true,
+        twitterUrl: true,
+        sortOrder: true,
+        isVisible: true,
+        createdAt: true,
+        updatedAt: true
       }
     });
   },
 
   deleteTeamMember: async (input: { teamMemberId: string }) => {
-    // Check if exists
-    await teamService.getTeamMemberById({ teamMemberId: input.teamMemberId });
+    const existing = await prisma.teamMember.findUnique({
+      where: {
+        id: input.teamMemberId
+      },
+      select: {
+        id: true
+      }
+    });
 
-    return prisma.teamMember.delete({
-      where: { id: input.teamMemberId }
+    if (!existing) {
+      throw new AppError(404, "Team member not found.", "TEAM_MEMBER_NOT_FOUND");
+    }
+
+    await prisma.teamMember.delete({
+      where: {
+        id: input.teamMemberId
+      }
     });
   }
 };

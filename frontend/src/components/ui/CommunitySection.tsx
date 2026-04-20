@@ -1,6 +1,9 @@
 import { motion } from "framer-motion";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 
+// TODO: Replace with your real WhatsApp / Discord / Telegram invite link
+const COMMUNITY_LINK = "https://forms.gle/sc9w11jVmH6tucEo8";
+
 const VECTOR = "Vector.png";
 const GHANA = "ghana 1.png";
 
@@ -25,7 +28,7 @@ export default function CommunitySection(){
           <motion.button
             key={i}
             whileHover={{ scale: 1.05 }}
-            className="relative flex h-10 lg:h-12 items-center justify-center rounded-[9.90566px] bg-[linear-gradient(90deg,#001F38_-14.09%,rgba(0,86,157,0.40)_100%)] px-8 lg:px-10 text-white shadow-[0_0_20px_rgba(123,75,255,0.18)] font-['Plus_Jakarta_Sans'] font-normal text-lg lg:text-2xl"
+            className="relative flex h-10 lg:h-12 items-center justify-center rounded-[9.90566px] bg-[linear-gradient(90deg,#001F38_-14.09%,rgba(0,86,157,0.40)_100%)] px-8 lg:px-10 text-white shadow-[0_0_20px_rgba(123,75,255,0.18)] font-normal text-lg lg:text-2xl"
           >
             <img src={GHANA} alt='ghana' className="inline-block w-4 h-4 mr-2 align-middle" /> 
             {c}
@@ -66,6 +69,7 @@ export default function CommunitySection(){
 
             <motion.button
               whileHover={{ scale: 1.05 }}
+              onClick={() => window.open(COMMUNITY_LINK, "_blank", "noreferrer")}
               className="flex h-14 w-full items-center justify-center gap-2.5 rounded-[15px] bg-[linear-gradient(270deg,#7422FF_0%,#050020_100%)] px-2.5 py-2.5 text-white shadow-[inset_0_0_19.5px_rgba(0,121,221,0.7)] sm:h-15 sm:w-53.75"
             >
               <ArrowUpRight size={20} className="inline-block" />

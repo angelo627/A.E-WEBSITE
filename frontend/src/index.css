@@ -35,6 +35,12 @@ body {
   color: white;
   margin: 0;
   overflow-x: hidden;
+  font-family: var(--sans);
+}
+
+/* Apply heading font to all headings globally */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--heading);
 }
 
 .marquee-edge-left,

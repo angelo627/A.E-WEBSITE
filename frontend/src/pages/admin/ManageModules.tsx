@@ -1,103 +1,276 @@
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { apiFetch } from "../../lib/api";
-import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
+  BookOpen, 
   Plus, 
   Trash2, 
-  Edit2, 
-  Video, 
-  Link as LinkIcon, 
-  FileText, 
-  StickyNote, 
-  Upload, 
-  Check, 
+  Edit3, 
+  Save, 
   X,
-  ChevronDown,
-  ChevronUp,
-  GripVertical
+  Loader2,
+  AlertCircle,
+  FileVideo,
+  Link as LinkIcon,
+  FileText,
+  StickyNote,
+  CheckCircle2,
+  ListVideo,
+  Upload
 } from "lucide-react";
 
-interface Resource {
-  id?: string;
+type ResourceType = "VIDEO" | "LINK" | "DOCUMENT" | "NOTE";
+
+interface ModuleResource {
+  id: string;
   title: string;
-  type: "VIDEO" | "LINK" | "DOCUMENT" | "NOTE";
+  type: ResourceType;
   url?: string;
   content?: string;
   sortOrder: number;
 }
 
-interface Module {
+interface AdminModule {
   id: string;
   title: string;
   slug: string;
   shortDescription: string;
   description: string;
   order: number;
-  estimatedMinutes: number | null;
+  estimatedMinutes?: number | null;
   isPublished: boolean;
-  resources: Resource[];
+  resources: ModuleResource[];
+  createdAt: string;
+  updatedAt: string;
 }
 
-export default function ManageModules() {
-  const [modules, setModules] = useState<Module[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [isEditing, setIsEditing] = useState<string | null>(null);
-  const [formData, setFormData] = useState({
-    title: "",
-    slug: "",
-    shortDescription: "",
-    description: "",
-    order: 0,
-    estimatedMinutes: 0,
-    isPublished: false,
-  });
-  const [resources, setResources] = useState<Resource[]>([]);
-  const [submitting, setSubmitting] = useState(false);
-  const [uploadingVideo, setUploadingVideo] = useState<number | null>(null);
+interface ResourceFormState {
+  key: string;
+  title: string;
+  type: ResourceType;
+  url: string;
+  content: string;
+  sortOrder: string;
+}
 
-  useEffect(() => {
-    fetchModules();
+interface ModuleFormState {
+  title: string;
+  slug: string;
+  shortDescription: string;
+  description: string;
+  order: string;
+  estimatedMinutes: string;
+  isPublished: boolean;
+  resources: ResourceFormState[];
+}
+
+const RESOURCE_TYPES: ReadonlyArray<ResourceType> = ["VIDEO", "LINK", "DOCUMENT", "NOTE"];
+
+const isObject = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+
+const isResourceType = (value: unknown): value is ResourceType =>
+  typeof value === "string" && RESOURCE_TYPES.includes(value as ResourceType);
+
+const isAdminModule = (value: unknown): value is AdminModule => {
+  if (!isObject(value) || !Array.isArray(value.resources)) {
+    return false;
+  }
+
+  const baseValid =
+    typeof value.id === "string" &&
+    typeof value.title === "string" &&
+    typeof value.slug === "string" &&
+    typeof value.shortDescription === "string" &&
+    typeof value.description === "string" &&
+    typeof value.order === "number" &&
+    typeof value.isPublished === "boolean" &&
+    typeof value.createdAt === "string" &&
+    typeof value.updatedAt === "string";
+
+  if (!baseValid) {
+    return false;
+  }
+
+  if (
+    value.estimatedMinutes !== undefined &&
+    value.estimatedMinutes !== null &&
+    typeof value.estimatedMinutes !== "number"
+  ) {
+    return false;
+  }
+
+  return value.resources.every((resource) => {
+    if (!isObject(resource) || !isResourceType(resource.type)) {
+      return false;
+    }
+    return (
+      typeof resource.id === "string" &&
+      typeof resource.title === "string" &&
+      typeof resource.sortOrder === "number" &&
+      (resource.url === undefined || resource.url === null || typeof resource.url === "string") &&
+      (resource.content === undefined || resource.content === null || typeof resource.content === "string")
+    );
+  });
+};
+
+const isAdminModulesResponse = (value: unknown): value is AdminModule[] =>
+  Array.isArray(value) && value.every((moduleItem) => isAdminModule(moduleItem));
+
+const createResourceRow = (index = 0): ResourceFormState => ({
+  key: `${Date.now()}-${Math.random()}`,
+  title: "",
+  type: "VIDEO",
+  url: "",
+  content: "",
+  sortOrder: String(index)
+});
+
+const createEmptyForm = (): ModuleFormState => ({
+  title: "",
+  slug: "",
+  shortDescription: "",
+  description: "",
+  order: "0",
+  estimatedMinutes: "",
+  isPublished: false,
+  resources: [createResourceRow(0)]
+});
+
+const slugify = (value: string): string =>
+  value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+const toFormState = (moduleItem: AdminModule): ModuleFormState => ({
+  title: moduleItem.title,
+  slug: moduleItem.slug,
+  shortDescription: moduleItem.shortDescription,
+  description: moduleItem.description,
+  order: String(moduleItem.order),
+  estimatedMinutes:
+    typeof moduleItem.estimatedMinutes === "number" ? String(moduleItem.estimatedMinutes) : "",
+  isPublished: moduleItem.isPublished,
+  resources:
+    moduleItem.resources.length > 0
+      ? moduleItem.resources.map((resource) => ({
+          key: resource.id,
+          title: resource.title,
+          type: resource.type,
+          url: resource.url ?? "",
+          content: resource.content ?? "",
+          sortOrder: String(resource.sortOrder)
+        }))
+      : [createResourceRow(0)]
+});
+
+const getErrorMessage = (error: unknown): string => {
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+  return "Something went wrong. Please try again.";
+};
+
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.05 }
+  }
+} as const;
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100, damping: 15 } }
+} as const;
+
+const getResourceIcon = (type: string) => {
+  switch(type) {
+    case "VIDEO": return <FileVideo className="w-5 h-5 text-blue-400" />;
+    case "LINK": return <LinkIcon className="w-5 h-5 text-emerald-400" />;
+    case "DOCUMENT": return <FileText className="w-5 h-5 text-indigo-400" />;
+    case "NOTE": return <StickyNote className="w-5 h-5 text-amber-400" />;
+    default: return <FileText className="w-5 h-5 text-gray-400" />;
+  }
+};
+
+export default function ManageModules() {
+  const [modules, setModules] = useState<AdminModule[]>([]);
+  const [form, setForm] = useState<ModuleFormState>(createEmptyForm());
+  const [editingModuleId, setEditingModuleId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadingVideoIndex, setUploadingVideoIndex] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const isEditing = useMemo(() => editingModuleId !== null, [editingModuleId]);
+
+  const loadModules = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await apiFetch("/admin/modules");
+      if (!isAdminModulesResponse(response)) {
+        throw new Error("Unexpected admin modules response shape.");
+      }
+      setModules(response);
+    } catch (fetchError: unknown) {
+      setError(getErrorMessage(fetchError));
+      setModules([]);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
-  const fetchModules = async () => {
-    try {
-      const data = await apiFetch("/admin/modules");
-      setModules(data);
-    } catch (error: any) {
-      toast.error(error.message || "Failed to fetch modules");
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    void loadModules();
+  }, [loadModules]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target;
-    setFormData((prev) => ({
+  // Clear messages automatically
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => setSuccessMessage(null), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage]);
+
+  const handleChange = (field: keyof Omit<ModuleFormState, "resources">, value: string | boolean) => {
+    setForm((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
+      [field]: value
     }));
   };
 
-  const handleResourceChange = (index: number, field: keyof Resource, value: any) => {
-    const updated = [...resources];
-    updated[index] = { ...updated[index], [field]: value };
-    setResources(updated);
+  const handleResourceChange = (
+    index: number,
+    field: keyof Omit<ResourceFormState, "key">,
+    value: string
+  ) => {
+    setForm((prev) => {
+      const nextResources = [...prev.resources];
+      nextResources[index] = {
+        ...nextResources[index],
+        [field]: value
+      };
+      return {
+        ...prev,
+        resources: nextResources
+      };
+    });
   };
 
-  const addResource = () => {
-    setResources([...resources, { title: "", type: "VIDEO", url: "", sortOrder: resources.length }]);
-  };
-
-  const removeResource = (index: number) => {
-    setResources(resources.filter((_, i) => i !== index));
-  };
-
-  const handleVideoUpload = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || !e.target.files[0]) return;
+  const handleVideoUpload = async (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files || !event.target.files[0]) return;
     
-    setUploadingVideo(index);
-    const file = e.target.files[0];
+    setUploadingVideoIndex(index);
+    setSubmitError(null);
+    const file = event.target.files[0];
     const uploadFormData = new FormData();
     uploadFormData.append("video", file);
 
@@ -107,399 +280,557 @@ export default function ManageModules() {
         body: uploadFormData,
       });
       handleResourceChange(index, "url", result.url);
-      toast.success("Video uploaded successfully");
-    } catch (error: any) {
-      toast.error(error.message || "Video upload failed");
+      setSuccessMessage("Video uploaded and URL assigned successfully.");
+    } catch (uploadError: unknown) {
+      setSubmitError(getErrorMessage(uploadError));
     } finally {
-      setUploadingVideo(null);
+      setUploadingVideoIndex(null);
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
+  const addResource = () => {
+    setForm((prev) => ({
+      ...prev,
+      resources: [...prev.resources, createResourceRow(prev.resources.length)]
+    }));
+  };
 
-    const payload = {
-      ...formData,
-      order: Number(formData.order),
-      estimatedMinutes: Number(formData.estimatedMinutes),
-      resources: resources.map((r, i) => ({ ...r, sortOrder: i })),
-    };
-
-    try {
-      if (isEditing) {
-        await apiFetch(`/admin/modules/${isEditing}`, {
-          method: "PATCH",
-          body: JSON.stringify(payload),
-        });
-        toast.success("Module updated");
-      } else {
-        await apiFetch("/admin/modules", {
-          method: "POST",
-          body: JSON.stringify(payload),
-        });
-        toast.success("Module created");
+  const removeResource = (index: number) => {
+    setForm((prev) => {
+      if (prev.resources.length === 1) {
+        return prev;
       }
+      const nextResources = prev.resources.filter((_, resourceIndex) => resourceIndex !== index);
+      return {
+        ...prev,
+        resources: nextResources
+      };
+    });
+  };
 
-      resetForm();
-      fetchModules();
-    } catch (error: any) {
-      toast.error(error.message || "Operation failed");
-    } finally {
-      setSubmitting(false);
-    }
+  const startEdit = (moduleItem: AdminModule) => {
+    setEditingModuleId(moduleItem.id);
+    setForm(toFormState(moduleItem));
+    setSubmitError(null);
+    setSuccessMessage(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const resetForm = () => {
-    setIsEditing(null);
-    setFormData({
-      title: "",
-      slug: "",
-      shortDescription: "",
-      description: "",
-      order: 0,
-      estimatedMinutes: 0,
-      isPublished: false,
-    });
-    setResources([]);
+    setEditingModuleId(null);
+    setForm(createEmptyForm());
+    setSubmitError(null);
+    setSuccessMessage(null);
   };
 
-  const handleEdit = (mod: Module) => {
-    setIsEditing(mod.id);
-    setFormData({
-      title: mod.title,
-      slug: mod.slug,
-      shortDescription: mod.shortDescription,
-      description: mod.description,
-      order: mod.order,
-      estimatedMinutes: mod.estimatedMinutes || 0,
-      isPublished: mod.isPublished,
-    });
-    setResources(mod.resources || []);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  const validateForm = (): string | null => {
+    if (!form.title.trim()) {
+      return "Title is required.";
+    }
+    if (!form.slug.trim()) {
+      return "Slug is required.";
+    }
+    if (!form.shortDescription.trim()) {
+      return "Short description is required.";
+    }
+    if (!form.description.trim()) {
+      return "Description is required.";
+    }
+    if (form.order.trim() && Number.isNaN(Number(form.order))) {
+      return "Order must be a valid number.";
+    }
+    if (form.estimatedMinutes.trim() && Number.isNaN(Number(form.estimatedMinutes))) {
+      return "Estimated minutes must be a valid number.";
+    }
+
+    for (let i = 0; i < form.resources.length; i += 1) {
+      const resource = form.resources[i];
+      if (!resource.title.trim()) {
+        return `Resource ${i + 1}: title is required.`;
+      }
+      if (!RESOURCE_TYPES.includes(resource.type)) {
+        return `Resource ${i + 1}: invalid resource type.`;
+      }
+      if (resource.sortOrder.trim() && Number.isNaN(Number(resource.sortOrder))) {
+        return `Resource ${i + 1}: sort order must be a valid number.`;
+      }
+      const hasUrl = resource.url.trim().length > 0;
+      const hasContent = resource.content.trim().length > 0;
+      if (resource.type === "NOTE" && !hasContent) {
+        return `Resource ${i + 1}: NOTE requires content.`;
+      }
+      if (resource.type !== "NOTE" && !hasUrl && !hasContent) {
+        return `Resource ${i + 1}: provide URL or content.`;
+      }
+    }
+
+    return null;
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure?")) return;
+  const buildPayload = () => ({
+    title: form.title.trim(),
+    slug: form.slug.trim().toLowerCase(),
+    shortDescription: form.shortDescription.trim(),
+    description: form.description.trim(),
+    order: form.order.trim() ? Number(form.order) : 0,
+    estimatedMinutes: form.estimatedMinutes.trim() ? Number(form.estimatedMinutes) : undefined,
+    isPublished: form.isPublished,
+    resources: form.resources.map((resource, index) => ({
+      title: resource.title.trim(),
+      type: resource.type,
+      url: resource.url.trim() || undefined,
+      content: resource.content.trim() || undefined,
+      sortOrder: resource.sortOrder.trim() ? Number(resource.sortOrder) : index
+    }))
+  });
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSubmitError(null);
+    setSuccessMessage(null);
+
+    const validationError = validateForm();
+    if (validationError) {
+      setSubmitError(validationError);
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
-      await apiFetch(`/admin/modules/${id}`, { method: "DELETE" });
-      toast.success("Module deleted");
-      fetchModules();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to delete");
+      const payload = buildPayload();
+      if (isEditing && editingModuleId) {
+        await apiFetch(`/admin/modules/${editingModuleId}`, {
+          method: "PATCH",
+          body: JSON.stringify(payload)
+        });
+        setSuccessMessage("Module updated successfully.");
+      } else {
+        await apiFetch("/admin/modules", {
+          method: "POST",
+          body: JSON.stringify(payload)
+        });
+        setSuccessMessage("Module created successfully.");
+      }
+
+      await loadModules();
+      resetForm();
+    } catch (submissionError: unknown) {
+      setSubmitError(getErrorMessage(submissionError));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (moduleId: string) => {
+    const confirmed = window.confirm("Delete this module permanently?");
+    if (!confirmed) {
+      return;
+    }
+
+    setSubmitError(null);
+    setSuccessMessage(null);
+    try {
+      await apiFetch(`/admin/modules/${moduleId}`, {
+        method: "DELETE"
+      });
+      if (editingModuleId === moduleId) {
+        resetForm();
+      }
+      setSuccessMessage("Module deleted successfully.");
+      await loadModules();
+    } catch (deleteError: unknown) {
+      setSubmitError(getErrorMessage(deleteError));
     }
   };
 
   return (
-    <div className="pt-32 pb-24 px-6 min-h-screen bg-[#050020] text-white selection:bg-blue-500/30 font-outfit">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6">
+    <div className="pt-24 px-6 min-h-screen bg-[#050020] text-white overflow-hidden relative font-outfit">
+      <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
+
+      <motion.div 
+        className="max-w-7xl mx-auto relative z-10 pb-20 space-y-8"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.section variants={itemVariants} className="flex items-center gap-4 mb-4">
+          <div className="p-3 bg-blue-500/20 rounded-xl shadow-[0_0_30px_rgba(59,130,246,0.3)] border border-blue-500/30">
+            <BookOpen className="w-8 h-8 text-blue-400" />
+          </div>
           <div>
-            <h1 className="text-4xl font-bold bg-linear-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent italic">
+            <h1 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent italic">
               Manage Modules
             </h1>
-            <p className="text-white/50 mt-2">Create and organize your educational content</p>
+            <p className="text-gray-400 text-sm md:text-base mt-2">
+              Create, update, publish, and structure your learning resources.
+            </p>
           </div>
-          <button 
-            onClick={resetForm}
-            className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl px-6 py-3 transition-all"
-          >
-            <Plus className="w-5 h-5" />
-            <span>New Module</span>
-          </button>
-        </div>
+        </motion.section>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Form Section */}
-          <div className="lg:col-span-12">
-            <section className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 shadow-2xl">
-              <h2 className="text-2xl font-semibold mb-8 flex items-center gap-3">
-                {isEditing ? <Edit2 className="w-6 h-6 text-blue-400" /> : <Plus className="w-6 h-6 text-green-400" />}
-                {isEditing ? "Edit Module" : "Create New Module"}
-              </h2>
+        <motion.section variants={itemVariants} className="bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] shadow-2xl rounded-3xl p-6 md:p-8 relative">
+          <AnimatePresence>
+            {submitError && (
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                exit={{ opacity: 0, y: -10 }}
+                className="flex items-center gap-3 bg-rose-500/10 border border-rose-500/20 rounded-xl p-4 mb-6 shadow-lg shadow-rose-500/5"
+              >
+                <AlertCircle className="w-5 h-5 text-rose-400" />
+                <p className="text-sm font-medium text-rose-200">{submitError}</p>
+              </motion.div>
+            )}
+            {successMessage && (
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                exit={{ opacity: 0, y: -10 }}
+                className="flex items-center gap-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 mb-6 shadow-lg shadow-emerald-500/5"
+              >
+                <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                <p className="text-sm font-medium text-emerald-200">{successMessage}</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-              <form onSubmit={handleSubmit} className="space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="space-y-6">
-                    <div>
-                      <label className="block text-sm font-medium text-white/40 mb-2 uppercase tracking-wider">Title</label>
-                      <input
-                        type="text"
-                        name="title"
-                        required
-                        value={formData.title}
-                        onChange={handleInputChange}
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 focus:outline-none focus:border-blue-500/50 text-white placeholder:text-white/20 transition-all shadow-inner"
-                        placeholder="e.g. Introduction to Neural Networks"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-white/40 mb-2 uppercase tracking-wider">Slug</label>
-                      <input
-                        type="text"
-                        name="slug"
-                        required
-                        value={formData.slug}
-                        onChange={handleInputChange}
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 focus:outline-none focus:border-blue-500/50 text-white placeholder:text-white/20 transition-all font-mono text-sm"
-                        placeholder="intro-to-nn"
-                      />
-                    </div>
-                  </div>
+          <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+            {isEditing ? <Edit3 className="w-5 h-5 text-blue-400" /> : <Plus className="w-5 h-5 text-emerald-400" />}
+            {isEditing ? "Edit Tracking Module" : "Create New Module"}
+          </h2>
 
-                  <div className="space-y-6">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-white/40 mb-2 uppercase tracking-wider">Order</label>
-                        <input
-                          type="number"
-                          name="order"
-                          value={formData.order}
-                          onChange={handleInputChange}
-                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 focus:outline-none focus:border-blue-500/50 text-white placeholder:text-white/20 transition-all"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-white/40 mb-2 uppercase tracking-wider">Duration (Min)</label>
-                        <input
-                          type="number"
-                          name="estimatedMinutes"
-                          value={formData.estimatedMinutes}
-                          onChange={handleInputChange}
-                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 focus:outline-none focus:border-blue-500/50 text-white placeholder:text-white/20 transition-all"
-                        />
-                      </div>
-                    </div>
-                    <div className="pt-4">
-                      <label className="flex items-center gap-3 cursor-pointer group">
-                        <div className="relative">
-                          <input
-                            type="checkbox"
-                            name="isPublished"
-                            checked={formData.isPublished}
-                            onChange={handleInputChange}
-                            className="sr-only"
-                          />
-                          <div className={`w-12 h-6 rounded-full transition-colors ${formData.isPublished ? "bg-blue-600" : "bg-white/10"}`}></div>
-                          <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${formData.isPublished ? "translate-x-6" : "translate-x-0"}`}></div>
-                        </div>
-                        <span className="text-sm font-medium text-white/70 group-hover:text-white transition-colors">Published & Visible</span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-white/40 mb-2 uppercase tracking-wider">Short Description</label>
-                  <input
-                    type="text"
-                    name="shortDescription"
-                    required
-                    value={formData.shortDescription}
-                    onChange={handleInputChange}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 focus:outline-none focus:border-blue-500/50 text-white placeholder:text-white/20 transition-all"
-                    placeholder="Brief highlight of this module..."
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-white/40 mb-2 uppercase tracking-wider">Full Description</label>
-                  <textarea
-                    name="description"
-                    required
-                    rows={4}
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 focus:outline-none focus:border-blue-500/50 text-white placeholder:text-white/20 transition-all"
-                    placeholder="Detailed overview..."
-                  />
-                </div>
-
-                {/* Resources Section */}
-                <div className="pt-8">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-semibold flex items-center gap-2">
-                       <LinkIcon className="w-5 h-5 text-blue-400" />
-                       Module Resources
-                    </h3>
-                    <button
-                      type="button"
-                      onClick={addResource}
-                      className="text-sm flex items-center gap-1.5 text-blue-400 hover:text-blue-300 transition-colors"
-                    >
-                      <Plus className="w-4 h-4" /> Add Resource
-                    </button>
-                  </div>
-
-                  <div className="space-y-4">
-                    {resources.map((resource, index) => (
-                      <motion.div 
-                        key={index}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="p-6 bg-white/5 border border-white/10 rounded-2xl relative group"
-                      >
-                        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
-                          <div className="md:col-span-4">
-                            <input
-                              type="text"
-                              required
-                              placeholder="Resource Title"
-                              value={resource.title}
-                              onChange={(e) => handleResourceChange(index, "title", e.target.value)}
-                              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-500/50"
-                            />
-                          </div>
-                          <div className="md:col-span-2">
-                            <select
-                              value={resource.type}
-                              onChange={(e) => handleResourceChange(index, "type", e.target.value)}
-                              className="w-full bg-[#0a0525] border border-white/10 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-500/50 cursor-pointer"
-                            >
-                              <option value="VIDEO">Video</option>
-                              <option value="LINK">Link</option>
-                              <option value="DOCUMENT">Doc</option>
-                              <option value="NOTE">Note</option>
-                            </select>
-                          </div>
-                          <div className="md:col-span-5 flex gap-2">
-                            <input
-                              type="text"
-                              placeholder={resource.type === "VIDEO" ? "Video URL (YouTube or Upload)" : "URL / Destination"}
-                              value={resource.url || ""}
-                              onChange={(e) => handleResourceChange(index, "url", e.target.value)}
-                              className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-500/50"
-                            />
-                            {resource.type === "VIDEO" && (
-                              <label className={`cursor-pointer p-2.5 rounded-lg border border-white/10 hover:bg-white/10 transition-all ${uploadingVideo === index ? "opacity-50 pointer-events-none" : ""}`}>
-                                <Upload className={`w-4 h-4 ${uploadingVideo === index ? "animate-bounce" : ""}`} />
-                                <input
-                                  type="file"
-                                  accept="video/*"
-                                  className="hidden"
-                                  onChange={(e) => handleVideoUpload(index, e)}
-                                />
-                              </label>
-                            )}
-                          </div>
-                          <div className="md:col-span-1 flex justify-end">
-                            <button
-                              type="button"
-                              onClick={() => removeResource(index)}
-                              className="p-2.5 text-white/20 hover:text-red-400 transition-colors"
-                            >
-                              <X className="w-5 h-5" />
-                            </button>
-                          </div>
-                        </div>
-                      </motion.div>
-                    ))}
-                    {resources.length === 0 && (
-                      <div className="py-8 border border-dashed border-white/10 rounded-2xl text-center text-white/30 text-sm">
-                        No resources added. Modules are better with content!
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex gap-4 pt-10">
-                  <button
-                    type="submit"
-                    disabled={submitting}
-                    className="flex-1 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-50 text-white font-bold py-5 rounded-2xl transition-all shadow-xl shadow-blue-500/10"
-                  >
-                    {submitting ? "Saving Content..." : isEditing ? "Update Module" : "Create Module"}
-                  </button>
-                  {isEditing && (
-                    <button
-                      type="button"
-                      onClick={resetForm}
-                      className="px-10 bg-white/5 border border-white/10 hover:bg-white/10 rounded-2xl transition-all"
-                    >
-                      Cancel
-                    </button>
-                  )}
-                </div>
-              </form>
-            </section>
-          </div>
-
-          {/* List Section */}
-          <div className="lg:col-span-12 mt-12">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-semibold">Active Modules</h2>
-              <div className="h-px bg-white/10 flex-1 ml-6"></div>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-xs uppercase tracking-wider font-bold text-gray-500 mb-2" htmlFor="module-title">
+                  Title
+                </label>
+                <input
+                  id="module-title"
+                  type="text"
+                  value={form.title}
+                  onChange={(event) => handleChange("title", event.target.value)}
+                  onBlur={() => {
+                    if (!form.slug.trim() && form.title.trim()) {
+                      handleChange("slug", slugify(form.title));
+                    }
+                  }}
+                  className="w-full rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 focus:bg-white/10 outline-none px-4 py-3 transition-colors placeholder:text-gray-600"
+                  placeholder="e.g. Introduction to React"
+                />
+              </div>
+              <div>
+                <label className="block text-xs uppercase tracking-wider font-bold text-gray-500 mb-2" htmlFor="module-slug">
+                  Slug (URL-friendly)
+                </label>
+                <input
+                  id="module-slug"
+                  type="text"
+                  value={form.slug}
+                  onChange={(event) => handleChange("slug", slugify(event.target.value))}
+                  className="w-full rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 focus:bg-white/10 outline-none px-4 py-3 transition-colors placeholder:text-gray-600"
+                  placeholder="e.g. intro-to-react"
+                />
+              </div>
             </div>
 
-            {loading ? (
-              <div className="space-y-4">
-                {[1, 2, 3].map(n => (
-                  <div key={n} className="h-24 bg-white/5 border border-white/10 rounded-2xl animate-pulse"></div>
-                ))}
-              </div>
-            ) : modules.length === 0 ? (
-              <div className="text-center py-20 bg-white/5 border border-dashed border-white/10 rounded-3xl">
-                <p className="text-white/30 italic">No modules found. Start building your curriculum!</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 gap-4">
-                <AnimatePresence mode="popLayout">
-                  {modules.map((mod) => (
-                    <motion.div
-                      key={mod.id}
-                      layout
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:bg-white/8 transition-all hover:border-blue-500/20 group"
-                    >
-                      <div className="flex items-center gap-6">
-                        <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center font-bold text-blue-400">
-                          {mod.order}
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-3">
-                            <h3 className="text-lg font-bold group-hover:text-blue-400 transition-colors">{mod.title}</h3>
-                            {mod.isPublished ? (
-                              <span className="text-[10px] px-2 py-0.5 bg-green-500/20 text-green-400 border border-green-500/20 rounded-full font-bold uppercase tracking-wider">Live</span>
-                            ) : (
-                              <span className="text-[10px] px-2 py-0.5 bg-white/10 text-white/40 border border-white/20 rounded-full font-bold uppercase tracking-wider">Draft</span>
-                            )}
-                          </div>
-                          <p className="text-white/40 text-sm mt-1 line-clamp-1">{mod.shortDescription}</p>
-                        </div>
-                      </div>
+            <div>
+              <label className="block text-xs uppercase tracking-wider font-bold text-gray-500 mb-2" htmlFor="module-short-description">
+                Short Description
+              </label>
+              <textarea
+                id="module-short-description"
+                rows={2}
+                value={form.shortDescription}
+                onChange={(event) => handleChange("shortDescription", event.target.value)}
+                className="w-full rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 focus:bg-white/10 outline-none px-4 py-3 transition-colors placeholder:text-gray-600 resize-none font-outfit"
+                placeholder="Brief summary for list views..."
+              />
+            </div>
 
-                      <div className="flex items-center gap-8">
-                        <div className="hidden sm:flex flex-col items-end">
-                           <span className="text-xs text-white/30 uppercase tracking-widest">Resources</span>
-                           <span className="text-sm font-semibold">{mod.resources?.length || 0} items</span>
-                        </div>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => handleEdit(mod)}
-                            className="p-3 bg-white/5 hover:bg-blue-500/20 text-blue-400 border border-white/10 rounded-xl transition-all"
-                            title="Edit Module"
-                          >
-                            <Edit2 className="w-5 h-5" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(mod.id)}
-                            className="p-3 bg-white/5 hover:bg-red-500/20 text-red-500 border border-white/10 rounded-xl transition-all"
-                            title="Delete Module"
-                          >
-                            <Trash2 className="w-5 h-5" />
-                          </button>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
+            <div>
+              <label className="block text-xs uppercase tracking-wider font-bold text-gray-500 mb-2" htmlFor="module-description">
+                Full Description
+              </label>
+              <textarea
+                id="module-description"
+                rows={4}
+                value={form.description}
+                onChange={(event) => handleChange("description", event.target.value)}
+                className="w-full rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 focus:bg-white/10 outline-none px-4 py-3 transition-colors placeholder:text-gray-600 resize-none font-outfit"
+                placeholder="Detailed explanation of the module contents..."
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <label className="block text-xs uppercase tracking-wider font-bold text-gray-500 mb-2" htmlFor="module-order">
+                  Sort Order
+                </label>
+                <input
+                  id="module-order"
+                  type="number"
+                  value={form.order}
+                  onChange={(event) => handleChange("order", event.target.value)}
+                  className="w-full rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 focus:bg-white/10 outline-none px-4 py-3 transition-colors placeholder:text-gray-600"
+                  placeholder="0"
+                />
               </div>
-            )}
+              <div>
+                <label className="block text-xs uppercase tracking-wider font-bold text-gray-500 mb-2" htmlFor="module-minutes">
+                  Estimated Minutes
+                </label>
+                <input
+                  id="module-minutes"
+                  type="number"
+                  value={form.estimatedMinutes}
+                  onChange={(event) => handleChange("estimatedMinutes", event.target.value)}
+                  className="w-full rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 focus:bg-white/10 outline-none px-4 py-3 transition-colors placeholder:text-gray-600"
+                  placeholder="e.g. 120"
+                />
+              </div>
+              <div className="flex items-center pt-6">
+                <label className="relative inline-flex items-center cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={form.isPublished}
+                    onChange={(event) => handleChange("isPublished", event.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-white/10 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+                  <span className="ml-3 text-sm font-medium text-gray-300 group-hover:text-white transition-colors">Publish Directly</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="space-y-4 pt-6 border-t border-white/10">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <h3 className="text-xl font-bold flex items-center gap-2">
+                  <ListVideo className="w-5 h-5 text-indigo-400" />
+                  Module Resources
+                </h3>
+                <button
+                  type="button"
+                  onClick={addResource}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white hover:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all font-medium text-sm border border-blue-500/20"
+                >
+                  <Plus className="w-4 h-4" /> Add Resource
+                </button>
+              </div>
+
+              <AnimatePresence>
+                {form.resources.map((resource, index) => (
+                  <motion.article 
+                    layout
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    key={resource.key} 
+                    className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 space-y-4 hover:border-white/20 transition-colors"
+                  >
+                    <div className="flex items-center justify-between pb-2 border-b border-white/5">
+                      <p className="text-xs uppercase tracking-widest font-bold text-gray-500 flex items-center gap-2">
+                        {getResourceIcon(resource.type)} Resource #{index + 1}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => removeResource(index)}
+                        disabled={form.resources.length === 1}
+                        className="p-1.5 rounded-lg bg-rose-500/10 text-rose-400 hover:bg-rose-500 hover:text-white disabled:opacity-30 disabled:hover:bg-rose-500/10 disabled:hover:text-rose-400 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <input
+                        type="text"
+                        placeholder="Resource Title"
+                        value={resource.title}
+                        onChange={(event) => handleResourceChange(index, "title", event.target.value)}
+                        className="rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 outline-none px-4 py-2.5 transition-colors placeholder:text-gray-600"
+                      />
+                      <select
+                        value={resource.type}
+                        onChange={(event) => handleResourceChange(index, "type", event.target.value)}
+                        className="rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 outline-none px-4 py-2.5 transition-all appearance-none cursor-pointer text-white"
+                        style={{ backgroundImage: `url('data:image/svg+xml;utf8,<svg fill="none" stroke="%239CA3AF" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>')`, backgroundPosition: 'right 0.75rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1em 1em', paddingRight: '2.5rem' }}
+                      >
+                        {RESOURCE_TYPES.map((type) => (
+                          <option key={type} value={type} className="text-gray-900 bg-white">
+                            {type}
+                          </option>
+                        ))}
+                      </select>
+                      <input
+                        type="number"
+                        placeholder="Sort Order"
+                        value={resource.sortOrder}
+                        onChange={(event) => handleResourceChange(index, "sortOrder", event.target.value)}
+                        className="rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 outline-none px-4 py-2.5 transition-colors placeholder:text-gray-600"
+                      />
+                    </div>
+
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder={resource.type === "VIDEO" ? "Video URL (YouTube or Upload)" : "URL / Destination"}
+                        value={resource.url}
+                        onChange={(event) => handleResourceChange(index, "url", event.target.value)}
+                        className="flex-1 rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 outline-none px-4 py-2.5 transition-colors placeholder:text-gray-600"
+                      />
+                      {resource.type === "VIDEO" && (
+                        <label className={`flex items-center justify-center px-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 cursor-pointer transition-all ${uploadingVideoIndex === index ? "opacity-50 pointer-events-none" : ""}`}>
+                          {uploadingVideoIndex === index ? (
+                            <Loader2 className="w-5 h-5 animate-spin text-blue-400" />
+                          ) : (
+                            <Upload className="w-5 h-5 text-blue-400" />
+                          )}
+                          <input
+                            type="file"
+                            accept="video/*"
+                            className="hidden"
+                            onChange={(e) => handleVideoUpload(index, e)}
+                          />
+                        </label>
+                      )}
+                    </div>
+
+                    <textarea
+                      rows={2}
+                      placeholder="Content / Notes (optional, required for NOTE)"
+                      value={resource.content}
+                      onChange={(event) => handleResourceChange(index, "content", event.target.value)}
+                      className="w-full rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 outline-none px-4 py-2.5 transition-colors placeholder:text-gray-600 resize-none font-outfit"
+                    />
+                  </motion.article>
+                ))}
+              </AnimatePresence>
+            </div>
+
+            <div className="flex flex-wrap gap-4 pt-4">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="flex items-center gap-2 px-8 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 hover:shadow-[0_0_20px_rgba(59,130,246,0.4)] disabled:opacity-50 disabled:hover:bg-blue-600 disabled:hover:shadow-none transition-all font-bold text-white shadow-lg shadow-blue-500/20"
+              >
+                {isSubmitting ? (
+                  <><Loader2 className="w-5 h-5 animate-spin" /> Saving...</>
+                ) : (
+                  <><Save className="w-5 h-5" /> {isEditing ? "Update Module" : "Create Module"}</>
+                )}
+              </button>
+              {isEditing && (
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all font-medium text-white"
+                >
+                  <X className="w-5 h-5" /> Cancel Edit
+                </button>
+              )}
+            </div>
+          </form>
+        </motion.section>
+
+        <motion.section variants={itemVariants} className="bg-white/[0.02] backdrop-blur-xl border border-white/[0.05] rounded-3xl p-6 md:p-8 shadow-2xl">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-bold flex items-center gap-2">
+              <BookOpen className="w-6 h-6 text-indigo-400" />
+              Existing Modules
+            </h2>
+            <span className="bg-white/10 text-white px-3 py-1 rounded-full text-xs font-bold tracking-wider">
+               {modules.length} Total
+            </span>
           </div>
-        </div>
-      </div>
+
+          {isLoading ? (
+             <div className="flex flex-col items-center justify-center py-12">
+                <Loader2 className="w-10 h-10 text-indigo-500 animate-spin mb-4" />
+                <p className="text-indigo-200">Loading modules array...</p>
+             </div>
+          ) : null}
+          
+          {!isLoading && error ? (
+            <div className="flex flex-col items-center py-12 text-center">
+              <AlertCircle className="w-12 h-12 text-rose-400 mb-4" />
+              <p className="text-rose-200 mb-4">{error}</p>
+              <button
+                type="button"
+                onClick={() => void loadModules()}
+                className="px-6 py-2.5 bg-rose-500 hover:bg-rose-400 rounded-xl font-medium shadow-lg shadow-rose-500/20"
+              >
+                Retry Request
+              </button>
+            </div>
+          ) : null}
+          
+          {!isLoading && !error && modules.length === 0 ? (
+            <div className="text-center py-12">
+               <BookOpen className="w-12 h-12 mx-auto text-gray-500 mb-4 opacity-50" />
+               <p className="text-gray-400">No modules found. Create one above.</p>
+            </div>
+          ) : null}
+
+          {!isLoading && !error && modules.length > 0 ? (
+            <div className="space-y-4">
+              <AnimatePresence>
+                {modules.map((moduleItem) => (
+                  <motion.article
+                    layout
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    key={moduleItem.id}
+                    className={`group bg-white/[0.02] border border-white/[0.08] hover:border-indigo-500/30 rounded-2xl p-5 transition-all duration-300 relative overflow-hidden flex flex-col md:flex-row gap-6 md:items-center justify-between ${editingModuleId === moduleItem.id ? 'ring-2 ring-blue-500 ring-offset-2 ring-offset-[#050020]' : ''}`}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/0 via-indigo-500/0 to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                    
+                    <div className="flex-1 z-10 w-full min-w-0">
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className={`text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-md ${moduleItem.isPublished ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'}`}>
+                          {moduleItem.isPublished ? "Published" : "Draft"}
+                        </span>
+                        <span className="text-xs text-gray-500 font-medium whitespace-nowrap">
+                           Order: {moduleItem.order}
+                        </span>
+                        <span className="text-xs text-gray-500 font-medium whitespace-nowrap">
+                           {moduleItem.resources.length} Resources
+                        </span>
+                      </div>
+                      <h3 className="text-lg md:text-xl font-bold text-white group-hover:text-indigo-300 transition-colors truncate italic">
+                        {moduleItem.title}
+                      </h3>
+                      <p className="text-sm text-gray-400 mt-1 truncate font-mono">
+                        /{moduleItem.slug}
+                      </p>
+                    </div>
+
+                    <div className="flex gap-3 z-10 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => startEdit(moduleItem)}
+                        className="flex items-center justify-center p-3 rounded-xl bg-blue-500/10 text-blue-400 hover:bg-blue-500 hover:text-white transition-all shadow-lg hover:shadow-blue-500/30 group/btn"
+                        title="Edit Module"
+                      >
+                        <Edit3 className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void handleDelete(moduleItem.id)}
+                        className="flex items-center justify-center p-3 rounded-xl bg-rose-500/10 text-rose-400 hover:bg-rose-500 hover:text-white transition-all shadow-lg hover:shadow-rose-500/30 group/btn"
+                        title="Delete Module"
+                      >
+                        <Trash2 className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
+                      </button>
+                    </div>
+                  </motion.article>
+                ))}
+              </AnimatePresence>
+            </div>
+          ) : null}
+        </motion.section>
+      </motion.div>
     </div>
   );
 }

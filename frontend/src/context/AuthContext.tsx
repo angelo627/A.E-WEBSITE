@@ -1,49 +1,111 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useState } from "react";
 import type { ReactNode } from "react";
 
-interface User {
+export type UserRole = "STUDENT" | "ADMIN" | "SUPER_ADMIN";
+export type UserStatus = "PENDING_VERIFICATION" | "ACTIVE" | "SUSPENDED" | "DEACTIVATED";
+
+export interface AuthUser {
   id: string;
   firstName: string;
   lastName: string;
   username: string;
   email: string;
-  role: string;
+  role: UserRole;
+  status?: UserStatus;
 }
 
 interface AuthContextType {
-  user: User | null;
+  user: AuthUser | null;
   token: string | null;
   isLoading: boolean;
-  login: (user: User, token: string) => void;
+  login: (user: AuthUser, token: string) => void;
   logout: () => void;
   isLoggedIn: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+const USER_ROLES: ReadonlyArray<UserRole> = ["STUDENT", "ADMIN", "SUPER_ADMIN"];
+const USER_STATUSES: ReadonlyArray<UserStatus> = [
+  "PENDING_VERIFICATION",
+  "ACTIVE",
+  "SUSPENDED",
+  "DEACTIVATED"
+];
 
-  useEffect(() => {
-    const savedUser = localStorage.getItem("ae_user");
-    const savedToken = localStorage.getItem("ae_token");
+const isObject = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
 
-    if (savedUser && savedToken) {
-      try {
-        setUser(JSON.parse(savedUser));
-        setToken(savedToken);
-      } catch (error) {
-        console.error("Failed to parse saved user from localStorage:", error);
-        localStorage.removeItem("ae_user");
-        localStorage.removeItem("ae_token");
-      }
+const isString = (value: unknown): value is string =>
+  typeof value === "string" && value.trim().length > 0;
+
+const isUserRole = (value: unknown): value is UserRole =>
+  typeof value === "string" && USER_ROLES.includes(value as UserRole);
+
+const isUserStatus = (value: unknown): value is UserStatus =>
+  typeof value === "string" && USER_STATUSES.includes(value as UserStatus);
+
+const isAuthUser = (value: unknown): value is AuthUser => {
+  if (!isObject(value)) {
+    return false;
+  }
+
+  if (
+    !isString(value.id) ||
+    !isString(value.firstName) ||
+    !isString(value.lastName) ||
+    !isString(value.username) ||
+    !isString(value.email) ||
+    !isUserRole(value.role)
+  ) {
+    return false;
+  }
+
+  if (value.status !== undefined && !isUserStatus(value.status)) {
+    return false;
+  }
+
+  return true;
+};
+
+const clearStoredAuth = (): void => {
+  localStorage.removeItem("ae_user");
+  localStorage.removeItem("ae_token");
+};
+
+const getStoredAuth = (): { user: AuthUser | null; token: string | null } => {
+  const savedUser = localStorage.getItem("ae_user");
+  const savedToken = localStorage.getItem("ae_token");
+
+  if (!savedUser || !savedToken) {
+    return { user: null, token: null };
+  }
+
+  if (!isString(savedToken)) {
+    clearStoredAuth();
+    return { user: null, token: null };
+  }
+
+  try {
+    const parsed = JSON.parse(savedUser) as unknown;
+    if (!isAuthUser(parsed)) {
+      clearStoredAuth();
+      return { user: null, token: null };
     }
-    setIsLoading(false);
-  }, []);
+    return { user: parsed, token: savedToken };
+  } catch (error) {
+    console.error("Failed to parse saved user from localStorage:", error);
+    clearStoredAuth();
+    return { user: null, token: null };
+  }
+};
 
-  const login = (newUser: User, newToken: string) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const storedAuth = getStoredAuth();
+  const [user, setUser] = useState<AuthUser | null>(storedAuth.user);
+  const [token, setToken] = useState<string | null>(storedAuth.token);
+
+  const login = (newUser: AuthUser, newToken: string) => {
     setUser(newUser);
     setToken(newToken);
     localStorage.setItem("ae_user", JSON.stringify(newUser));
@@ -53,8 +115,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const logout = () => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem("ae_user");
-    localStorage.removeItem("ae_token");
+    clearStoredAuth();
   };
 
   return (
@@ -62,7 +123,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       value={{
         user,
         token,
-        isLoading,
+        isLoading: false,
         login,
         logout,
         isLoggedIn: !!user,
@@ -73,10 +134,4 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   );
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-};
+export default AuthContext;

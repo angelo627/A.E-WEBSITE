@@ -13,7 +13,6 @@ const AnimatedCounter = ({
 }) => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
-  const [started, setStarted] = useState(false);
 
   const springValue = useSpring(0, { 
     duration: duration * 1000,
@@ -21,11 +20,10 @@ const AnimatedCounter = ({
   });
 
   useEffect(() => {
-    if (inView && !started) {
-      setStarted(true);
+    if (inView) {
       springValue.set(value);
     }
-  }, [inView, value, springValue, started]);
+  }, [inView, value, springValue]);
 
   const displayValue = useTransform(springValue, (latest) => {
     if (format === "abbreviated") {
