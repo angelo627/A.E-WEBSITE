@@ -248,20 +248,25 @@ export default function DashboardPage() {
                 <p className="text-3xl font-black text-[var(--text-color)]">{dashboard.summary.notStartedModules}</p>
               </motion.div>
 
-              <motion.div whileHover={{ y: -4 }} className="ae-brand-card border border-[var(--ae-border)] hover:border-[var(--ae-blue)]/50 rounded-2xl p-6 shadow-sm hover:shadow-md relative overflow-hidden group transition-all">
-                <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-[var(--ae-blue)] via-[var(--ae-lavender)] to-[var(--ae-peach)]" />
-                <div className="flex items-start justify-between mb-4 relative z-10 pt-2">
-                  <div className="p-3 bg-[var(--ae-blue)]/10 rounded-xl group-hover:bg-[var(--ae-blue)]/20 transition-colors">
-                    <TrendingUp className="w-6 h-6 text-[var(--ae-blue)]" />
+              <Link to="/leaderboard" className="block group">
+                <motion.div whileHover={{ y: -4 }} className="h-full ae-brand-card border border-[var(--ae-border)] hover:border-[var(--ae-blue)]/50 rounded-2xl p-6 shadow-sm hover:shadow-md relative overflow-hidden transition-all">
+                  <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-[var(--ae-blue)] via-[var(--ae-lavender)] to-[var(--ae-peach)]" />
+                  <div className="flex items-start justify-between mb-4 relative z-10 pt-2">
+                    <div className="p-3 bg-[var(--ae-blue)]/10 rounded-xl group-hover:bg-[var(--ae-blue)]/20 transition-colors">
+                      <TrendingUp className="w-6 h-6 text-[var(--ae-blue)]" />
+                    </div>
                   </div>
-                </div>
-                <div className="relative z-10">
-                  <p className="text-sm font-bold text-slate-500 mb-1">Overall Progress</p>
-                  <p className="text-3xl font-black text-[var(--text-color)]">
-                    {Math.max(0, Math.min(100, Math.round(dashboard.summary.overallProgressPercent)))}%
-                  </p>
-                </div>
-              </motion.div>
+                  <div className="relative z-10">
+                    <p className="text-sm font-bold text-slate-500 mb-1">Overall Progress</p>
+                    <p className="text-3xl font-black text-[var(--text-color)]">
+                      {Math.max(0, Math.min(100, Math.round(dashboard.summary.overallProgressPercent)))}%
+                    </p>
+                    <p className="text-xs font-bold text-[var(--ae-blue)] mt-3 flex items-center group-hover:underline">
+                      View Leaderboard <ChevronRight className="w-4 h-4 ml-1" />
+                    </p>
+                  </div>
+                </motion.div>
+              </Link>
             </motion.div>
 
             {/* Main Progress Tracker */}

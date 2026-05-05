@@ -52,7 +52,7 @@ function Navbar() {
     { to: "/admin/users", label: "Users" },
   ];
 
-  const navLinks = !isLoggedIn ? publicLinks : isAdmin ? adminLinks : authenticatedLinks;
+  const navLinks = publicLinks;
 
   return (
     <header className={`fixed top-0 left-0 w-full z-50 flex justify-center px-4 transition-all duration-300 ${isScrolled ? "pt-2" : "pt-4"}`}>
@@ -166,20 +166,43 @@ function Navbar() {
 
         {/* MOBILE MENU DROPDOWN */}
         {isMenuOpen && (
-          <div className="absolute top-20 left-0 w-full bg-[var(--bg-color)] border border-[var(--ae-border)] shadow-2xl rounded-3xl p-8 lg:hidden flex flex-col gap-6 text-lg text-[var(--text-color)] font-medium animate-in fade-in slide-in-from-top-4 duration-300 z-40 backdrop-blur-xl">
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                onClick={closeMenu}
-                className={({ isActive }) => 
-                  `transition-colors ${isActive ? "text-[var(--ae-blue)] font-bold" : "text-[var(--text-color)]/70 hover:text-[var(--ae-blue)]"}`
-                }
-              >
-                {link.label}
-              </NavLink>
-            ))}
+          <div className="absolute top-20 left-0 w-full bg-[var(--bg-color)] border border-[var(--ae-border)] shadow-2xl rounded-3xl p-8 lg:hidden flex flex-col gap-6 text-lg text-[var(--text-color)] font-medium animate-in fade-in slide-in-from-top-4 duration-300 z-40 backdrop-blur-xl max-h-[80vh] overflow-y-auto">
+            <div className="flex flex-col gap-4">
+              {navLinks.map((link) => (
+                <NavLink
+                  key={link.to}
+                  to={link.to}
+                  onClick={closeMenu}
+                  className={({ isActive }) => 
+                    `transition-colors ${isActive ? "text-[var(--ae-blue)] font-bold" : "text-[var(--text-color)]/70 hover:text-[var(--ae-blue)]"}`
+                  }
+                >
+                  {link.label}
+                </NavLink>
+              ))}
+            </div>
             
+            {isLoggedIn && (
+              <>
+                <hr className="border-[var(--ae-border)]" />
+                <p className="text-xs font-bold text-[var(--ae-blue)] uppercase tracking-wider mb-2">Account & Dashboard</p>
+                <div className="flex flex-col gap-4">
+                  {(isAdmin ? adminLinks : authenticatedLinks).map((link) => (
+                    <NavLink
+                      key={link.to}
+                      to={link.to}
+                      onClick={closeMenu}
+                      className={({ isActive }) => 
+                        `transition-colors ${isActive ? "text-[var(--ae-blue)] font-bold" : "text-[var(--text-color)]/70 hover:text-[var(--ae-blue)]"}`
+                      }
+                    >
+                      {link.label}
+                    </NavLink>
+                  ))}
+                </div>
+              </>
+            )}
+
             <hr className="border-[var(--ae-border)]" />
             
             {!isLoggedIn ? (
@@ -189,9 +212,15 @@ function Navbar() {
               </div>
             ) : (
               <div className="flex flex-col gap-4">
-                <Link to={dashboardPath} onClick={closeMenu} className="hover:text-[var(--ae-blue)] transition-colors">
-                  {isAdmin ? "Admin Dashboard" : "Dashboard"}
-                </Link>
+                <button 
+                  onClick={() => {
+                    logout();
+                    closeMenu();
+                  }}
+                  className="text-left font-bold text-red-500 hover:text-red-700 transition-colors py-2"
+                >
+                  Logout
+                </button>
               </div>
             )}
           </div>
