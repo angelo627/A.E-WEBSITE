@@ -42,7 +42,12 @@ const Login = (): ReactElement => {
         body: JSON.stringify({ email: identifier, password }),
       });
       console.log("Login successful:", response);
-      navigate("/home");
+      
+      // Determine dashboard path based on role if available in response, otherwise default to dashboard
+      const role = (response as any)?.user?.role;
+      const targetPath = role === "ADMIN" || role === "SUPER_ADMIN" ? "/admin" : "/dashboard";
+      
+      navigate(targetPath);
     } catch (err: unknown) {
       setError(getErrorMessage(err, "Invalid credentials. Please try again."));
     } finally {

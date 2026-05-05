@@ -13,11 +13,7 @@ function Navbar() {
 
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const handleScroll = () => {istener("scroll", handleScroll);
   }, []);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
@@ -52,7 +48,7 @@ function Navbar() {
     { to: "/admin/users", label: "Users" },
   ];
 
-  const navLinks = publicLinks;
+  const navLinks = !isLoggedIn ? publicLinks : isAdmin ? adminLinks : authenticatedLinks;
 
   return (
     <header className={`fixed top-0 left-0 w-full z-50 flex justify-center px-4 transition-all duration-300 ${isScrolled ? "pt-2" : "pt-4"}`}>
@@ -181,27 +177,6 @@ function Navbar() {
                 </NavLink>
               ))}
             </div>
-            
-            {isLoggedIn && (
-              <>
-                <hr className="border-[var(--ae-border)]" />
-                <p className="text-xs font-bold text-[var(--ae-blue)] uppercase tracking-wider mb-2">Account & Dashboard</p>
-                <div className="flex flex-col gap-4">
-                  {(isAdmin ? adminLinks : authenticatedLinks).map((link) => (
-                    <NavLink
-                      key={link.to}
-                      to={link.to}
-                      onClick={closeMenu}
-                      className={({ isActive }) => 
-                        `transition-colors ${isActive ? "text-[var(--ae-blue)] font-bold" : "text-[var(--text-color)]/70 hover:text-[var(--ae-blue)]"}`
-                      }
-                    >
-                      {link.label}
-                    </NavLink>
-                  ))}
-                </div>
-              </>
-            )}
 
             <hr className="border-[var(--ae-border)]" />
             
@@ -217,7 +192,7 @@ function Navbar() {
                     logout();
                     closeMenu();
                   }}
-                  className="text-left font-bold text-red-500 hover:text-red-700 transition-colors py-2"
+                  className="text-left font-bold text-red-500 hover:text-red-700 transition-colors"
                 >
                   Logout
                 </button>
