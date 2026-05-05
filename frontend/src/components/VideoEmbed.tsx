@@ -43,7 +43,31 @@ export const VideoEmbed: React.FC<VideoEmbedProps> = ({ url }) => {
     );
   }
 
-  // Fallback to text link if not a platform we recognize
+  // Cloudinary Video Regex
+  // Format: https://res.cloudinary.com/cloud_name/video/upload/.../public_id.mp4
+  const cloudinaryMatch = url.match(
+    /res\.cloudinary\.com\/[^\/]+\/video\/upload\/(?:v\d+\/)?(.+)\.(mp4|webm|ogg|mov|mkv)$|res\.cloudinary\.com\/[^\/]+\/video\/upload\/(?:v\d+\/)?(.+)$/i
+  );
+
+  // Generic Video File Regex
+  const isDirectVideo = url.match(/\.(mp4|webm|ogg|mov|mkv|avi)(\?.*)?$/i);
+
+  if (cloudinaryMatch || isDirectVideo) {
+    return (
+      <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-black mt-4">
+        <video
+          src={url}
+          className="w-full h-full object-contain"
+          controls
+          preload="metadata"
+          playsInline
+        >
+          <track kind="captions" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    );
+  }
   return (
     <div className="mt-4">
       <a

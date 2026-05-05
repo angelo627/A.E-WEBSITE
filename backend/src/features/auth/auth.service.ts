@@ -306,7 +306,7 @@ export const authService = {
     });
 
 
-    if (!user) {
+    if (!user || !user.passwordHash) {
       throw new AppError(401, INVALID_CREDENTIALS_MESSAGE, "INVALID_CREDENTIALS");
     }
 
@@ -607,6 +607,14 @@ export const authService = {
 
     if (!user) {
       throw new AppError(404, "User not found.", "NOT_FOUND");
+    }
+
+    if (!user.passwordHash) {
+      throw new AppError(
+        400,
+        "You haven't set a password yet. Please use social login or set a password in your settings.",
+        "PASSWORD_NOT_SET"
+      );
     }
 
     const currentPasswordMatches = await verifyPassword(

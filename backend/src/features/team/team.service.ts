@@ -8,6 +8,8 @@ export interface UpsertTeamMemberInput {
   imageUrl?: string;
   linkedinUrl?: string;
   twitterUrl?: string;
+  whatsappUrl?: string;
+  emailAddress?: string;
   sortOrder?: number;
   isVisible?: boolean;
 }
@@ -27,6 +29,8 @@ export const teamService = {
         imageUrl: true,
         linkedinUrl: true,
         twitterUrl: true,
+        whatsappUrl: true,
+        emailAddress: true,
         sortOrder: true,
         isVisible: true,
         createdAt: true,
@@ -46,6 +50,8 @@ export const teamService = {
         imageUrl: true,
         linkedinUrl: true,
         twitterUrl: true,
+        whatsappUrl: true,
+        emailAddress: true,
         sortOrder: true,
         isVisible: true,
         createdAt: true,
@@ -67,6 +73,8 @@ export const teamService = {
         imageUrl: true,
         linkedinUrl: true,
         twitterUrl: true,
+        whatsappUrl: true,
+        emailAddress: true,
         sortOrder: true,
         isVisible: true,
         createdAt: true,
@@ -90,6 +98,8 @@ export const teamService = {
         imageUrl: input.imageUrl,
         linkedinUrl: input.linkedinUrl,
         twitterUrl: input.twitterUrl,
+        whatsappUrl: input.whatsappUrl,
+        emailAddress: input.emailAddress,
         sortOrder: input.sortOrder ?? 0,
         isVisible: input.isVisible ?? true
       },
@@ -101,6 +111,8 @@ export const teamService = {
         imageUrl: true,
         linkedinUrl: true,
         twitterUrl: true,
+        whatsappUrl: true,
+        emailAddress: true,
         sortOrder: true,
         isVisible: true,
         createdAt: true,
@@ -134,6 +146,8 @@ export const teamService = {
         imageUrl: input.imageUrl,
         linkedinUrl: input.linkedinUrl,
         twitterUrl: input.twitterUrl,
+        whatsappUrl: input.whatsappUrl,
+        emailAddress: input.emailAddress,
         sortOrder: input.sortOrder ?? 0,
         isVisible: input.isVisible ?? true
       },
@@ -145,6 +159,8 @@ export const teamService = {
         imageUrl: true,
         linkedinUrl: true,
         twitterUrl: true,
+        whatsappUrl: true,
+        emailAddress: true,
         sortOrder: true,
         isVisible: true,
         createdAt: true,

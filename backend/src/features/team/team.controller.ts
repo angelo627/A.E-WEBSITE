@@ -18,6 +18,8 @@ function parseTeamMemberPayload(body: Record<string, unknown>) {
     imageUrl: optionalString(body.imageUrl),
     linkedinUrl: optionalString(body.linkedinUrl),
     twitterUrl: optionalString(body.twitterUrl),
+    whatsappUrl: optionalString(body.whatsappUrl),
+    emailAddress: optionalString(body.emailAddress),
     sortOrder: optionalNumber(body.sortOrder, "sortOrder"),
     isVisible: optionalBoolean(body.isVisible)
   };

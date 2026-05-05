@@ -43,6 +43,19 @@ async function startServer(): Promise<void> {
   process.on("SIGTERM", () => {
     void shutdown("SIGTERM");
   });
+
+  // Handle unhandled promise rejections
+  process.on("unhandledRejection", (reason, promise) => {
+    console.error("Unhandled Rejection at:", promise, "reason:", reason);
+    // In production, you might want to gracefully shut down or report to an error tracking service
+  });
+
+  // Handle uncaught exceptions
+  process.on("uncaughtException", (error) => {
+    console.error("Uncaught Exception:", error);
+    // For uncaught exceptions, it's safer to shut down the process after logging
+    void shutdown("UNCUGHT_EXCEPTION");
+  });
 }
 
 // Start the server and handle any startup errors

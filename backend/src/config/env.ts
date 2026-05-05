@@ -70,5 +70,9 @@ export const env = {
   refreshCookieName: process.env.REFRESH_COOKIE_NAME ?? "ae_refresh_token",
   cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME ?? "",
   cloudinaryApiKey: process.env.CLOUDINARY_API_KEY ?? "",
-  cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET ?? ""
+  cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET ?? "",
+  googleClientId: process.env.GOOGLE_CLIENT_ID ?? "",
+  googleClientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+  facebookAppId: process.env.FACEBOOK_APP_ID ?? "",
+  facebookAppSecret: process.env.FACEBOOK_APP_SECRET ?? ""
 } as const;

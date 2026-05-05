@@ -39,6 +39,9 @@ const isObject = (value: unknown): value is Record<string, unknown> =>
 const isString = (value: unknown): value is string =>
   typeof value === "string" && value.trim().length > 0;
 
+const isStringAllowEmpty = (value: unknown): value is string =>
+  typeof value === "string";
+
 const isUserRole = (value: unknown): value is UserRole =>
   typeof value === "string" && USER_ROLES.includes(value as UserRole);
 
@@ -53,7 +56,7 @@ const isAuthUser = (value: unknown): value is AuthUser => {
   if (
     !isString(value.id) ||
     !isString(value.firstName) ||
-    !isString(value.lastName) ||
+    !isStringAllowEmpty(value.lastName) ||
     !isString(value.username) ||
     !isString(value.email) ||
     !isUserRole(value.role)
@@ -101,20 +104,24 @@ const getStoredAuth = (): { user: AuthUser | null; token: string | null } => {
 };
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const storedAuth = getStoredAuth();
-  const [user, setUser] = useState<AuthUser | null>(storedAuth.user);
-  const [token, setToken] = useState<string | null>(storedAuth.token);
+  const [authState, setAuthState] = useState<{ user: AuthUser | null; token: string | null }>(
+    () => getStoredAuth()
+  );
+  const { user, token } = authState;
+  // isLoading is always false: localStorage is read synchronously in the
+  // useState initialisers above, so auth is resolved before first render.
+  const isLoading = false;
 
   const login = (newUser: AuthUser, newToken: string) => {
-    setUser(newUser);
-    setToken(newToken);
+    // Write to localStorage synchronously FIRST so apiFetch can read it
+    // even if React hasn't re-rendered yet.
     localStorage.setItem("ae_user", JSON.stringify(newUser));
     localStorage.setItem("ae_token", newToken);
+    setAuthState({ user: newUser, token: newToken });
   };
 
   const logout = () => {
-    setUser(null);
-    setToken(null);
+    setAuthState({ user: null, token: null });
     clearStoredAuth();
   };
 
@@ -123,10 +130,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       value={{
         user,
         token,
-        isLoading: false,
+        isLoading,
         login,
         logout,
-        isLoggedIn: !!user,
+        isLoggedIn: !!user && !!token,
       }}
     >
       {children}

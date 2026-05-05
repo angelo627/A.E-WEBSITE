@@ -11,12 +11,11 @@ import {
   AlertCircle,
   CheckCircle2,
   Image as ImageIcon,
-  Eye,
   EyeOff,
   UserPlus,
   Upload
 } from "lucide-react";
-import { FaLinkedin, FaTwitter } from "react-icons/fa";
+import { FaLinkedin, FaTwitter, FaWhatsapp, FaEnvelope } from "react-icons/fa";
 
 interface TeamMember {
   id: string;
@@ -26,6 +25,8 @@ interface TeamMember {
   imageUrl?: string | null;
   linkedinUrl?: string | null;
   twitterUrl?: string | null;
+  whatsappUrl?: string | null;
+  emailAddress?: string | null;
   sortOrder: number;
   isVisible: boolean;
   createdAt: string;
@@ -39,6 +40,8 @@ interface TeamFormState {
   imageUrl: string;
   linkedinUrl: string;
   twitterUrl: string;
+  whatsappUrl: string;
+  emailAddress: string;
   sortOrder: string;
   isVisible: boolean;
 }
@@ -57,6 +60,8 @@ const isTeamMember = (value: unknown): value is TeamMember =>
     value.linkedinUrl === null ||
     typeof value.linkedinUrl === "string") &&
   (value.twitterUrl === undefined || value.twitterUrl === null || typeof value.twitterUrl === "string") &&
+  (value.whatsappUrl === undefined || value.whatsappUrl === null || typeof value.whatsappUrl === "string") &&
+  (value.emailAddress === undefined || value.emailAddress === null || typeof value.emailAddress === "string") &&
   typeof value.sortOrder === "number" &&
   typeof value.isVisible === "boolean" &&
   typeof value.createdAt === "string" &&
@@ -72,6 +77,8 @@ const emptyForm = (): TeamFormState => ({
   imageUrl: "",
   linkedinUrl: "",
   twitterUrl: "",
+  whatsappUrl: "",
+  emailAddress: "",
   sortOrder: "0",
   isVisible: true
 });
@@ -83,6 +90,8 @@ const toFormState = (member: TeamMember): TeamFormState => ({
   imageUrl: member.imageUrl ?? "",
   linkedinUrl: member.linkedinUrl ?? "",
   twitterUrl: member.twitterUrl ?? "",
+  whatsappUrl: member.whatsappUrl ?? "",
+  emailAddress: member.emailAddress ?? "",
   sortOrder: String(member.sortOrder),
   isVisible: member.isVisible
 });
@@ -211,6 +220,8 @@ export default function ManageTeam() {
     formData.append("imageUrl", form.imageUrl.trim() || "");
     formData.append("linkedinUrl", form.linkedinUrl.trim() || "");
     formData.append("twitterUrl", form.twitterUrl.trim() || "");
+    formData.append("whatsappUrl", form.whatsappUrl.trim() || "");
+    formData.append("emailAddress", form.emailAddress.trim() || "");
     formData.append("sortOrder", form.sortOrder.trim() ? form.sortOrder : "0");
     formData.append("isVisible", String(form.isVisible));
     if (file) {
@@ -430,6 +441,35 @@ export default function ManageTeam() {
                   onChange={(event) => handleField("twitterUrl", event.target.value)}
                   className="w-full rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 focus:bg-white/10 outline-none px-4 py-3 transition-colors placeholder:text-gray-600 font-outfit text-sm"
                   placeholder="https://..."
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-xs uppercase tracking-wider font-bold text-gray-500 mb-2 flex items-center gap-2" htmlFor="team-whatsapp">
+                  <FaWhatsapp className="w-4 h-4 text-emerald-400" /> WhatsApp Link
+                </label>
+                <input
+                  id="team-whatsapp"
+                  type="text"
+                  value={form.whatsappUrl}
+                  onChange={(event) => handleField("whatsappUrl", event.target.value)}
+                  className="w-full rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 focus:bg-white/10 outline-none px-4 py-3 transition-colors placeholder:text-gray-600 font-outfit text-sm"
+                  placeholder="https://wa.me/..."
+                />
+              </div>
+              <div>
+                <label className="block text-xs uppercase tracking-wider font-bold text-gray-500 mb-2 flex items-center gap-2" htmlFor="team-email">
+                  <FaEnvelope className="w-4 h-4 text-gray-400" /> Contact Email
+                </label>
+                <input
+                  id="team-email"
+                  type="text"
+                  value={form.emailAddress}
+                  onChange={(event) => handleField("emailAddress", event.target.value)}
+                  className="w-full rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 focus:bg-white/10 outline-none px-4 py-3 transition-colors placeholder:text-gray-600 font-outfit text-sm"
+                  placeholder="name@example.com or mailto:..."
                 />
               </div>
             </div>

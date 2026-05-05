@@ -26,9 +26,9 @@ interface QuizListItem {
   id: string;
   moduleId: string;
   title: string;
-  instructions?: string;
+  instructions?: string | null;
   passingScore: number;
-  timeLimitMinutes?: number;
+  timeLimitMinutes?: number | null;
   isPublished: boolean;
   questionCount: number;
   attemptCount: number;
@@ -45,7 +45,7 @@ interface QuizOption {
 interface QuizQuestion {
   id: string;
   prompt: string;
-  explanation?: string;
+  explanation?: string | null;
   sortOrder: number;
   options: QuizOption[];
 }
@@ -100,9 +100,13 @@ const isQuizListItem = (value: unknown): value is QuizListItem =>
   typeof value.id === "string" &&
   typeof value.moduleId === "string" &&
   typeof value.title === "string" &&
-  (value.instructions === undefined || typeof value.instructions === "string") &&
+  (value.instructions === undefined ||
+    value.instructions === null ||
+    typeof value.instructions === "string") &&
   typeof value.passingScore === "number" &&
-  (value.timeLimitMinutes === undefined || typeof value.timeLimitMinutes === "number") &&
+  (value.timeLimitMinutes === undefined ||
+    value.timeLimitMinutes === null ||
+    typeof value.timeLimitMinutes === "number") &&
   typeof value.isPublished === "boolean" &&
   typeof value.questionCount === "number" &&
   typeof value.attemptCount === "number" &&
@@ -117,9 +121,13 @@ const isQuizDetail = (value: unknown): value is QuizDetail => {
     typeof value.id === "string" &&
     typeof value.moduleId === "string" &&
     typeof value.title === "string" &&
-    (value.instructions === undefined || typeof value.instructions === "string") &&
+    (value.instructions === undefined ||
+      value.instructions === null ||
+      typeof value.instructions === "string") &&
     typeof value.passingScore === "number" &&
-    (value.timeLimitMinutes === undefined || typeof value.timeLimitMinutes === "number") &&
+    (value.timeLimitMinutes === undefined ||
+      value.timeLimitMinutes === null ||
+      typeof value.timeLimitMinutes === "number") &&
     typeof value.isPublished === "boolean";
 
   if (!quizBase) {
@@ -134,7 +142,9 @@ const isQuizDetail = (value: unknown): value is QuizDetail => {
     const validQuestion =
       typeof question.id === "string" &&
       typeof question.prompt === "string" &&
-      (question.explanation === undefined || typeof question.explanation === "string") &&
+      (question.explanation === undefined ||
+        question.explanation === null ||
+        typeof question.explanation === "string") &&
       typeof question.sortOrder === "number";
 
     if (!validQuestion) {

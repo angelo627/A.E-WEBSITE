@@ -2,7 +2,7 @@
 
 function Footer() {
   return (
-     <div className="  pt-20 px-6 md:px-16 bg-[#050020]">
+     <div className="mt-20  pt-10 px-6 md:px-16">
           <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8 text-sm items-start">
             {/* Brand / Description */}
             <div className="md:col-span-2">

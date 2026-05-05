@@ -1,10 +1,12 @@
 import { useState, useEffect, type ChangeEvent, type ReactElement } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import { apiFetch } from "../lib/api";
 import loginImg from "/login_mage.png";
 import { FaGoogle, FaFacebook, FaMicrosoft } from "react-icons/fa";
 import { FiEye, FiEyeOff, FiAlertCircle } from "react-icons/fi";
+
+const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:5000/api";
 
 type LoginData = {
   username: string;
@@ -26,9 +28,14 @@ const getErrorMessage = (error: unknown, fallback: string): string => {
 const Login = (): ReactElement => {
   const navigate = useNavigate();
   const { login, isLoggedIn, user } = useAuth();
+  const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(() => {
+    const err = searchParams.get("error");
+    if (err === "google_failed" || err === "oauth_failed") return "Google sign-in failed. Please try again or use email.";
+    return null;
+  });
   const [data, setData] = useState<LoginData>({ username: "", password: "" });
 
   useEffect(() => {
@@ -98,9 +105,9 @@ const Login = (): ReactElement => {
 
           {/* ── Social Buttons ── */}
           <div className="flex flex-col sm:flex-row gap-3 mb-8">
-            {/* Google */}
+            {/* Google — real OAuth */}
             <a
-              href="https://accounts.google.com/signin"
+              href={`${API_BASE}/auth/google`}
               className="flex-1 flex items-center justify-center gap-2.5 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 backdrop-blur-sm px-4 py-3 transition-all duration-200 group"
             >
               <span className="w-5 h-5 flex items-center justify-center text-lg">
@@ -108,26 +115,28 @@ const Login = (): ReactElement => {
               </span>
               <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">Google</span>
             </a>
-            {/* Facebook */}
-            <a
-              href="https://www.facebook.com/login/"
+            {/* Facebook — placeholder until FB keys added */}
+            <button
+              type="button"
+              onClick={() => setError("Facebook login coming soon! Use Google or email for now.")}
               className="flex-1 flex items-center justify-center gap-2.5 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 backdrop-blur-sm px-4 py-3 transition-all duration-200 group"
             >
               <span className="w-5 h-5 flex items-center justify-center text-lg">
                 <FaFacebook className="text-[#0866FF]" />
               </span>
               <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">Facebook</span>
-            </a>
-            {/* Microsoft */}
-            <a
-              href="https://login.microsoftonline.com/"
+            </button>
+            {/* Microsoft — placeholder */}
+            <button
+              type="button"
+              onClick={() => setError("Microsoft login coming soon! Use Google or email for now.")}
               className="flex-1 flex items-center justify-center gap-2.5 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 backdrop-blur-sm px-4 py-3 transition-all duration-200 group"
             >
               <span className="w-5 h-5 flex items-center justify-center text-lg">
                 <FaMicrosoft className="text-[#00A4EF]" />
               </span>
               <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">Microsoft</span>
-            </a>
+            </button>
           </div>
 
           {/* ── Divider ── */}
@@ -169,9 +178,9 @@ const Login = (): ReactElement => {
                 <label htmlFor="password" className="block text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   Password
                 </label>
-                <a href="#" className="text-xs text-violet-400 hover:text-violet-300 transition-colors font-medium">
+                <Link to="/forgot-password" className="text-xs text-violet-400 hover:text-violet-300 transition-colors font-medium">
                   Forgot password?
-                </a>
+                </Link>
               </div>
               <div className="relative">
                 <input

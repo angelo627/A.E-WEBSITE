@@ -18,9 +18,9 @@ interface QuizQuestion {
 interface QuizData {
   id: string;
   title: string;
-  instructions?: string;
+  instructions?: string | null;
   passingScore: number;
-  timeLimitMinutes?: number;
+  timeLimitMinutes?: number | null;
   module: {
     id: string;
     title: string;
@@ -66,11 +66,19 @@ const isQuizData = (value: unknown): value is QuizData => {
     return false;
   }
 
-  if (value.instructions !== undefined && typeof value.instructions !== "string") {
+  if (
+    value.instructions !== undefined &&
+    value.instructions !== null &&
+    typeof value.instructions !== "string"
+  ) {
     return false;
   }
 
-  if (value.timeLimitMinutes !== undefined && typeof value.timeLimitMinutes !== "number") {
+  if (
+    value.timeLimitMinutes !== undefined &&
+    value.timeLimitMinutes !== null &&
+    typeof value.timeLimitMinutes !== "number"
+  ) {
     return false;
   }
 

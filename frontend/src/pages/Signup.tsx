@@ -5,6 +5,8 @@ import { FaGoogle, FaFacebook, FaMicrosoft } from "react-icons/fa";
 import { FiEye, FiEyeOff, FiAlertCircle, FiCheckCircle } from "react-icons/fi";
 import classImg from "/class.png";
 
+const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:5000/api";
+
 type SignupData = {
   firstName: string;
   lastName: string;
@@ -191,27 +193,32 @@ const Signup = (): ReactElement => {
             <>
               {/* ── Social Buttons ── */}
               <div className="flex flex-col sm:flex-row gap-3 mb-7">
+                {/* Google — real OAuth */}
                 <a
-                  href="https://accounts.google.com/signin"
+                  href={`${API_BASE}/auth/google`}
                   className="flex-1 flex items-center justify-center gap-2.5 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 backdrop-blur-sm px-4 py-3 transition-all duration-200 group"
                 >
                   <FaGoogle className="text-[#EA4335]" />
                   <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">Google</span>
                 </a>
-                <a
-                  href="https://www.facebook.com/login/"
+                {/* Facebook — coming soon */}
+                <button
+                  type="button"
+                  onClick={() => setError("Facebook login coming soon! Use Google or email for now.")}
                   className="flex-1 flex items-center justify-center gap-2.5 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 backdrop-blur-sm px-4 py-3 transition-all duration-200 group"
                 >
                   <FaFacebook className="text-[#0866FF]" />
                   <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">Facebook</span>
-                </a>
-                <a
-                  href="https://login.microsoftonline.com/"
+                </button>
+                {/* Microsoft — coming soon */}
+                <button
+                  type="button"
+                  onClick={() => setError("Microsoft login coming soon! Use Google or email for now.")}
                   className="flex-1 flex items-center justify-center gap-2.5 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 backdrop-blur-sm px-4 py-3 transition-all duration-200 group"
                 >
                   <FaMicrosoft className="text-[#00A4EF]" />
                   <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">Microsoft</span>
-                </a>
+                </button>
               </div>
 
               {/* ── Divider ── */}

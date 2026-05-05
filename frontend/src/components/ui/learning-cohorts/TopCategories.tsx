@@ -21,10 +21,6 @@ const categories: Category[] = [
   { title: "Computational Sci.",   courses: "6 Courses",  icon: BarChart3, color: "from-sky-500/20 to-sky-900/10",    glow: "rgba(14,165,233,0.35)"  },
 ];
 
-const containerVariants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.07 } },
-};
 
 const TopCategories: FC = () => {
   return (
