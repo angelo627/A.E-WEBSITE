@@ -13,9 +13,12 @@ function Navbar() {
 
 
   useEffect(() => {
-    const handleScroll = () => {istener("scroll", handleScroll);
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
   const isAdmin = user?.role === "ADMIN" || user?.role === "SUPER_ADMIN";
