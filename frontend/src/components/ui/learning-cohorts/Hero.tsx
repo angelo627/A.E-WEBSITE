@@ -46,7 +46,7 @@ function Hero() {
         </div>
 
         {/* Title */}
-        <h1 className="text-5xl md:text-8xl font-black leading-[0.9] mb-8 text-[var(--text-color)] italic tracking-tighter uppercase">
+        <h1 className="text-4xl md:text-6xl font-black leading-[0.95] mb-8 text-[var(--text-color)] italic tracking-tighter uppercase">
           Learning <span className="text-[var(--ae-blue)]">Cohorts</span>
         </h1>
 
