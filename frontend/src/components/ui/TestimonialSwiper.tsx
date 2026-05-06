@@ -90,7 +90,7 @@ export default function TestimonialSwiper() {
       <div className="max-w-7xl mx-auto relative z-10">
         <FadeInWhenVisible delay={0.05}>
           <div className="text-center mb-10 sm:mb-12">
-            <h2 className="mx-auto w-full pt- max-w-210.25 text-xl font-semibold leading-none text-center bg-gradient-to-r from-[var(--ae-blue)] to-[var(--ae-plum-deep)] bg-clip-text text-transparent sm:text-3xl md:text-[40.3857px] md:leading-12.75 tracking-tight">
+            <h2 className="mx-auto w-full pt- max-w-210.25 text-xl font-semibold leading-none text-center auth-gradient-text sm:text-3xl md:text-[40.3857px] md:leading-12.75 tracking-tight">
               World Algorithmic Explorers Learning Streak Rank
             </h2>
           </div>

@@ -208,7 +208,7 @@ const HomePage = () => {
           {" "}
           {/* removed top padding, minimal bottom */}
           <div className="max-w-6xl mx-auto text-center">
-            <h1 className="text-lg sm:text-4xl md:text-5xl text-[var(--ae-plum-deep)] font-semibold">
+            <h1 className="text-lg sm:text-4xl md:text-5xl auth-gradient-text font-semibold">
               Trusted by 25,000+ Teams Worldwide
             </h1>
           </div>
