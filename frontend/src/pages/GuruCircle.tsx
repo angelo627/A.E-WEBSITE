@@ -299,7 +299,7 @@ export default function GuruCircle() {
 
         {/* ── FEATURE CARDS ── */}
         <div
-          className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-[clamp(6px,1vw,10px)] absolute -bottom-40 md:bottom-[13%] left-1/2 -translate-x-1/2 w-[90%] md:w-full z-[25] transition-opacity duration-700 delay-700"
+          className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-[clamp(6px,1vw,10px)] absolute -bottom-52 md:bottom-[13%] left-1/2 -translate-x-1/2 w-[90%] md:w-full z-[25] transition-opacity duration-700 delay-700"
           style={{
             opacity: mounted ? 1 : 0,
           }}
@@ -331,7 +331,7 @@ export default function GuruCircle() {
 
       {/* ── STATS ROW ── */}
       <div
-        className="flex flex-wrap justify-center gap-6 md:gap-[clamp(20px,5vw,72px)] w-full max-w-[min(88vw,760px)] px-6 pb-12 mt-48 md:mt-4 relative z-[30] transition-opacity duration-600 delay-900"
+        className="flex flex-wrap justify-center gap-8 md:gap-6 lg:gap-[clamp(20px,5vw,72px)] w-full max-w-[min(88vw,760px)] px-6 pb-12 mt-56 md:mt-4 relative z-[30] transition-opacity duration-600 delay-900"
         style={{
           opacity: mounted ? 1 : 0,
         }}
