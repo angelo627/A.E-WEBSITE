@@ -91,7 +91,7 @@ const getStatusStyle = (status: ModuleStatus): string => {
   if (status === "IN_PROGRESS") {
     return "bg-purple-50 text-purple-700 border border-purple-200";
   }
-  return "bg-slate-100 text-slate-600 border border-slate-200";
+  return "app-soft-surface app-muted-text border";
 };
 
 const getStatusLabel = (status: ModuleStatus): string => {
@@ -179,7 +179,7 @@ export default function DashboardPage() {
         {isLoading ? (
           <motion.div variants={itemVariants} className="flex flex-col items-center justify-center p-12 ae-brand-card border border-[var(--ae-border)] rounded-3xl shadow-sm">
             <Loader2 className="w-10 h-10 text-[var(--ae-blue)] animate-spin mb-4" />
-            <p className="text-slate-600 font-medium">Loading your learning workspace...</p>
+            <p className="app-muted-text font-medium">Loading your learning workspace...</p>
           </motion.div>
         ) : null}
 
@@ -214,7 +214,7 @@ export default function DashboardPage() {
                     <BookOpen className="w-6 h-6 text-purple-600" />
                   </div>
                 </div>
-                <p className="text-sm font-bold text-slate-500 mb-1">Total Modules</p>
+                <p className="text-sm font-bold app-muted-text mb-1">Total Modules</p>
                 <p className="text-3xl font-black text-[var(--text-color)]">{dashboard.summary.totalModules}</p>
               </motion.div>
 
@@ -224,7 +224,7 @@ export default function DashboardPage() {
                     <CheckCircle className="w-6 h-6 text-emerald-600" />
                   </div>
                 </div>
-                <p className="text-sm font-bold text-slate-500 mb-1">Completed</p>
+                <p className="text-sm font-bold app-muted-text mb-1">Completed</p>
                 <p className="text-3xl font-black text-[var(--text-color)]">{dashboard.summary.completedModules}</p>
               </motion.div>
 
@@ -234,17 +234,17 @@ export default function DashboardPage() {
                     <PlayCircle className="w-6 h-6 text-amber-600" />
                   </div>
                 </div>
-                <p className="text-sm font-bold text-slate-500 mb-1">In Progress</p>
+                <p className="text-sm font-bold app-muted-text mb-1">In Progress</p>
                 <p className="text-3xl font-black text-[var(--text-color)]">{dashboard.summary.inProgressModules}</p>
               </motion.div>
 
               <motion.div whileHover={{ y: -4 }} className="ae-brand-card border border-[var(--ae-border)] hover:border-slate-300 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all group">
                 <div className="flex items-start justify-between mb-4">
-                  <div className="p-3 bg-slate-50 rounded-xl group-hover:bg-slate-100 transition-colors">
-                    <Clock className="w-6 h-6 text-slate-600" />
+                  <div className="p-3 app-soft-surface rounded-xl transition-colors">
+                    <Clock className="w-6 h-6 app-muted-text" />
                   </div>
                 </div>
-                <p className="text-sm font-bold text-slate-500 mb-1">Not Started</p>
+                <p className="text-sm font-bold app-muted-text mb-1">Not Started</p>
                 <p className="text-3xl font-black text-[var(--text-color)]">{dashboard.summary.notStartedModules}</p>
               </motion.div>
 
@@ -257,7 +257,7 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   <div className="relative z-10">
-                    <p className="text-sm font-bold text-slate-500 mb-1">Overall Progress</p>
+                    <p className="text-sm font-bold app-muted-text mb-1">Overall Progress</p>
                     <p className="text-3xl font-black text-[var(--text-color)]">
                       {Math.max(0, Math.min(100, Math.round(dashboard.summary.overallProgressPercent)))}%
                     </p>
@@ -275,15 +275,15 @@ export default function DashboardPage() {
               <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4">
                  <div>
                     <h2 className="text-2xl font-black text-[var(--text-color)] mb-2">Learning Tracker</h2>
-                    <p className="text-slate-500 font-medium text-sm">Your journey relative to the total curriculum.</p>
+                    <p className="app-muted-text font-medium text-sm">Your journey relative to the total curriculum.</p>
                  </div>
                  <div className="text-right">
                     <span className="text-[var(--ae-blue)] font-bold">{dashboard.summary.completedModules} of {dashboard.summary.totalModules}</span>
-                    <span className="text-slate-400 ml-2 font-bold uppercase tracking-wider text-xs">Modules</span>
+                    <span className="app-subtle-text ml-2 font-bold uppercase tracking-wider text-xs">Modules</span>
                  </div>
               </div>
               
-              <div className="h-4 w-full bg-slate-100 rounded-full overflow-hidden border border-slate-200 shadow-inner relative">
+              <div className="h-4 w-full app-soft-surface rounded-full overflow-hidden border shadow-inner relative">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${Math.max(0, Math.min(100, dashboard.summary.overallProgressPercent))}%` }}
@@ -300,8 +300,8 @@ export default function DashboardPage() {
               </div>
 
               {dashboard.modules.length === 0 ? (
-                <div className="ae-brand-card border border-[var(--ae-border)] rounded-3xl p-12 text-center text-slate-500 shadow-sm">
-                  <BookOpen className="w-12 h-12 mx-auto text-slate-300 mb-4" />
+                <div className="ae-brand-card border border-[var(--ae-border)] rounded-3xl p-12 text-center app-muted-text shadow-sm">
+                  <BookOpen className="w-12 h-12 mx-auto app-subtle-text mb-4" />
                   <p className="font-medium">No modules available yet.</p>
                 </div>
               ) : (
@@ -323,7 +323,7 @@ export default function DashboardPage() {
                               {getStatusLabel(module.status)}
                             </span>
                             {typeof module.estimatedMinutes === "number" && (
-                              <span className="text-xs text-slate-500 flex items-center font-bold">
+                              <span className="text-xs app-muted-text flex items-center font-bold">
                                 <Clock className="w-3.5 h-3.5 mr-1" />
                                 {module.estimatedMinutes} mins
                               </span>
@@ -336,10 +336,10 @@ export default function DashboardPage() {
                         
                         <div className="md:w-64 flex flex-col justify-center gap-2 z-10 shrink-0">
                           <div className="flex justify-between text-sm font-bold">
-                            <span className="text-slate-500">Progress</span>
+                            <span className="app-muted-text">Progress</span>
                             <span className="text-[var(--ae-blue)]">{Math.round(module.progressPercent)}%</span>
                           </div>
-                          <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+                          <div className="h-2 w-full app-soft-surface rounded-full overflow-hidden border">
                             <motion.div
                               initial={{ width: 0 }}
                               whileInView={{ width: `${Math.max(0, Math.min(100, module.progressPercent))}%` }}
@@ -350,12 +350,12 @@ export default function DashboardPage() {
                           </div>
                         </div>
 
-                        <div className="hidden md:flex flex-col items-center justify-center pl-6 border-l border-slate-200 z-10 gap-2 min-w-[100px]">
-                          <span className="text-[10px] font-black tracking-widest uppercase text-slate-400 group-hover:text-[var(--ae-blue)] transition-colors">
+                        <div className="hidden md:flex flex-col items-center justify-center pl-6 border-l border-[var(--ae-border)] z-10 gap-2 min-w-[100px]">
+                          <span className="text-[10px] font-black tracking-widest uppercase app-subtle-text group-hover:text-[var(--ae-blue)] transition-colors">
                             {module.status === 'COMPLETED' ? 'Review' : (module.status === 'IN_PROGRESS' ? 'Continue' : 'Start')}
                           </span>
-                          <div className="w-10 h-10 rounded-full bg-slate-50 group-hover:bg-[var(--ae-blue)] border border-slate-200 group-hover:border-[var(--ae-blue)] flex items-center justify-center transition-all duration-300 shadow-sm">
-                            <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-white transition-colors" />
+                          <div className="w-10 h-10 rounded-full app-soft-surface group-hover:bg-[var(--ae-blue)] border group-hover:border-[var(--ae-blue)] flex items-center justify-center transition-all duration-300 shadow-sm">
+                            <ChevronRight className="w-5 h-5 app-subtle-text group-hover:text-white transition-colors" />
                           </div>
                         </div>
                       </motion.div>

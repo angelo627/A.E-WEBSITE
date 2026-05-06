@@ -265,11 +265,11 @@ export default function QuizPage() {
               </div>
 
               {quiz.latestAttempt ? (
-                <div className="mt-6 bg-slate-50 border border-slate-200 rounded-2xl p-4 flex items-center justify-between">
+                <div className="mt-6 app-soft-surface border rounded-2xl p-4 flex items-center justify-between">
                   <div>
-                    <p className="text-xs uppercase font-bold tracking-wider text-slate-500 mb-1">Last Attempt</p>
-                    <p className="text-lg font-black text-[var(--ae-plum-deep)]">
-                      {quiz.latestAttempt.score}% <span className="text-slate-500 font-medium text-base ml-2">({quiz.latestAttempt.correctAnswers}/{quiz.latestAttempt.totalQuestions})</span>
+                    <p className="text-xs uppercase font-bold tracking-wider app-muted-text mb-1">Last Attempt</p>
+                    <p className="text-lg font-black text-[var(--text-color)]">
+                      {quiz.latestAttempt.score}% <span className="app-muted-text font-medium text-base ml-2">({quiz.latestAttempt.correctAnswers}/{quiz.latestAttempt.totalQuestions})</span>
                     </p>
                   </div>
                 </div>
@@ -328,7 +328,7 @@ export default function QuizPage() {
                             className={`flex items-center gap-4 p-4 rounded-2xl border-2 cursor-pointer transition-all ${
                               isSelected
                                 ? "border-[var(--ae-blue)] bg-[var(--ae-blue)]/5 font-bold text-[var(--ae-blue)] shadow-sm"
-                                : "border-[var(--ae-border)] bg-[var(--card-bg)] hover:border-slate-300 font-medium text-[var(--text-color)]/70"
+                                : "border-[var(--ae-border)] bg-[var(--card-bg)] hover:border-[var(--ae-blue)]/50 font-medium text-[var(--text-color)]/70"
                             }`}
                           >
                             <input
@@ -349,7 +349,7 @@ export default function QuizPage() {
 
                 <div className="ae-brand-card border border-[var(--ae-border)] rounded-3xl p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">
+                    <p className="text-sm font-bold app-muted-text uppercase tracking-wider mb-1">
                       Progress
                     </p>
                     <p className="font-medium text-[var(--text-color)]/70">

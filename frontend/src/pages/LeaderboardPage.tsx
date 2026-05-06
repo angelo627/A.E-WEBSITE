@@ -45,15 +45,15 @@ const isLeaderboardResponse = (value: unknown): value is LeaderboardEntry[] =>
 
 const getRowStyle = (entry: LeaderboardEntry): string => {
   if (entry.rank === 1) {
-    return "bg-gradient-to-r from-amber-50 to-yellow-50/50 hover:from-amber-100 border-l-4 border-l-amber-400";
+    return "leaderboard-row leaderboard-row-first border-l-4 border-l-amber-400";
   }
   if (entry.rank === 2) {
-    return "bg-gradient-to-r from-slate-100 to-slate-50 border-l-4 border-l-slate-300";
+    return "leaderboard-row leaderboard-row-second border-l-4 border-l-slate-300";
   }
   if (entry.rank === 3) {
-    return "bg-gradient-to-r from-orange-50 to-orange-50/50 hover:from-orange-100 border-l-4 border-l-orange-500";
+    return "leaderboard-row leaderboard-row-third border-l-4 border-l-orange-500";
   }
-  return "bg-white hover:bg-slate-50 transition-colors border-l-4 border-l-transparent";
+  return "leaderboard-row border-l-4 border-l-transparent";
 };
 
 // Animation variants
@@ -119,7 +119,7 @@ export default function LeaderboardPage() {
       >
         <motion.section variants={itemVariants} className="text-center mb-12">
           <div className="inline-flex items-center justify-center p-4 bg-purple-100 rounded-full mb-4 shadow-sm">
-            <Trophy className="w-10 h-10 text-[var(--ae-plum-deep)]" />
+            <Trophy className="w-10 h-10 text-[var(--ae-blue)]" />
           </div>
           <h1 className="text-4xl md:text-5xl font-black mb-3 text-[var(--text-color)]">
             Global Leaderboard
@@ -132,7 +132,7 @@ export default function LeaderboardPage() {
         {isLoading ? (
           <motion.div variants={itemVariants} className="flex flex-col items-center justify-center p-12 ae-brand-card border border-[var(--ae-border)] rounded-3xl shadow-sm">
             <Loader2 className="w-10 h-10 text-[var(--ae-blue)] animate-spin mb-4" />
-            <p className="text-slate-600 font-medium">Loading leaderboard...</p>
+            <p className="app-muted-text font-medium">Loading leaderboard...</p>
           </motion.div>
         ) : null}
 
@@ -158,8 +158,8 @@ export default function LeaderboardPage() {
         ) : null}
 
         {!isLoading && !error && entries.length === 0 ? (
-          <motion.div variants={itemVariants} className="ae-brand-card border border-[var(--ae-border)] shadow-sm rounded-3xl p-12 text-center text-slate-500">
-             <Trophy className="w-12 h-12 mx-auto text-slate-300 mb-4" />
+          <motion.div variants={itemVariants} className="ae-brand-card border border-[var(--ae-border)] shadow-sm rounded-3xl p-12 text-center app-muted-text">
+             <Trophy className="w-12 h-12 mx-auto app-subtle-text mb-4" />
              <p className="font-medium">No leaderboard data yet. Be the first to start learning!</p>
           </motion.div>
         ) : null}
@@ -174,7 +174,7 @@ export default function LeaderboardPage() {
                 
                 if (entry.rank === 2) {
                   badgeColor = "text-slate-400";
-                  bgGlow = "hover:border-slate-300/50 border-slate-200";
+                  bgGlow = "hover:border-slate-300/50 border-[var(--ae-border)]";
                   icon = <Medal className="w-8 h-8 text-slate-400" />;
                 } else if (entry.rank === 3) {
                   badgeColor = "text-orange-500";
@@ -201,14 +201,14 @@ export default function LeaderboardPage() {
                     <h2 className="text-2xl font-black text-[var(--text-color)] mb-6 truncate w-full">{entry.username}</h2>
                     
                     <div className="text-left w-full space-y-4">
-                      <div className="flex justify-between items-center bg-slate-50 border border-slate-100 rounded-xl p-3">
-                         <div className="flex items-center text-slate-500 font-bold text-xs uppercase tracking-wider">
+                      <div className="flex justify-between items-center app-soft-surface border rounded-xl p-3">
+                         <div className="flex items-center app-muted-text font-bold text-xs uppercase tracking-wider">
                             <Target className="w-4 h-4 mr-2" /> Avg Score
                          </div>
                          <span className={`font-black ${badgeColor}`}>{Math.round(entry.averageScore)}%</span>
                       </div>
-                      <div className="flex justify-between items-center bg-slate-50 border border-slate-100 rounded-xl p-3">
-                         <div className="flex items-center text-slate-500 font-bold text-xs uppercase tracking-wider">
+                      <div className="flex justify-between items-center app-soft-surface border rounded-xl p-3">
+                         <div className="flex items-center app-muted-text font-bold text-xs uppercase tracking-wider">
                             <Activity className="w-4 h-4 mr-2" /> Completed
                          </div>
                          <span className="font-black text-[var(--text-color)]">{entry.modulesCompleted}</span>
@@ -223,7 +223,7 @@ export default function LeaderboardPage() {
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[720px] text-left border-collapse">
                   <thead>
-                    <tr className="text-xs uppercase font-bold text-slate-400 border-b border-slate-100">
+                    <tr className="text-xs uppercase font-bold app-subtle-text border-b border-[var(--ae-border)]">
                       <th className="px-6 py-4 tracking-wider">Rank</th>
                       <th className="px-6 py-4 tracking-wider">Student</th>
                       <th className="px-6 py-4 tracking-wider">Average Score</th>
@@ -238,32 +238,32 @@ export default function LeaderboardPage() {
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.1 + idx * 0.05 }}
-                        className={`${getRowStyle(entry)} group border-b border-slate-50 last:border-b-0`}
+                        className={`${getRowStyle(entry)} group border-b border-[var(--ae-border)] last:border-b-0`}
                       >
                         <td className="px-6 py-4">
-                          <span className={`font-black rounded-lg px-3 py-1 bg-white border border-slate-100 shadow-sm ${entry.rank <= 3 ? 'text-amber-500' : 'text-slate-400'}`}>
+                          <span className={`font-black rounded-lg px-3 py-1 bg-[var(--card-bg)] border border-[var(--ae-border)] shadow-sm ${entry.rank <= 3 ? 'text-amber-500' : 'app-subtle-text'}`}>
                             #{entry.rank}
                           </span>
                         </td>
-                        <td className="px-6 py-4 font-black text-[var(--text-color)] group-hover:text-[var(--ae-blue)] transition-colors">
+                        <td className="px-6 py-4 font-black leaderboard-row-text group-hover:text-[var(--ae-periwinkle)] transition-colors">
                           {entry.username}
                         </td>
                         <td className="px-6 py-4">
                            <div className="flex items-center">
-                             <div className="w-24 h-2 bg-slate-100 rounded-full mr-3 overflow-hidden border border-slate-200">
+                             <div className="w-24 h-2 app-soft-surface rounded-full mr-3 overflow-hidden border">
                                <div 
                                   className="h-full bg-[var(--ae-blue)] rounded-full"
                                   style={{ width: `${Math.round(entry.averageScore)}%` }}
                                />
                              </div>
-                             <span className="font-bold text-[var(--text-color)]">{Math.round(entry.averageScore)}%</span>
+                             <span className="font-bold leaderboard-row-text">{Math.round(entry.averageScore)}%</span>
                            </div>
                         </td>
-                        <td className="px-6 py-4 text-slate-500 font-bold">
+                        <td className="px-6 py-4 leaderboard-row-muted font-bold">
                           {entry.totalAttempts}
                         </td>
                         <td className="px-6 py-4 text-right">
-                          <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 text-slate-600 font-black border border-slate-200">
+                          <span className="inline-flex items-center justify-center w-8 h-8 rounded-full app-soft-surface leaderboard-row-muted font-black border">
                              {entry.modulesCompleted}
                           </span>
                         </td>
