@@ -117,20 +117,30 @@ export default function LeaderboardPage() {
         initial="hidden"
         animate="visible"
       >
-        <motion.section variants={itemVariants} className="auth-hero-card text-center mb-12 rounded-[32px] px-6 py-12">
-          <div className="auth-topline mx-auto mb-6 w-24" />
-          <div className="inline-flex items-center justify-center p-4 bg-purple-100 rounded-full mb-4 shadow-sm">
-            <Trophy className="w-10 h-10 text-[var(--ae-blue)]" />
+        <motion.section 
+          variants={itemVariants} 
+          className="text-center mb-12 rounded-[32px] px-6 py-12 relative overflow-hidden shadow-2xl border border-white/10"
+          style={{ background: "linear-gradient(160deg, #1e1735 0%, #251d3f 45%, #33418f 100%)" }}
+        >
+          {/* Decorative Blobs */}
+          <div className="absolute top-[-80px] right-[-50px] w-[350px] h-[350px] rounded-full opacity-25 pointer-events-none blur-2xl" style={{ background: "radial-gradient(circle, #9aa8e7, transparent)" }} />
+          <div className="absolute bottom-[-60px] left-[-60px] w-[280px] h-[280px] rounded-full opacity-20 pointer-events-none blur-2xl" style={{ background: "radial-gradient(circle, #e3b5ee, transparent)" }} />
+          <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] pointer-events-none mix-blend-overlay"></div>
+
+          <div className="relative z-10 flex flex-col items-center">
+            <div className="inline-flex items-center justify-center p-4 bg-white/10 border border-white/20 rounded-full mb-6 shadow-sm backdrop-blur-sm">
+              <Trophy className="w-10 h-10 text-amber-300 drop-shadow-sm" />
+            </div>
+            <span className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-white/90 text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] mb-4 backdrop-blur-sm shadow-sm">
+              Ranking Arena
+            </span>
+            <h1 className="text-4xl md:text-5xl font-black mb-4 text-transparent bg-clip-text bg-gradient-to-r from-white to-white/80 drop-shadow-sm">
+              Global Leaderboard
+            </h1>
+            <p className="text-white/80 font-medium text-lg max-w-2xl mx-auto leading-relaxed">
+              Ranked by average score, then total quiz attempts. Compete with others and secure your spot!
+            </p>
           </div>
-          <div className="auth-section-kicker text-xs font-bold uppercase tracking-[0.24em] text-[var(--ae-blue)] mb-4">
-            Ranking Arena
-          </div>
-          <h1 className="text-4xl md:text-5xl font-black mb-3 auth-gradient-text">
-            Global Leaderboard
-          </h1>
-          <p className="text-[var(--text-color)]/70 font-medium text-lg max-w-2xl mx-auto">
-            Ranked by average score, then total quiz attempts. Compete with others and secure your spot!
-          </p>
         </motion.section>
 
         {isLoading ? (

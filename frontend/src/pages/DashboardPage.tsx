@@ -164,17 +164,27 @@ export default function DashboardPage() {
         initial="hidden"
         animate="visible"
       >
-        <motion.div variants={itemVariants} className="mb-10 auth-hero-card rounded-[28px] p-6 md:p-8">
-          <div className="auth-topline mb-6 w-28" />
-          <span className="inline-flex items-center px-4 py-1.5 rounded-full bg-[var(--text-color)]/5 border border-[var(--text-color)]/10 text-[var(--text-color)]/80 text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] mb-6">
-            Algorithmic Explorers Dashboard
-          </span>
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-3 auth-gradient-text">
-            Welcome back, {user?.firstName || "Student"}!
-          </h1>
-          <p className="text-[var(--text-color)]/70 text-lg max-w-2xl font-medium">
-            Track your module progress, continue your learning, and stay on top.
-          </p>
+        <motion.div 
+          variants={itemVariants} 
+          className="mb-10 rounded-[28px] p-8 md:p-10 relative overflow-hidden shadow-2xl border border-white/10"
+          style={{ background: "linear-gradient(160deg, #1e1735 0%, #251d3f 45%, #33418f 100%)" }}
+        >
+          {/* Decorative Blobs */}
+          <div className="absolute top-[-80px] right-[-50px] w-[350px] h-[350px] rounded-full opacity-25 pointer-events-none blur-2xl" style={{ background: "radial-gradient(circle, #9aa8e7, transparent)" }} />
+          <div className="absolute bottom-[-60px] left-[-60px] w-[280px] h-[280px] rounded-full opacity-20 pointer-events-none blur-2xl" style={{ background: "radial-gradient(circle, #e3b5ee, transparent)" }} />
+          <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] pointer-events-none mix-blend-overlay"></div>
+
+          <div className="relative z-10">
+            <span className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-white/90 text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] mb-6 backdrop-blur-sm shadow-sm">
+              Algorithmic Explorers Dashboard
+            </span>
+            <h1 className="text-4xl md:text-5xl font-extrabold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-white to-white/80 drop-shadow-sm">
+              Welcome back, {user?.firstName || "Student"}!
+            </h1>
+            <p className="text-white/80 text-lg max-w-2xl font-medium leading-relaxed">
+              Track your module progress, continue your learning, and stay on top.
+            </p>
+          </div>
         </motion.div>
 
         {isLoading ? (
