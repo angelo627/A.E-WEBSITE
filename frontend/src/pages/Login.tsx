@@ -1,6 +1,8 @@
 import { useState, type ReactElement } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import { apiFetch } from "../lib/api";
+import { useAuth } from "../context/useAuth";
+import type { AuthUser } from "../context/AuthContext";
 import { FaGoogle, FaFacebook, FaMicrosoft } from "react-icons/fa";
 import { FiEye, FiEyeOff, FiAlertCircle, FiArrowRight } from "react-icons/fi";
 
@@ -20,6 +22,8 @@ const getErrorMessage = (error: unknown, fallback: string): string => {
 
 const Login = (): ReactElement => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -40,14 +44,16 @@ const Login = (): ReactElement => {
       const response = await apiFetch("/auth/login", {
         method: "POST",
         body: JSON.stringify({ email: identifier, password }),
-      });
-      console.log("Login successful:", response);
+      }) as { user: AuthUser; accessToken: string };
+
+      login(response.user, response.accessToken);
       
       // Determine dashboard path based on role if available in response, otherwise default to dashboard
-      const role = (response as any)?.user?.role;
-      const targetPath = role === "ADMIN" || role === "SUPER_ADMIN" ? "/admin" : "/dashboard";
+      const role = response.user.role;
+      const from = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname;
+      const targetPath = from ?? (role === "ADMIN" || role === "SUPER_ADMIN" ? "/admin" : "/dashboard");
       
-      navigate(targetPath);
+      navigate(targetPath, { replace: true });
     } catch (err: unknown) {
       setError(getErrorMessage(err, "Invalid credentials. Please try again."));
     } finally {
