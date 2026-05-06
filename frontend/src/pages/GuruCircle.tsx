@@ -340,8 +340,8 @@ export default function GuruCircle() {
             <button className="px-8 py-3 w-full sm:w-auto"
               style={{
                 background: "var(--ae-surface)",
-                color: "var(--text-color)",
-                border: "1px solid var(--ae-border)",
+                color: "var(--ae-blue)",
+                border: "1.5px solid var(--ae-blue)",
                 borderRadius: "7px",
                 fontWeight: 700,
                 fontSize: "clamp(0.65rem,1.05vw,0.78rem)",
