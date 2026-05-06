@@ -7,6 +7,7 @@ import WhoWeAreSection from "../components/ui/WhoWeAre";
 import { Mouse } from "lucide-react";
 import { ArrowDown } from "lucide-react";
 import { ArrowUpRight } from "lucide-react";
+import { Award, TrendingUp, Users } from "lucide-react";
 import CohortsSection from "../components/ui/CohortsSection";
 import TestimonialSwiper from "../components/ui/TestimonialSwiper";
 import CommunitySection from "../components/ui/CommunitySection";
@@ -42,20 +43,18 @@ const Card = ({
   title,
   subtitle,
   cta,
-  center = false,
-  first = false,
-  last = false,
+  icon,
+  iconAccent = "blue",
   comment,
   commentLink,
 }: {
   title: string;
   subtitle?: string;
   cta?: string;
+  icon: React.ReactNode;
+  iconAccent?: "blue" | "peach" | "lavender";
   comment?: string;
   commentLink?: string;
-  center?: boolean;
-  first?: boolean;
-  last?: boolean;
 }) => (
   <div
     className="
@@ -68,40 +67,23 @@ const Card = ({
     "
   >
     <div className="w-full sm:w-[95%] ">
-
-      {first && (
-        <img
-          src="/badge 1.png"
-          alt={title}
-          className="mb-5 rounded-full bg-black h-10 lg:h-12.5"
-        />
-      )}
-      {center && (
-        <img
-          src="/badge 2.png"
-          alt={title}
-          className="mb-5 rounded-full bg-white h-10 lg:h-12.5"
-        />
-      )}
-      {last && (
-        <img
-          src="/badge 3.png"
-          alt={title}
-          className="mb-5 rounded-full bg-black h-10 lg:h-12.5"
-        />
-      )}
+      <div
+        className={`mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl border shadow-lg ${
+          iconAccent === "peach"
+            ? "border-[var(--ae-peach)]/25 bg-[var(--ae-peach)]/12 text-[var(--ae-peach)]"
+            : iconAccent === "lavender"
+              ? "border-[var(--ae-lavender)]/25 bg-[var(--ae-lavender)]/12 text-[var(--ae-lavender)]"
+              : "border-[var(--ae-blue)]/25 bg-[var(--ae-blue)]/12 text-[var(--ae-periwinkle)]"
+        }`}
+      >
+        {icon}
+      </div>
 
       <h3 className="text-[var(--text-color)] text-lg sm:text-xl font-semibold mb-2 text-start">{title}</h3>
-      {subtitle && first && (
-        <p className="text-[var(--text-color)]/80 text-lg sm:text-xl leading-relaxed text-start">{subtitle}</p>
-      )}
-      {subtitle && center && (
-        <p className="text-[var(--text-color)]/60 text-base sm:text-lg bottom-25 absolute leading-relaxed">
+      {subtitle && (
+        <p className="text-[var(--text-color)]/78 text-lg sm:text-xl leading-relaxed text-start">
           {subtitle}
         </p>
-      )}
-      {subtitle && !first && !center && (
-        <p className="text-[var(--text-color)]/80 text-lg sm:text-xl leading-relaxed text-start">{subtitle}</p>
       )}
     </div>
 
@@ -109,11 +91,7 @@ const Card = ({
       <div className="mt-6 w-full">
         {cta && (
           <button
-            className={
-              center
-                ? "w-full py-2 rounded-md flex items-center justify-center ae-brand-button font-semibold"
-                : undefined
-            }
+            className="w-full py-2 rounded-md flex items-center justify-center ae-brand-button font-semibold"
           >
             {cta}
           </button>
@@ -193,7 +171,8 @@ const HomePage = () => {
                 subtitle="Join a community of forward-thinking explorers."
                 commentLink="AE retreat on"
                 comment="31st December, 2025"
-                first
+                icon={<Award size={28} strokeWidth={2.1} />}
+                iconAccent="blue"
               />
             </FadeInWhenVisible>
 
@@ -202,7 +181,8 @@ const HomePage = () => {
                 title="Prioritizing Growth"
                 subtitle="With 120k+ active user's"
                 cta="Sign Up as Volunteer"
-                center
+                icon={<TrendingUp size={28} strokeWidth={2.1} />}
+                iconAccent="peach"
               />
             </FadeInWhenVisible>
 
@@ -210,10 +190,10 @@ const HomePage = () => {
               <Card
                 title="Collaboration & Development"
                 subtitle="Collaborate on cutting-edge AI projects."
-
                 commentLink="AE retreat on"
                 comment="31st December, 2025"
-                last
+                icon={<Users size={28} strokeWidth={2.1} />}
+                iconAccent="lavender"
               />
             </FadeInWhenVisible>
           </div>
