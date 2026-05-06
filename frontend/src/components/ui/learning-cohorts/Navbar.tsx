@@ -32,12 +32,14 @@ function Navbar() {
     { to: "/products", label: "Products" },
     { to: "/guru-circle", label: "Guru Circle" },
     { to: "/testimonials", label: "Testimonials" },
+    { to: "/community", label: "Community" },
     { to: "/contact", label: "Contact" },
   ];
 
   const authenticatedLinks = [
     { to: "/dashboard", label: "Dashboard" },
     { to: "/leaderboard", label: "Leaderboard" },
+    { to: "/community", label: "Community" },
     ...(isAdmin ? [{ to: "/admin", label: "Admin" }] : []),
   ];
 

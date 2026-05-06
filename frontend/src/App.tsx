@@ -12,6 +12,7 @@ import ModulesPage from "./pages/ModulesPage";
 import ProductsPage from "./pages/ProductsPage";
 import TestimonialsPage from "./pages/TestimonialsPage";
 import ContactPage from "./pages/ContactPage";
+import CommunityPage from "./pages/CommunityPage";
 
 // Generic Pages included initially
 import Guru from "./pages/Guru";
@@ -24,6 +25,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import OAuthCallback from "./pages/OAuthCallback";
 import DashboardPage from "./pages/DashboardPage";
+import PostDetailsPage from "./pages/PostDetailsPage";
 import ModuleDetailPage from "./pages/ModuleDetailPage";
 import QuizPage from "./pages/QuizPage";
 import LeaderboardPage from "./pages/LeaderboardPage";
@@ -53,6 +55,7 @@ function App() {
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/testimonials" element={<TestimonialsPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/community" element={<CommunityPage />} />
           <Route path="/guru" element={<Guru />} />
           <Route path="/guru-circle" element={<GuruCircle />} />
           <Route path="/login" element={<Login />} />
@@ -91,6 +94,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <LeaderboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/community/:id"
+            element={
+              <ProtectedRoute>
+                <PostDetailsPage />
               </ProtectedRoute>
             }
           />

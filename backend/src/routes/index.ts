@@ -23,6 +23,7 @@ import {
 } from "../features/testimonials/testimonials.routes";
 import { adminTeamRouter, publicTeamRouter } from "../features/team/team.routes";
 import { usersRouter } from "../features/users/users.routes";
+import { communityRoutes } from "../features/community/community.routes";
 
 const apiRouter = Router();
 const adminRouter = Router();
@@ -45,6 +46,7 @@ apiRouter.use(authenticate);
 apiRouter.use("/dashboard", dashboardRouter);
 apiRouter.use("/modules", learnerModulesRouter);
 apiRouter.use("/quizzes", learnerQuizzesRouter);
+apiRouter.use("/community", communityRoutes);
 
 adminRouter.use(authorize("ADMIN", "SUPER_ADMIN"));
 adminRouter.use("/modules", adminModulesRouter);
