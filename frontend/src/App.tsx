@@ -3,6 +3,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Navbar from "./components/ui/learning-cohorts/Navbar";
+import AnnouncementBanner from "./components/ui/announcement/AnnouncementBanner";
 
 // Public Pages
 import HomePage from "./pages/HomePage";
@@ -38,6 +39,7 @@ import ManageProducts from "./pages/admin/ManageProducts";
 import ManageTestimonials from "./pages/admin/ManageTestimonials";
 import ManageTeam from "./pages/admin/ManageTeam";
 import ViewUsers from "./pages/admin/ViewUsers";
+import ManageAnnouncements from "./pages/admin/ManageAnnouncements";
 
 function App() {
   return (
@@ -45,6 +47,7 @@ function App() {
       <AuthProvider>
         <BrowserRouter>
         <Navbar />
+        <AnnouncementBanner />
 
         <Routes>
           {/* PUBLIC ROUTES */}
@@ -160,6 +163,14 @@ function App() {
             element={
               <ProtectedRoute requireAdmin>
                 <ViewUsers />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/announcements"
+            element={
+              <ProtectedRoute requireAdmin>
+                <ManageAnnouncements />
               </ProtectedRoute>
             }
           />

@@ -173,14 +173,12 @@ async function trySendVerificationEmail(user: {
     await createAndSendVerificationToken(user);
     return { sent: true };
   } catch (error) {
+    // Never let an email failure crash registration — log and carry on
     if (error instanceof AppError) {
-      return {
-        sent: false,
-        errorCode: error.code
-      };
+      return { sent: false, errorCode: error.code };
     }
-
-    throw error;
+    console.error("[trySendVerificationEmail] Non-fatal email error:", error);
+    return { sent: false, errorCode: "EMAIL_SEND_FAILED" };
   }
 }
 
@@ -439,14 +437,20 @@ export const authService = {
       })
     ]);
 
-    await sendEmailWithPlunk({
-      to: user.email,
-      subject: "Reset your A.E password",
-      body: renderResetPasswordEmail({
-        firstName: user.firstName,
-        resetUrl: buildClientUrl("/reset-password", token)
-      })
-    });
+    try {
+      await sendEmailWithPlunk({
+        to: user.email,
+        subject: "Reset your A.E password",
+        body: renderResetPasswordEmail({
+          firstName: user.firstName,
+          resetUrl: buildClientUrl("/reset-password", token)
+        })
+      });
+    } catch (error) {
+      console.error("[forgotPassword] Failed to send reset email:", error);
+      // We don't throw here to avoid revealing if an email exists/failing the whole request
+      // but in a real prod app we might want more specific feedback.
+    }
   },
 
   resetPassword: async (input: { token: string; password: string }): Promise<void> => {
@@ -569,7 +573,7 @@ export const authService = {
       return;
     }
 
-    await createAndSendVerificationToken(user);
+    await trySendVerificationEmail(user);
   },
 
   getProfile: async (input: { userId: string }): Promise<AuthenticatedUser> => {

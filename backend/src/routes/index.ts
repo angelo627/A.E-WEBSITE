@@ -24,6 +24,7 @@ import {
 import { adminTeamRouter, publicTeamRouter } from "../features/team/team.routes";
 import { usersRouter } from "../features/users/users.routes";
 import { communityRoutes } from "../features/community/community.routes";
+import announcementRouter from "../features/announcement/announcement.routes";
 
 const apiRouter = Router();
 const adminRouter = Router();
@@ -47,6 +48,7 @@ apiRouter.use("/dashboard", dashboardRouter);
 apiRouter.use("/modules", learnerModulesRouter);
 apiRouter.use("/quizzes", learnerQuizzesRouter);
 apiRouter.use("/community", communityRoutes);
+apiRouter.use("/announcements", announcementRouter);
 
 adminRouter.use(authorize("ADMIN", "SUPER_ADMIN"));
 adminRouter.use("/modules", adminModulesRouter);

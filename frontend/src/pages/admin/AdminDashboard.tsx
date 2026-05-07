@@ -12,7 +12,8 @@ import {
   ChevronRight,
   Loader2,
   AlertCircle,
-  LayoutDashboard
+  LayoutDashboard,
+  Megaphone
 } from "lucide-react";
 
 interface AdminSummary {
@@ -25,6 +26,7 @@ interface AdminSummary {
   pendingTestimonials: number;
   activeUsers: number;
   publishedModules: number;
+  announcements: number;
 }
 
 const isObject = (value: unknown): value is Record<string, unknown> =>
@@ -63,14 +65,15 @@ export default function AdminDashboard() {
     setError(null);
 
     try {
-      const [usersRes, modulesRes, quizzesRes, productsRes, testimonialsRes, teamRes] =
+      const [usersRes, modulesRes, quizzesRes, productsRes, testimonialsRes, teamRes, announcementsRes] =
         await Promise.all([
           apiFetch("/admin/users"),
           apiFetch("/admin/modules"),
           apiFetch("/admin/quizzes"),
           apiFetch("/admin/products"),
           apiFetch("/admin/testimonials"),
-          apiFetch("/admin/team")
+          apiFetch("/admin/team"),
+          apiFetch("/announcements")
         ]);
 
       const users = asArray(usersRes);
@@ -79,6 +82,7 @@ export default function AdminDashboard() {
       const products = asArray(productsRes);
       const testimonials = asArray(testimonialsRes);
       const teamMembers = asArray(teamRes);
+      const announcements = asArray(announcementsRes?.announcements);
 
       const activeUsers = users.filter(
         (item) => isObject(item) && item.status === "ACTIVE"
@@ -101,7 +105,8 @@ export default function AdminDashboard() {
         teamMembers: teamMembers.length,
         pendingTestimonials,
         activeUsers,
-        publishedModules
+        publishedModules,
+        announcements: announcements.length
       });
     } catch (fetchError: unknown) {
       setError(getErrorMessage(fetchError));
@@ -171,6 +176,15 @@ export default function AdminDashboard() {
         color: "text-emerald-500",
         bg: "bg-emerald-500/10",
         border: "group-hover:border-emerald-500/30"
+      },
+      { 
+        label: "Announcements", 
+        value: summary.announcements || 0, 
+        sub: "Site-wide active banners",
+        icon: Megaphone,
+        color: "text-amber-500",
+        bg: "bg-amber-500/10",
+        border: "group-hover:border-amber-500/30"
       }
     ];
   }, [summary]);
@@ -182,6 +196,7 @@ export default function AdminDashboard() {
     { label: "Manage Testimonials", path: "/admin/testimonials", icon: MessageSquare },
     { label: "Manage Team", path: "/admin/team", icon: ShieldCheck },
     { label: "View Users", path: "/admin/users", icon: Users },
+    { label: "Manage Announcements", path: "/admin/announcements", icon: Megaphone },
   ];
 
   return (
