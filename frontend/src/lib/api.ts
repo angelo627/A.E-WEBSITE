@@ -17,15 +17,18 @@ export async function apiFetch(endpoint: string, options: RequestInit = {}) {
     headers,
   });
 
-  const result = await response.json();
+  // Safely parse JSON — 204 No Content or empty bodies would crash response.json()
+  const contentType = response.headers.get("content-type");
+  const hasJson = contentType?.includes("application/json");
+  const result = hasJson ? await response.json() : null;
 
   if (!response.ok) {
-    throw new Error(result.message || "Something went wrong");
+    throw new Error((result as any)?.message || "Something went wrong");
   }
 
   // Handle standardized backend wrapper: { status: "success", message: "...", data: { ... } }
-  if (result && typeof result === "object" && result.status === "success") {
-    return result.data;
+  if (result && typeof result === "object" && (result as any).status === "success") {
+    return (result as any).data;
   }
 
   return result;

@@ -41,7 +41,7 @@ export class CommunityController {
   deletePost = asyncHandler(async (req: Request, res: Response) => {
     await communityService.deletePost(req.params.id as string, req.user!.sub, req.user!.role);
 
-    res.status(204).json({
+    res.status(200).json({
       status: "success",
       data: null
     });
@@ -65,7 +65,7 @@ export class CommunityController {
   deleteComment = asyncHandler(async (req: Request, res: Response) => {
     await communityService.deleteComment(req.params.commentId as string, req.user!.sub, req.user!.role);
 
-    res.status(204).json({
+    res.status(200).json({
       status: "success",
       data: null
     });
