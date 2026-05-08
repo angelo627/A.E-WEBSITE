@@ -139,7 +139,7 @@ const HomePage = () => {
       <header className="relative z-20 flex items-center justify-center min-h-screen pt-80 lg:pt-70 lg:pb-12 h-screen">
         <div className="max-w-3xl text-center px-4 sm:px-6">
           <FadeInWhenVisible>
-            <p className="text-[var(--ae-blue)] font-bold tracking-widest text-xs sm:text-sm md:text-base mb-3 md:mb-4">
+            <p className="text-[var(--ae-periwinkle)] font-bold tracking-widest text-xs sm:text-sm md:text-base mb-3 md:mb-4">
               Welcome to AE.
             </p>
 
