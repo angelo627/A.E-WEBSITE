@@ -157,6 +157,7 @@ export const usersService = {
 
     // If not found by username, try by email (fallback for legacy sessions/redirects)
     if (!user && username.includes("@")) {
+      console.log(`[DEBUG] Username not found, trying email fallback for: "${username}"`);
       user = await prisma.user.findUnique({
         where: { email: username },
         select: {

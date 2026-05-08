@@ -78,6 +78,7 @@ export const usersController = {
 
   getPublicProfile: asyncHandler(async (req: Request, res: Response) => {
     const username = req.params.username as string;
+    console.log(`[DEBUG] Fetching profile for: "${username}"`);
     const profile = await usersService.getUserProfileByUsername(username);
 
     return res.status(200).json({
