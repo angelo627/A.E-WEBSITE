@@ -444,7 +444,7 @@ export default function ManageModules() {
   };
 
   return (
-    <div className="pt-32 px-6 min-h-screen ae-brand-page text-[var(--text-color)] pb-20 overflow-hidden relative font-outfit">
+    <div className="pt-40 px-6 md:pt-48 md:px-10 min-h-screen ae-brand-page text-[var(--text-color)] pb-20 overflow-hidden relative font-outfit">
       
 
       <motion.div 

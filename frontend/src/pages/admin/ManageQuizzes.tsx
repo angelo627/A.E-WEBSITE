@@ -529,7 +529,7 @@ export default function ManageQuizzes() {
   };
 
   return (
-    <div className="pt-24 px-6 min-h-screen bg-[var(--bg-color)] text-[var(--text-color)] pb-20 overflow-hidden relative">
+    <div className="pt-40 px-6 min-h-screen bg-[var(--bg-color)] text-[var(--text-color)] pb-20 overflow-hidden relative">
       
 
       <motion.div 

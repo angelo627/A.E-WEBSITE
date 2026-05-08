@@ -75,22 +75,21 @@ const ManageAnnouncements = () => {
       alert("Failed to delete announcement");
     }
   };
-
   return (
-    <div className="p-6 md:p-10 max-w-5xl mx-auto">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Megaphone className="text-[var(--ae-blue)]" />
+    <div className="pt-40 pb-10 px-6 md:pt-48 md:px-10 max-w-5xl mx-auto min-h-screen ae-brand-page text-[var(--text-color)]">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-10">
+        <div className="space-y-1">
+          <h1 className="text-2xl md:text-4xl font-black italic flex items-center gap-3">
+            <Megaphone className="text-[var(--ae-blue)] shrink-0" size={28} />
             Manage Announcements
           </h1>
-          <p className="text-sm text-[var(--app-muted-text)]">Create and manage site-wide banners.</p>
+          <p className="text-sm md:text-base text-[var(--app-muted-text)] font-medium">Create and manage site-wide banners.</p>
         </div>
         <button 
           onClick={() => setIsAdding(!isAdding)}
-          className="ae-brand-button px-4 py-2 flex items-center gap-2 text-sm"
+          className="ae-brand-button px-8 py-3 flex items-center gap-2 text-sm shadow-xl hover:scale-105 active:scale-95 transition-all w-full sm:w-auto justify-center shrink-0"
         >
-          {isAdding ? "Cancel" : <><Plus size={18} /> New Announcement</>}
+          {isAdding ? "Cancel" : <><Plus size={20} /> New Announcement</>}
         </button>
       </div>
 
@@ -153,20 +152,20 @@ const ManageAnnouncements = () => {
           </div>
         ) : (
           announcements.map((ann) => (
-            <div key={ann.id} className={`ae-brand-card p-5 rounded-2xl flex items-center justify-between gap-6 ${!ann.isActive ? 'opacity-60 bg-gray-50' : ''}`}>
-              <div className="flex-1 min-w-0">
+            <div key={ann.id} className={`ae-brand-card p-5 md:p-6 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-6 ${!ann.isActive ? 'opacity-60 grayscale-[0.5]' : ''} border border-[var(--ae-border)] shadow-sm hover:shadow-md transition-all duration-300`}>
+              <div className="flex-1 min-w-0 w-full">
                 <div className="flex items-center gap-2 mb-1">
                   <h3 className="font-bold text-lg truncate">{ann.title}</h3>
                   {!ann.isActive && <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-200 text-gray-500 font-bold uppercase">Inactive</span>}
                 </div>
                 <p className="text-sm text-[var(--app-muted-text)] line-clamp-1">{ann.message}</p>
-                <div className="flex items-center gap-4 mt-2 text-[10px] text-[var(--app-subtle-text)] font-medium">
-                  <span>Created: {new Date(ann.createdAt).toLocaleDateString()}</span>
-                  {ann.expiresAt && <span className="text-orange-500">Expires: {new Date(ann.expiresAt).toLocaleString()}</span>}
+                <div className="flex flex-wrap items-center gap-4 mt-3 text-[10px] md:text-xs text-[var(--app-subtle-text)] font-medium">
+                  <span className="bg-[var(--app-soft-surface)] px-2 py-1 rounded-md border border-[var(--app-soft-border)]">Created: {new Date(ann.createdAt).toLocaleDateString()}</span>
+                  {ann.expiresAt && <span className="text-orange-500 bg-orange-50 dark:bg-orange-950/20 px-2 py-1 rounded-md border border-orange-200 dark:border-orange-500/20">Expires: {new Date(ann.expiresAt).toLocaleString()}</span>}
                 </div>
               </div>
-
-              <div className="flex items-center gap-2 grow-0 shrink-0">
+ 
+              <div className="flex items-center gap-3 self-end md:self-center shrink-0">
                 <button 
                   onClick={() => handleToggleActive(ann)}
                   className={`p-2 rounded-xl transition-colors ${ann.isActive ? 'text-green-500 hover:bg-green-50' : 'text-gray-400 hover:bg-gray-100'}`}
