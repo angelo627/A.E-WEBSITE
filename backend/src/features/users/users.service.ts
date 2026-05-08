@@ -124,7 +124,8 @@ export const usersService = {
   },
 
   getUserProfileByUsername: async (username: string) => {
-    const user = await prisma.user.findUnique({
+    // Try finding by username first
+    let user = await prisma.user.findUnique({
       where: { username },
       select: {
         id: true,
@@ -153,6 +154,39 @@ export const usersService = {
         }
       }
     });
+
+    // If not found by username, try by email (fallback for legacy sessions/redirects)
+    if (!user && username.includes("@")) {
+      user = await prisma.user.findUnique({
+        where: { email: username },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+          email: true,
+          role: true,
+          avatarUrl: true,
+          bio: true,
+          location: true,
+          createdAt: true,
+          communityPosts: {
+            orderBy: { createdAt: "desc" },
+            take: 5,
+            include: {
+              _count: { select: { comments: true, likes: true } }
+            }
+          },
+          _count: {
+            select: {
+              moduleProgresses: { where: { status: "COMPLETED" } },
+              quizAttempts: true,
+              communityPosts: true,
+            }
+          }
+        }
+      });
+    }
 
     if (!user) {
       throw new AppError(404, "Profile not found.", "USER_NOT_FOUND");
