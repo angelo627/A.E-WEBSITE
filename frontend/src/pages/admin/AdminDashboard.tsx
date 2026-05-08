@@ -27,6 +27,7 @@ interface AdminSummary {
   activeUsers: number;
   publishedModules: number;
   announcements: number;
+  communityPosts: number;
 }
 
 const isObject = (value: unknown): value is Record<string, unknown> =>
@@ -65,7 +66,7 @@ export default function AdminDashboard() {
     setError(null);
 
     try {
-      const [usersRes, modulesRes, quizzesRes, productsRes, testimonialsRes, teamRes, announcementsRes] =
+      const [usersRes, modulesRes, quizzesRes, productsRes, testimonialsRes, teamRes, announcementsRes, communityRes] =
         await Promise.all([
           apiFetch("/admin/users"),
           apiFetch("/admin/modules"),
@@ -73,7 +74,8 @@ export default function AdminDashboard() {
           apiFetch("/admin/products"),
           apiFetch("/admin/testimonials"),
           apiFetch("/admin/team"),
-          apiFetch("/announcements")
+          apiFetch("/announcements"),
+          apiFetch("/community")
         ]);
 
       const users = asArray(usersRes);
@@ -83,6 +85,7 @@ export default function AdminDashboard() {
       const testimonials = asArray(testimonialsRes);
       const teamMembers = asArray(teamRes);
       const announcements = asArray(announcementsRes?.announcements);
+      const communityPosts = asArray(communityRes?.posts);
 
       const activeUsers = users.filter(
         (item) => isObject(item) && item.status === "ACTIVE"
@@ -106,7 +109,8 @@ export default function AdminDashboard() {
         pendingTestimonials,
         activeUsers,
         publishedModules,
-        announcements: announcements.length
+        announcements: announcements.length,
+        communityPosts: communityPosts.length
       });
     } catch (fetchError: unknown) {
       setError(getErrorMessage(fetchError));
@@ -185,6 +189,15 @@ export default function AdminDashboard() {
         color: "text-amber-500",
         bg: "bg-amber-500/10",
         border: "group-hover:border-amber-500/30"
+      },
+      { 
+        label: "Community Posts", 
+        value: summary.communityPosts || 0, 
+        sub: "Member discussions",
+        icon: MessageSquare,
+        color: "text-cyan-500",
+        bg: "bg-cyan-500/10",
+        border: "group-hover:border-cyan-500/30"
       }
     ];
   }, [summary]);
@@ -197,6 +210,7 @@ export default function AdminDashboard() {
     { label: "Manage Team", path: "/admin/team", icon: ShieldCheck },
     { label: "View Users", path: "/admin/users", icon: Users },
     { label: "Manage Announcements", path: "/admin/announcements", icon: Megaphone },
+    { label: "Manage Community (Pin/Like)", path: "/community", icon: MessageSquare },
   ];
 
   return (
