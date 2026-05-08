@@ -24,7 +24,7 @@ export class CommunityService {
     return prisma.communityPost.create({
       data,
       include: {
-        user: { select: { id: true, firstName: true, lastName: true, avatarUrl: true, role: true } },
+        user: { select: { id: true, firstName: true, lastName: true, username: true, avatarUrl: true, role: true } },
         _count: { select: { comments: true, likes: true } }
       }
     });
@@ -40,7 +40,7 @@ export class CommunityService {
         { createdAt: "desc" }
       ],
       include: {
-        user: { select: { id: true, firstName: true, lastName: true, avatarUrl: true, role: true } },
+        user: { select: { id: true, firstName: true, lastName: true, username: true, avatarUrl: true, role: true } },
         _count: { select: { comments: true, likes: true } },
         likes: {
           select: { userId: true }
@@ -53,11 +53,11 @@ export class CommunityService {
     const post = await prisma.communityPost.findUnique({
       where: { id: postId },
       include: {
-        user: { select: { id: true, firstName: true, lastName: true, avatarUrl: true, role: true } },
+        user: { select: { id: true, firstName: true, lastName: true, username: true, avatarUrl: true, role: true } },
         comments: {
           orderBy: { createdAt: "asc" },
           include: {
-            user: { select: { id: true, firstName: true, lastName: true, avatarUrl: true, role: true } }
+            user: { select: { id: true, firstName: true, lastName: true, username: true, avatarUrl: true, role: true } }
           }
         },
         _count: { select: { comments: true, likes: true } },
@@ -143,7 +143,7 @@ export class CommunityService {
     return prisma.communityComment.create({
       data,
       include: {
-        user: { select: { id: true, firstName: true, lastName: true, avatarUrl: true, role: true } }
+        user: { select: { id: true, firstName: true, lastName: true, username: true, avatarUrl: true, role: true } }
       }
     });
   }

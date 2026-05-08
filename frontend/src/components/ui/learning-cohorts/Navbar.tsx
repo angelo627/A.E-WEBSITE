@@ -40,6 +40,7 @@ function Navbar() {
     { to: "/dashboard", label: "Dashboard" },
     { to: "/leaderboard", label: "Leaderboard" },
     { to: "/community", label: "Community" },
+    { to: `/profile/${user?.username}`, label: "Profile" },
     ...(isAdmin ? [{ to: "/admin", label: "Admin" }] : []),
   ];
 
