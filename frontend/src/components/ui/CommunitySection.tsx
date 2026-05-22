@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Users } from "lucide-react";
 
 // TODO: Replace with your real WhatsApp / Discord / Telegram invite link
 const COMMUNITY_LINK = "https://forms.gle/sc9w11jVmH6tucEo8";
@@ -14,10 +14,21 @@ export default function CommunitySection(){
       <div className="mt-20 text-center px-4">
         <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[87.11px] font-semibold tracking-tight italic">Our Community</h1>
         <div className="flex justify-center mt-4">
-          <div className="relative flex h-10 lg:h-12 w-56.25 items-center justify-center rounded-[9.90566px] ae-brand-card border border-[var(--ae-border)] px-[33.4057px] text-[var(--text-color)] shadow-sm">
-            <div className="relative flex h-12 min-w-[188.21px] items-center justify-start">
-             <img src="/btn-members.png" alt="Members" className="h-7 filter invert-0 dark:invert" />
+          <div className="inline-flex h-12 items-center gap-3 rounded-[10px] ae-brand-card border border-[var(--ae-border)] px-5 text-[var(--text-color)] shadow-sm">
+            <div className="flex -space-x-2" aria-hidden="true">
+              {["#33418f", "#f5a487", "#9aa8e7"].map((color) => (
+                <span
+                  key={color}
+                  className="grid h-7 w-7 place-items-center rounded-full border-2 border-[var(--card-bg)]"
+                  style={{ backgroundColor: color }}
+                >
+                  <Users size={13} className="text-white" strokeWidth={2.5} />
+                </span>
+              ))}
             </div>
+            <span className="text-base font-semibold tracking-normal text-[var(--text-color)] sm:text-lg">
+              500K+ People
+            </span>
           </div>
         </div>
       </div>
