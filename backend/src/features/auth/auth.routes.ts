@@ -1,12 +1,22 @@
-import { Router } from "express";
+import { NextFunction, Request, Response, Router } from "express";
 
 import { authenticate } from "../../middlewares/auth";
 import { authController } from "./auth.controller";
-import { passport } from "./auth.passport";
+import { isGoogleOAuthConfigured, passport } from "./auth.passport";
 import { env } from "../../config/env";
 import { setRefreshTokenCookie } from "../../shared/utils/cookies";
 
 const authRouter = Router();
+
+function requireGoogleOAuth(_req: Request, res: Response, next: NextFunction) {
+  if (!isGoogleOAuthConfigured) {
+    return res.status(503).json({
+      message: "Google OAuth is not configured."
+    });
+  }
+
+  return next();
+}
 
 authRouter.post("/register", authController.register);
 authRouter.post("/login", authController.login);
@@ -23,12 +33,14 @@ authRouter.post("/change-password", authenticate, authController.changePassword)
 // Step 1: Redirect user to Google's consent screen
 authRouter.get(
   "/google",
+  requireGoogleOAuth,
   passport.authenticate("google", { session: false, scope: ["profile", "email"] })
 );
 
 // Step 2: Google redirects back here with a code — exchange it for tokens
 authRouter.get(
   "/google/callback",
+  requireGoogleOAuth,
   passport.authenticate("google", { session: false, failureRedirect: `${env.clientBaseUrl}/login?error=google_failed` }),
   (req, res) => {
     const result = (req.user as unknown) as {

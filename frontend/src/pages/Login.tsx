@@ -6,7 +6,7 @@ import type { AuthUser } from "../context/AuthContext";
 import { FaGoogle, FaFacebook, FaMicrosoft } from "react-icons/fa";
 import { FiEye, FiEyeOff, FiAlertCircle, FiArrowRight } from "react-icons/fi";
 
-const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:5000/api";
+const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:5050/api";
 
 const getErrorMessage = (error: unknown, fallback: string): string => {
   if (

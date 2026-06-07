@@ -125,7 +125,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/auth/me`,
+          `${import.meta.env.VITE_API_URL || "http://localhost:5050/api"}/auth/me`,
           {
             method: "GET",
             headers: {

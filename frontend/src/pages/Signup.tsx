@@ -4,7 +4,7 @@ import { apiFetch } from "../lib/api";
 import { FaGoogle, FaFacebook, FaMicrosoft } from "react-icons/fa";
 import { FiEye, FiEyeOff, FiAlertCircle, FiCheckCircle, FiArrowRight } from "react-icons/fi";
 
-const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:5000/api";
+const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:5050/api";
 
 type SignupData = {
   firstName: string;
