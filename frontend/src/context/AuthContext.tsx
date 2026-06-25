@@ -1,4 +1,4 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 
 export type UserRole = "STUDENT" | "ADMIN" | "SUPER_ADMIN";
@@ -12,6 +12,7 @@ export interface AuthUser {
   email: string;
   role: UserRole;
   status?: UserStatus;
+  avatarUrl?: string;
 }
 
 interface AuthContextType {
@@ -68,6 +69,10 @@ const isAuthUser = (value: unknown): value is AuthUser => {
     return false;
   }
 
+  if (value.avatarUrl !== undefined && typeof value.avatarUrl !== "string") {
+    return false;
+  }
+
   return true;
 };
 
@@ -107,10 +112,46 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [authState, setAuthState] = useState<{ user: AuthUser | null; token: string | null }>(
     () => getStoredAuth()
   );
+  const [isValidating, setIsValidating] = useState(true);
   const { user, token } = authState;
-  // isLoading is always false: localStorage is read synchronously in the
-  // useState initialisers above, so auth is resolved before first render.
-  const isLoading = false;
+
+  // Validate token on mount and periodically
+  useEffect(() => {
+    const validateToken = async () => {
+      if (!token || !user) {
+        setIsValidating(false);
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL || "http://localhost:5050/api"}/auth/me`,
+          {
+            method: "GET",
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          // Token is invalid or expired
+          console.warn("Token validation failed, clearing auth state");
+          setAuthState({ user: null, token: null });
+          clearStoredAuth();
+        }
+      } catch (error) {
+        console.error("Token validation error:", error);
+        // On network error, keep the session but log the error
+        // This prevents logout on temporary network issues
+      } finally {
+        setIsValidating(false);
+      }
+    };
+
+    validateToken();
+  }, [token, user]);
 
   const login = (newUser: AuthUser, newToken: string) => {
     // Write to localStorage synchronously FIRST so apiFetch can read it
@@ -130,10 +171,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       value={{
         user,
         token,
-        isLoading,
+        isLoading: isValidating,
         login,
         logout,
-        isLoggedIn: !!user && !!token,
+        isLoggedIn: !!user && !!token && !isValidating,
       }}
     >
       {children}

@@ -4,7 +4,6 @@ import { Lock, BookOpen, Clock, Loader2, AlertCircle, ChevronRight } from "lucid
 import { Link } from "react-router-dom";
 import { apiFetch } from "../lib/api";
 
-const bgPath = "/background.jpg";
 
 interface PublicModule {
   id: string;
@@ -86,26 +85,18 @@ export default function ModulesPage() {
   }, [loadModules]);
 
   return (
-    <div className="relative overflow-hidden bg-[#050020] min-h-screen">
-      <div
-        className="w-full relative overflow-hidden min-h-screen"
-        style={{
-          backgroundImage: `url('${bgPath}')`,
-          backgroundSize: "cover",
-          backgroundPosition: "center center",
-          backgroundAttachment: "fixed",
-        }}
-      >
-        <div className="absolute inset-0 bg-[#050020]/60 pointer-events-none fixed" />
+    <div className="relative overflow-hidden bg-slate-50 min-h-screen">
+      <div className="w-full relative overflow-hidden min-h-screen">
+        <div className="absolute inset-x-0 inset-y-0 bg-[var(--bg-color)] pointer-events-none fixed" />
 
-        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 pt-40 pb-24">
+        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 pt-32 pb-24">
 
           <FadeInWhenVisible>
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <h1 className="text-white text-4xl sm:text-5xl md:text-6xl font-semibold leading-tight drop-shadow-[0_8px_40px_rgba(120,40,255,0.25)] mb-6">
+              <h1 className="text-[var(--text-color)] text-4xl sm:text-5xl md:text-6xl font-semibold leading-tight drop-shadow-sm mb-6">
                 Learning Modules
               </h1>
-              <p className="text-white/80 text-lg md:text-xl leading-relaxed">
+              <p className="text-[var(--text-color)]/80 text-lg md:text-xl leading-relaxed">
                 Explore our comprehensive curriculum designed to take you from beginner to engineering expert.
               </p>
             </div>
@@ -115,8 +106,8 @@ export default function ModulesPage() {
           {isLoading && (
             <FadeInWhenVisible>
               <div className="flex flex-col items-center justify-center py-24 gap-4">
-                <Loader2 className="w-10 h-10 text-purple-400 animate-spin" />
-                <p className="text-white/60 text-sm">Loading modules…</p>
+                <Loader2 className="w-10 h-10 text-[var(--ae-periwinkle)] animate-spin" />
+                <p className="text-[var(--ae-plum-deep)]/60 text-sm">Loading modules…</p>
               </div>
             </FadeInWhenVisible>
           )}
@@ -125,14 +116,14 @@ export default function ModulesPage() {
           {!isLoading && error && (
             <FadeInWhenVisible>
               <div className="flex flex-col items-center gap-4 py-16 text-center">
-                <div className="w-14 h-14 rounded-full bg-rose-500/15 border border-rose-500/20 flex items-center justify-center">
-                  <AlertCircle className="w-7 h-7 text-rose-400" />
+                <div className="w-14 h-14 rounded-full bg-red-100 border border-red-200 flex items-center justify-center">
+                  <AlertCircle className="w-7 h-7 text-red-500" />
                 </div>
-                <p className="text-rose-300">{error}</p>
+                <p className="text-red-800 font-medium">{error}</p>
                 <button
                   type="button"
                   onClick={() => void loadModules()}
-                  className="px-6 py-2.5 bg-rose-500 hover:bg-rose-400 transition-colors rounded-xl font-medium text-white"
+                  className="px-6 py-2.5 bg-red-500 hover:bg-red-600 transition-colors rounded-xl font-bold text-white shadow-sm"
                 >
                   Try Again
                 </button>
@@ -143,9 +134,9 @@ export default function ModulesPage() {
           {/* Empty */}
           {!isLoading && !error && modules.length === 0 && (
             <FadeInWhenVisible>
-              <div className="text-center py-24">
-                <BookOpen className="w-12 h-12 text-gray-600 mx-auto mb-4 opacity-50" />
-                <p className="text-white/40">No modules published yet. Check back soon.</p>
+              <div className="text-center py-24 ae-brand-card border border-[var(--ae-border)] rounded-2xl shadow-sm">
+                <BookOpen className="w-12 h-12 text-gray-400 mx-auto mb-4 opacity-50" />
+                <p className="text-gray-500">No modules published yet. Check back soon.</p>
               </div>
             </FadeInWhenVisible>
           )}
@@ -155,35 +146,35 @@ export default function ModulesPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {modules.map((mod, idx) => (
                 <FadeInWhenVisible delay={0.08 * idx} key={mod.id}>
-                  <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden hover:bg-white/10 hover:border-white/20 hover:-translate-y-1 transition-all duration-300 group flex flex-col h-full shadow-xl hover:shadow-[0_8px_30px_rgba(120,40,255,0.15)]">
+                  <div className="ae-brand-card border border-[var(--ae-border)] rounded-2xl overflow-hidden hover:bg-[var(--ae-blue)]/5 hover:-translate-y-1 transition-all duration-300 group flex flex-col h-full shadow-sm hover:shadow-lg">
 
                     {/* Gradient banner */}
-                    <div className="relative h-40 w-full overflow-hidden bg-gradient-to-br from-[#7928FF]/30 via-[#4C00FF]/20 to-[#050020]">
+                    <div className="relative h-40 w-full overflow-hidden bg-[var(--ae-blue)]/5">
                       {/* Order badge */}
-                      <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-sm border border-white/20 py-1 px-3 rounded-full flex items-center gap-1.5">
-                        <span className="text-white/80 text-xs font-bold">#{String(mod.order).padStart(2, "0")}</span>
+                      <div className="absolute top-4 left-4 ae-brand-card border border-[var(--ae-border)] py-1 px-3 rounded-full flex items-center gap-1.5 shadow-sm">
+                        <span className="text-[var(--text-color)] text-xs font-bold">#{String(mod.order).padStart(2, "0")}</span>
                       </div>
 
                       {mod.hasPublishedQuiz && (
-                        <div className="absolute top-4 right-4 bg-purple-500/20 border border-purple-400/30 text-purple-300 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full">
+                        <div className="absolute top-4 right-4 bg-[var(--ae-periwinkle)]/10 border border-[var(--ae-periwinkle)]/20 text-[var(--ae-blue)] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full">
                           Quiz
                         </div>
                       )}
 
-                      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-[#050020] to-transparent" />
+                      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-[var(--bg-color)] to-transparent" />
                     </div>
 
                     {/* Content */}
                     <div className="p-6 flex flex-col flex-grow">
-                      <h2 className="text-xl font-semibold text-white mb-3 group-hover:text-purple-300 transition-colors line-clamp-2">
+                      <h2 className="text-xl font-semibold text-[var(--text-color)] mb-3 group-hover:text-[var(--ae-blue)] transition-colors line-clamp-2">
                         {mod.title}
                       </h2>
-                      <p className="text-white/60 text-sm leading-relaxed mb-6 flex-grow line-clamp-3">
+                      <p className="text-[var(--text-color)]/70 text-sm leading-relaxed mb-6 flex-grow line-clamp-3">
                         {mod.shortDescription}
                       </p>
 
                       {/* Stats row */}
-                      <div className="flex items-center gap-4 text-xs text-white/40 mb-6">
+                      <div className="flex items-center gap-4 text-xs text-[var(--text-color)]/50 mb-6">
                         {mod.estimatedMinutes && (
                           <span className="flex items-center gap-1.5">
                             <Clock className="w-3.5 h-3.5" />
@@ -201,19 +192,15 @@ export default function ModulesPage() {
                         <Link
                           to="/login"
                           className="relative w-full py-3.5 rounded-2xl flex items-center justify-center gap-2.5 font-bold transition-all duration-300 overflow-hidden group/btn
-                            bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600
-                            shadow-[0_0_24px_rgba(120,40,255,0.35)]
-                            hover:shadow-[0_0_40px_rgba(120,40,255,0.6)]
-                            hover:from-violet-500 hover:via-purple-500 hover:to-indigo-500
-                            hover:scale-[1.02] active:scale-[0.98] text-white text-sm"
+                            bg-[var(--ae-plum-deep)] text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 text-sm"
                         >
                           {/* Shine sweep */}
                           <span className="absolute inset-0 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700 bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
                           <Lock size={15} className="shrink-0 opacity-80" />
                           <span>Login to Start</span>
-                          <ChevronRight size={15} className="ml-auto group-hover/btn:translate-x-1 transition-transform duration-200" />
+                          <ChevronRight size={15} className="absolute right-5 group-hover/btn:translate-x-1 transition-transform duration-200" />
                         </Link>
-                        <p className="text-center text-[11px] text-white/25 tracking-wide">
+                        <p className="text-center text-[11px] font-bold tracking-wide uppercase text-slate-400">
                           Free to join · No credit card needed
                         </p>
                       </div>

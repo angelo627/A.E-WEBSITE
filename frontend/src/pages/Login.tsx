@@ -1,17 +1,12 @@
-import { useState, useEffect, type ChangeEvent, type ReactElement } from "react";
-import { useNavigate, Link, useSearchParams } from "react-router-dom";
-import { useAuth } from "../context/useAuth";
+import { useState, type ReactElement } from "react";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import { apiFetch } from "../lib/api";
-import loginImg from "/login_mage.png";
+import { useAuth } from "../context/useAuth";
+import type { AuthUser } from "../context/AuthContext";
 import { FaGoogle, FaFacebook, FaMicrosoft } from "react-icons/fa";
-import { FiEye, FiEyeOff, FiAlertCircle } from "react-icons/fi";
+import { FiEye, FiEyeOff, FiAlertCircle, FiArrowRight } from "react-icons/fi";
 
-const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:5000/api";
-
-type LoginData = {
-  username: string;
-  password: string;
-};
+const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:5050/api";
 
 const getErrorMessage = (error: unknown, fallback: string): string => {
   if (
@@ -27,46 +22,38 @@ const getErrorMessage = (error: unknown, fallback: string): string => {
 
 const Login = (): ReactElement => {
   const navigate = useNavigate();
-  const { login, isLoggedIn, user } = useAuth();
-  const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const { login } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState<string | null>(() => {
-    const err = searchParams.get("error");
-    if (err === "google_failed" || err === "oauth_failed") return "Google sign-in failed. Please try again or use email.";
-    return null;
-  });
-  const [data, setData] = useState<LoginData>({ username: "", password: "" });
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
 
-  useEffect(() => {
-    if (isLoggedIn) {
-      const isAdmin = user?.role === "ADMIN" || user?.role === "SUPER_ADMIN";
-      navigate(isAdmin ? "/admin" : "/dashboard");
-    }
-  }, [isLoggedIn, navigate, user?.role]);
-
-  const handleLogin = async (e?: React.FormEvent): Promise<void> => {
-    if (e) e.preventDefault();
+  const handleLogin = async (e: React.FormEvent): Promise<void> => {
+    e.preventDefault();
     setError(null);
 
-    if (data.username.trim() === "" || data.password.trim() === "") {
-      setError("Please fill in all fields.");
+    if (!identifier.trim() || !password.trim()) {
+      setError("Please enter your email/username and password.");
       return;
     }
 
     setLoading(true);
     try {
-      const result = await apiFetch("/auth/login", {
+      const response = await apiFetch("/auth/login", {
         method: "POST",
-        body: JSON.stringify({
-          email: data.username,
-          password: data.password,
-        }),
-      });
+        body: JSON.stringify({ email: identifier, password }),
+      }) as { user: AuthUser; accessToken: string };
 
-      login(result.user, result.accessToken);
-      const isAdmin = result?.user?.role === "ADMIN" || result?.user?.role === "SUPER_ADMIN";
-      navigate(isAdmin ? "/admin" : "/dashboard");
+      login(response.user, response.accessToken);
+      
+      // Determine dashboard path based on role if available in response, otherwise default to dashboard
+      const role = response.user.role;
+      const from = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname;
+      const targetPath = from ?? (role === "ADMIN" || role === "SUPER_ADMIN" ? "/admin" : "/dashboard");
+      
+      navigate(targetPath, { replace: true });
     } catch (err: unknown) {
       setError(getErrorMessage(err, "Invalid credentials. Please try again."));
     } finally {
@@ -74,111 +61,159 @@ const Login = (): ReactElement => {
     }
   };
 
-  const handleInputChange =
-    (field: keyof LoginData) =>
-    (event: ChangeEvent<HTMLInputElement>): void => {
-      setError(null);
-      setData((prev) => ({ ...prev, [field]: event.target.value }));
-    };
-
   return (
-    <div className="min-h-screen w-full bg-[#050020] flex items-stretch overflow-hidden">
-      {/* ── Left: Form Panel ── */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12 lg:px-16 xl:px-24 z-10">
-        <div className="w-full max-w-md">
+    <div className="min-h-screen w-full flex overflow-hidden">
 
-          {/* Logo / Brand */}
-          <div className="mb-10">
-            <div className="inline-flex items-center gap-3 mb-2">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center shadow-lg shadow-violet-500/30">
-                <svg viewBox="0 0 24 24" className="w-5 h-5 text-white fill-current">
-                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                </svg>
-              </div>
-              <span className="text-white font-bold text-lg tracking-tight">A.E Platform</span>
+      {/* ── Left: Decorative Brand Panel (always dark) ── */}
+      <div
+        className="hidden lg:flex flex-col justify-between w-[45%] xl:w-[50%] shrink-0 relative overflow-hidden p-12"
+        style={{ background: "linear-gradient(135deg, #1e1735 0%, #251d3f 40%, #33418f 100%)" }}
+      >
+        {/* Decorative blobs */}
+        <div className="absolute top-[-100px] left-[-100px] w-[400px] h-[400px] rounded-full opacity-20" style={{ background: "radial-gradient(circle, #9aa8e7, transparent)" }} />
+        <div className="absolute bottom-[-80px] right-[-80px] w-[300px] h-[300px] rounded-full opacity-15" style={{ background: "radial-gradient(circle, #e3b5ee, transparent)" }} />
+
+        {/* Brand mark */}
+        <div className="relative z-10">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg" style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.2)" }}>
+              <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current text-white">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+              </svg>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-white mt-6 leading-tight">
-              Welcome back
-            </h1>
-            <p className="text-gray-400 mt-2 text-sm">Sign in to continue your learning journey.</p>
+            <span className="text-white font-black text-xl tracking-tight">A.E Platform</span>
+          </div>
+        </div>
+
+        {/* Center quote */}
+        <div className="relative z-10 my-auto">
+          <div className="text-6xl text-white/20 font-serif leading-none mb-4">"</div>
+          <p className="text-white/80 text-xl font-medium leading-relaxed mb-8">
+            The best way to predict the future is to build it ourselves.
+          </p>
+          <p className="text-[#9aa8e7] text-sm font-semibold tracking-widest uppercase">
+            — Accelerated Engineers
+          </p>
+          <div className="flex gap-8 mt-12">
+            {[
+              { n: "2.4k+", l: "Members" },
+              { n: "120k+", l: "Learners" },
+              { n: "50+", l: "Modules" },
+            ].map(({ n, l }) => (
+              <div key={l}>
+                <p className="text-white font-black text-2xl">{n}</p>
+                <p className="text-white/40 text-xs uppercase tracking-widest font-semibold">{l}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="relative z-10">
+          <p className="text-white/30 text-xs tracking-widest uppercase">
+            Join the next generation of algorithmic thinkers
+          </p>
+        </div>
+      </div>
+
+      {/* ── Right: Form Panel (theme-aware) ── */}
+      <div
+        className="flex-1 flex flex-col justify-center px-6 py-12 sm:px-12 lg:px-16 xl:px-20 overflow-y-auto"
+        style={{ background: "var(--auth-form-bg)" }}
+      >
+        <div className="w-full max-w-md mx-auto">
+
+          {/* Mobile brand header */}
+          <div className="flex items-center gap-3 mb-10 lg:hidden">
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow" style={{ background: "#33418f" }}>
+              <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current text-white">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+              </svg>
+            </div>
+            <span className="font-black text-[var(--text-color)] text-lg tracking-tight uppercase">A.E Platform</span>
           </div>
 
-          {/* ── Social Buttons ── */}
-          <div className="flex flex-col sm:flex-row gap-3 mb-8">
-            {/* Google — real OAuth */}
+          {/* Heading */}
+          <div className="mb-8">
+            <h1 className="text-3xl sm:text-4xl font-black leading-tight tracking-tight mb-2" style={{ color: "var(--text-color)" }}>
+              Welcome back 👋
+            </h1>
+            <p className="text-sm font-medium" style={{ color: "var(--muted-text)" }}>
+              Sign in to continue your learning journey
+            </p>
+          </div>
+
+          {/* Social Login - icon only */}
+          <div className="flex items-center gap-3 mb-6">
             <a
               href={`${API_BASE}/auth/google`}
-              className="flex-1 flex items-center justify-center gap-2.5 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 backdrop-blur-sm px-4 py-3 transition-all duration-200 group"
+              title="Continue with Google"
+              className="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95"
+              style={{ background: "var(--social-btn-bg)", border: "1.5px solid var(--input-border)" }}
             >
-              <span className="w-5 h-5 flex items-center justify-center text-lg">
-                <FaGoogle className="text-[#EA4335]" />
-              </span>
-              <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">Google</span>
+              <FaGoogle className="text-[#EA4335]" size={18} />
             </a>
-            {/* Facebook — placeholder until FB keys added */}
             <button
               type="button"
-              onClick={() => setError("Facebook login coming soon! Use Google or email for now.")}
-              className="flex-1 flex items-center justify-center gap-2.5 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 backdrop-blur-sm px-4 py-3 transition-all duration-200 group"
+              title="Continue with Facebook"
+              onClick={() => setError("Facebook login coming soon!")}
+              className="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95"
+              style={{ background: "var(--social-btn-bg)", border: "1.5px solid var(--input-border)" }}
             >
-              <span className="w-5 h-5 flex items-center justify-center text-lg">
-                <FaFacebook className="text-[#0866FF]" />
-              </span>
-              <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">Facebook</span>
+              <FaFacebook className="text-[#0866FF]" size={18} />
             </button>
-            {/* Microsoft — placeholder */}
             <button
               type="button"
-              onClick={() => setError("Microsoft login coming soon! Use Google or email for now.")}
-              className="flex-1 flex items-center justify-center gap-2.5 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 backdrop-blur-sm px-4 py-3 transition-all duration-200 group"
+              title="Continue with Microsoft"
+              onClick={() => setError("Microsoft login coming soon!")}
+              className="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95"
+              style={{ background: "var(--social-btn-bg)", border: "1.5px solid var(--input-border)" }}
             >
-              <span className="w-5 h-5 flex items-center justify-center text-lg">
-                <FaMicrosoft className="text-[#00A4EF]" />
-              </span>
-              <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">Microsoft</span>
+              <FaMicrosoft className="text-[#00A4EF]" size={18} />
             </button>
           </div>
 
-          {/* ── Divider ── */}
-          <div className="flex items-center gap-4 mb-8">
-            <div className="flex-1 h-px bg-white/10" />
-            <span className="text-xs font-medium text-gray-500 uppercase tracking-widest whitespace-nowrap">or sign in with email</span>
-            <div className="flex-1 h-px bg-white/10" />
+          {/* Divider */}
+          <div className="flex items-center gap-4 mb-6">
+            <div className="flex-1 h-px" style={{ background: "var(--divider-color)" }} />
+            <span className="text-[11px] font-semibold uppercase tracking-widest whitespace-nowrap" style={{ color: "var(--muted-text)" }}>or continue manually</span>
+            <div className="flex-1 h-px" style={{ background: "var(--divider-color)" }} />
           </div>
 
-          {/* ── Error Alert ── */}
+          {/* Error */}
           {error && (
-            <div className="flex items-center gap-3 bg-rose-500/10 border border-rose-500/20 rounded-2xl px-4 py-3 mb-6">
-              <FiAlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
-              <p className="text-sm text-rose-300">{error}</p>
+            <div className="flex items-center gap-3 px-4 py-3 rounded-xl mb-5 border-l-4 border-red-500" style={{ background: "rgba(239,68,68,0.08)" }}>
+              <FiAlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+              <p className="text-sm font-semibold text-red-500">{error}</p>
             </div>
           )}
 
-          {/* ── Form ── */}
-          <form onSubmit={handleLogin} className="space-y-5">
-            {/* Username / Email */}
-            <div className="space-y-1.5">
-              <label htmlFor="username" className="block text-xs font-semibold text-gray-400 uppercase tracking-wider">
+          {/* Form */}
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label htmlFor="identifier" className="block text-xs font-bold uppercase tracking-wider mb-2" style={{ color: "var(--label-text)" }}>
                 Email or Username
               </label>
               <input
-                id="username"
+                id="identifier"
                 type="text"
-                autoComplete="username"
-                placeholder="Enter your email or username"
-                value={data.username}
-                onChange={handleInputChange("username")}
-                className="w-full rounded-2xl bg-white/5 border border-white/10 focus:border-violet-500/60 focus:bg-white/10 focus:ring-2 focus:ring-violet-500/20 outline-none px-4 py-3.5 text-white placeholder:text-gray-600 transition-all text-sm"
+                placeholder="you@example.com or username"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                className="w-full rounded-xl px-4 py-3.5 text-sm font-medium transition-all outline-none focus:ring-2 focus:ring-[#33418f]/20"
+                style={{
+                  background: "var(--input-bg)",
+                  border: "1.5px solid var(--input-border)",
+                  color: "var(--input-text)",
+                }}
               />
             </div>
 
-            {/* Password */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label htmlFor="password" className="block text-xs font-semibold text-gray-400 uppercase tracking-wider">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label htmlFor="password" className="block text-xs font-bold uppercase tracking-wider" style={{ color: "var(--label-text)" }}>
                   Password
                 </label>
-                <Link to="/forgot-password" className="text-xs text-violet-400 hover:text-violet-300 transition-colors font-medium">
+                <Link to="/forgot-password" className="text-xs font-bold text-[#33418f] hover:text-[var(--ae-plum-deep)] transition-colors">
                   Forgot password?
                 </Link>
               </div>
@@ -186,85 +221,53 @@ const Login = (): ReactElement => {
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  autoComplete="current-password"
-                  placeholder="••••••••"
-                  value={data.password}
-                  onChange={handleInputChange("password")}
-                  className="w-full rounded-2xl bg-white/5 border border-white/10 focus:border-violet-500/60 focus:bg-white/10 focus:ring-2 focus:ring-violet-500/20 outline-none px-4 py-3.5 pr-12 text-white placeholder:text-gray-600 transition-all text-sm"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full rounded-xl px-4 py-3.5 pr-12 text-sm font-medium transition-all outline-none focus:ring-2 focus:ring-[#33418f]/20"
+                  style={{
+                    background: "var(--input-bg)",
+                    border: "1.5px solid var(--input-border)",
+                    color: "var(--input-text)",
+                  }}
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 hover:text-[#33418f] transition-colors"
+                  style={{ color: "var(--muted-text)" }}
                 >
-                  {showPassword ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                  {showPassword ? <FiEyeOff size={17} /> : <FiEye size={17} />}
                 </button>
               </div>
             </div>
 
-            {/* Submit */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-2xl bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-bold py-4 mt-2 transition-all duration-200 shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
+              className="w-full py-4 rounded-xl font-black text-white text-sm tracking-widest uppercase flex items-center justify-center gap-2 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl disabled:opacity-60 disabled:cursor-not-allowed mt-2"
+              style={{ background: "linear-gradient(135deg, #33418f, #251d3f)", boxShadow: "0 4px 20px rgba(51,65,143,0.35)" }}
             >
               {loading ? (
                 <>
-                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
-                  Signing in…
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Verifying...
                 </>
               ) : (
-                "Sign In →"
+                <>
+                  Sign In
+                  <FiArrowRight className="w-4 h-4" />
+                </>
               )}
             </button>
           </form>
 
-          {/* ── Footer ── */}
-          <p className="mt-8 text-center text-sm text-gray-500">
+          <p className="mt-8 text-center text-sm" style={{ color: "var(--muted-text)" }}>
             Don&apos;t have an account?{" "}
-            <Link to="/signup" className="text-violet-400 hover:text-violet-300 font-semibold transition-colors">
-              Create one free
+            <Link to="/signup" className="font-bold text-[#33418f] hover:text-[var(--ae-plum-deep)] transition-colors underline underline-offset-2">
+              Create one
             </Link>
           </p>
-        </div>
-      </div>
-
-      {/* ── Right: Image Panel ── */}
-      <div className="hidden lg:block relative w-[45%] xl:w-[50%] shrink-0">
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#050020] via-[#050020]/30 to-transparent z-10 pointer-events-none" />
-        {/* Top & bottom fades */}
-        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#050020] to-transparent z-10 pointer-events-none" />
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#050020] to-transparent z-10 pointer-events-none" />
-
-        <img
-          src={loginImg}
-          alt="Learning platform illustration"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-
-        {/* Floating badge */}
-        <div className="absolute bottom-12 left-12 z-20 max-w-xs">
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-5 shadow-2xl">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="flex -space-x-2">
-                {["bg-violet-500","bg-pink-500","bg-cyan-500"].map((c, i) => (
-                  <div key={i} className={`w-7 h-7 rounded-full ${c} border-2 border-[#050020] flex items-center justify-center text-[10px] font-bold text-white`}>
-                    {["A","B","C"][i]}
-                  </div>
-                ))}
-              </div>
-              <span className="text-xs text-gray-300 font-medium">2,400+ learners enrolled</span>
-            </div>
-            <p className="text-white font-semibold text-sm leading-snug">
-              "The best learning platform I've used — structured, clean, and powerful."
-            </p>
-            <p className="text-gray-500 text-xs mt-2">— Top-rated by students</p>
-          </div>
         </div>
       </div>
     </div>

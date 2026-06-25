@@ -45,15 +45,15 @@ const isLeaderboardResponse = (value: unknown): value is LeaderboardEntry[] =>
 
 const getRowStyle = (entry: LeaderboardEntry): string => {
   if (entry.rank === 1) {
-    return "bg-gradient-to-r from-amber-500/10 to-yellow-500/5 hover:from-amber-500/20 border-l-4 border-l-amber-400";
+    return "leaderboard-row leaderboard-row-first border-l-4 border-l-amber-400";
   }
   if (entry.rank === 2) {
-    return "bg-gradient-to-r from-slate-300/10 to-slate-400/5 hover:from-slate-300/20 border-l-4 border-l-slate-300";
+    return "leaderboard-row leaderboard-row-second border-l-4 border-l-slate-300";
   }
   if (entry.rank === 3) {
-    return "bg-gradient-to-r from-orange-600/10 to-orange-700/5 hover:from-orange-600/20 border-l-4 border-l-orange-500";
+    return "leaderboard-row leaderboard-row-third border-l-4 border-l-orange-500";
   }
-  return "bg-white/5 hover:bg-white/10 transition-colors border-l-4 border-l-transparent";
+  return "leaderboard-row border-l-4 border-l-transparent";
 };
 
 // Animation variants
@@ -109,10 +109,7 @@ export default function LeaderboardPage() {
   const topThree = useMemo(() => entries.filter((entry) => entry.rank <= 3), [entries]);
 
   return (
-    <div className="pt-24 px-6 min-h-screen bg-[#050020] text-white overflow-hidden relative">
-      {/* Background decorations */}
-      <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-amber-600/10 rounded-full blur-[120px] pointer-events-none" />
+    <div className="pt-24 px-6 min-h-screen bg-[var(--bg-color)] overflow-hidden relative">
 
       <motion.div 
         className="max-w-6xl mx-auto relative z-10 pb-20 space-y-8"
@@ -120,40 +117,54 @@ export default function LeaderboardPage() {
         initial="hidden"
         animate="visible"
       >
-        <motion.section variants={itemVariants} className="text-center mb-12">
-          <div className="inline-flex items-center justify-center p-4 bg-purple-500/10 rounded-full mb-4 shadow-[0_0_30px_rgba(168,85,247,0.3)]">
-            <Trophy className="w-10 h-10 text-purple-400" />
+        <motion.section 
+          variants={itemVariants} 
+          className="text-center mb-12 rounded-[32px] px-6 py-12 relative overflow-hidden shadow-2xl border border-white/10"
+          style={{ background: "linear-gradient(160deg, #1e1735 0%, #251d3f 45%, #33418f 100%)" }}
+        >
+          {/* Decorative Blobs */}
+          <div className="absolute top-[-80px] right-[-50px] w-[350px] h-[350px] rounded-full opacity-25 pointer-events-none blur-2xl" style={{ background: "radial-gradient(circle, #9aa8e7, transparent)" }} />
+          <div className="absolute bottom-[-60px] left-[-60px] w-[280px] h-[280px] rounded-full opacity-20 pointer-events-none blur-2xl" style={{ background: "radial-gradient(circle, #e3b5ee, transparent)" }} />
+          <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] pointer-events-none mix-blend-overlay"></div>
+
+          <div className="relative z-10 flex flex-col items-center">
+            <div className="inline-flex items-center justify-center p-4 bg-white/10 border border-white/20 rounded-full mb-6 shadow-sm backdrop-blur-sm">
+              <Trophy className="w-10 h-10 text-amber-300 drop-shadow-sm" />
+            </div>
+            <span className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-white/90 text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] mb-4 backdrop-blur-sm shadow-sm">
+              Ranking Arena
+            </span>
+            <h1 className="text-4xl md:text-5xl font-black mb-4 text-transparent bg-clip-text bg-gradient-to-r from-white to-white/80 drop-shadow-sm">
+              Global Leaderboard
+            </h1>
+            <p className="text-white/80 font-medium text-lg max-w-2xl mx-auto leading-relaxed">
+              Ranked by average score, then total quiz attempts. Compete with others and secure your spot!
+            </p>
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-3 bg-gradient-to-r from-purple-400 via-fuchsia-400 to-amber-400 bg-clip-text text-transparent">
-            Global Leaderboard
-          </h1>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Ranked by average score, then total quiz attempts. Compete with others and secure your spot!
-          </p>
         </motion.section>
 
         {isLoading ? (
-          <motion.div variants={itemVariants} className="flex flex-col items-center justify-center p-12 bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl">
-            <Loader2 className="w-10 h-10 text-purple-500 animate-spin mb-4" />
-            <p className="text-purple-200">Loading leaderboard...</p>
+          <motion.div variants={itemVariants} className="flex flex-col items-center justify-center p-12 ae-brand-card border border-[var(--ae-border)] rounded-3xl shadow-sm">
+            <Loader2 className="w-10 h-10 text-[var(--ae-blue)] animate-spin mb-4" />
+            <p className="app-muted-text font-medium">Loading leaderboard...</p>
           </motion.div>
         ) : null}
 
         {!isLoading && error ? (
-          <motion.div variants={itemVariants} className="bg-rose-500/10 backdrop-blur-md border border-rose-500/20 rounded-3xl p-8 flex items-center justify-between">
+          <motion.div variants={itemVariants} className="bg-red-50 border border-red-200 rounded-3xl p-8 flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-rose-500/20 flex items-center justify-center">
-                <AlertCircle className="w-6 h-6 text-rose-400" />
+              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+                <AlertCircle className="w-6 h-6 text-red-500" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-rose-200 mb-1">Failed to load</h3>
-                <p className="text-rose-300/70">{error}</p>
+                <h3 className="text-lg font-bold text-red-900 mb-1">Failed to load</h3>
+                <p className="text-red-700 font-medium">{error}</p>
               </div>
             </div>
             <button
               type="button"
               onClick={() => void loadLeaderboard()}
-              className="px-6 py-2.5 bg-rose-500 hover:bg-rose-400 transition-colors rounded-xl font-medium text-white shadow-lg shadow-rose-500/20"
+              className="px-6 py-2.5 bg-red-500 hover:bg-red-600 transition-colors rounded-xl font-bold text-white shadow-md shadow-red-500/20"
             >
               Try Again
             </button>
@@ -161,9 +172,9 @@ export default function LeaderboardPage() {
         ) : null}
 
         {!isLoading && !error && entries.length === 0 ? (
-          <motion.div variants={itemVariants} className="bg-white/[0.02] border border-white/5 rounded-3xl p-12 text-center text-gray-400">
-             <Trophy className="w-12 h-12 mx-auto text-gray-600 mb-4 opacity-50" />
-             <p>No leaderboard data yet. Be the first to start learning!</p>
+          <motion.div variants={itemVariants} className="ae-brand-card border border-[var(--ae-border)] shadow-sm rounded-3xl p-12 text-center app-muted-text">
+             <Trophy className="w-12 h-12 mx-auto app-subtle-text mb-4" />
+             <p className="font-medium">No leaderboard data yet. Be the first to start learning!</p>
           </motion.div>
         ) : null}
 
@@ -176,12 +187,12 @@ export default function LeaderboardPage() {
                 let icon = <Trophy className="w-8 h-8 text-amber-400" />;
                 
                 if (entry.rank === 2) {
-                  badgeColor = "text-slate-300";
-                  bgGlow = "hover:shadow-[0_0_30px_rgba(203,213,225,0.2)] border-slate-400/30";
-                  icon = <Medal className="w-8 h-8 text-slate-300" />;
+                  badgeColor = "text-slate-400";
+                  bgGlow = "hover:border-slate-300/50 border-[var(--ae-border)]";
+                  icon = <Medal className="w-8 h-8 text-slate-400" />;
                 } else if (entry.rank === 3) {
                   badgeColor = "text-orange-500";
-                  bgGlow = "hover:shadow-[0_0_30px_rgba(249,115,22,0.2)] border-orange-500/30";
+                  bgGlow = "hover:border-orange-500/30 border-orange-200";
                   icon = <Award className="w-8 h-8 text-orange-500" />;
                 }
 
@@ -190,12 +201,10 @@ export default function LeaderboardPage() {
                     variants={itemVariants}
                     whileHover={{ y: -8, scale: 1.02 }}
                     key={entry.userId} 
-                    className={`relative bg-white/[0.03] backdrop-blur-xl border rounded-3xl p-6 md:p-8 flex flex-col items-center text-center transition-all duration-300 ${bgGlow} ${entry.rank === 1 ? 'md:-mt-8 shadow-2xl shadow-amber-500/10' : ''}`}
+                    className={`relative ae-brand-card auth-stat-glow shadow-sm border rounded-3xl p-6 md:p-8 flex flex-col items-center text-center transition-all duration-300 ${bgGlow} ${entry.rank === 1 ? 'md:-mt-8 border-amber-200 hover:border-amber-400/30 shadow-md shadow-amber-500/5' : ''}`}
                   >
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
                     
-                    <div className="mb-4 relative">
-                       <div className="absolute inset-0 bg-white/20 blur-xl rounded-full" />
+                    <div className="mb-4">
                        {icon}
                     </div>
                     
@@ -203,20 +212,20 @@ export default function LeaderboardPage() {
                       Rank #{entry.rank}
                     </span>
                     
-                    <h2 className="text-2xl font-bold text-white mb-6 truncate w-full">{entry.username}</h2>
+                    <h2 className="text-2xl font-black text-[var(--text-color)] mb-6 truncate w-full">{entry.username}</h2>
                     
                     <div className="text-left w-full space-y-4">
-                      <div className="flex justify-between items-center bg-white/5 rounded-xl p-3">
-                         <div className="flex items-center text-gray-400 text-sm">
+                      <div className="flex justify-between items-center app-soft-surface border rounded-xl p-3">
+                         <div className="flex items-center app-muted-text font-bold text-xs uppercase tracking-wider">
                             <Target className="w-4 h-4 mr-2" /> Avg Score
                          </div>
-                         <span className={`font-bold ${badgeColor}`}>{Math.round(entry.averageScore)}%</span>
+                         <span className={`font-black ${badgeColor}`}>{Math.round(entry.averageScore)}%</span>
                       </div>
-                      <div className="flex justify-between items-center bg-white/5 rounded-xl p-3">
-                         <div className="flex items-center text-gray-400 text-sm">
+                      <div className="flex justify-between items-center app-soft-surface border rounded-xl p-3">
+                         <div className="flex items-center app-muted-text font-bold text-xs uppercase tracking-wider">
                             <Activity className="w-4 h-4 mr-2" /> Completed
                          </div>
-                         <span className="font-bold text-white">{entry.modulesCompleted}</span>
+                         <span className="font-black text-[var(--text-color)]">{entry.modulesCompleted}</span>
                       </div>
                     </div>
                   </motion.article>
@@ -224,16 +233,16 @@ export default function LeaderboardPage() {
               })}
             </motion.section>
 
-            <motion.section variants={itemVariants} className="bg-white/[0.02] backdrop-blur-xl border border-white/[0.05] rounded-3xl p-1 md:p-4 mt-12 shadow-xl">
+            <motion.section variants={itemVariants} className="ae-brand-card border border-[var(--ae-border)] rounded-3xl p-1 md:p-4 mt-12 shadow-sm">
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[720px] text-left border-collapse">
                   <thead>
-                    <tr className="text-xs uppercase text-gray-400 border-b border-white/5">
-                      <th className="px-6 py-4 font-medium tracking-wider">Rank</th>
-                      <th className="px-6 py-4 font-medium tracking-wider">Student</th>
-                      <th className="px-6 py-4 font-medium tracking-wider">Average Score</th>
-                      <th className="px-6 py-4 font-medium tracking-wider">Attempts</th>
-                      <th className="px-6 py-4 font-medium tracking-wider text-right">Modules</th>
+                    <tr className="text-xs uppercase font-bold app-subtle-text border-b border-[var(--ae-border)]">
+                      <th className="px-6 py-4 tracking-wider">Rank</th>
+                      <th className="px-6 py-4 tracking-wider">Student</th>
+                      <th className="px-6 py-4 tracking-wider">Average Score</th>
+                      <th className="px-6 py-4 tracking-wider">Attempts</th>
+                      <th className="px-6 py-4 tracking-wider text-right">Modules</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -243,32 +252,32 @@ export default function LeaderboardPage() {
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.1 + idx * 0.05 }}
-                        className={`${getRowStyle(entry)} group`}
+                        className={`${getRowStyle(entry)} group border-b border-[var(--ae-border)] last:border-b-0`}
                       >
                         <td className="px-6 py-4">
-                          <span className={`font-bold rounded-lg px-3 py-1 bg-white/5 ${entry.rank <= 3 ? 'text-amber-400' : 'text-gray-300'}`}>
+                          <span className={`font-black rounded-lg px-3 py-1 bg-[var(--card-bg)] border border-[var(--ae-border)] shadow-sm ${entry.rank <= 3 ? 'text-amber-500' : 'app-subtle-text'}`}>
                             #{entry.rank}
                           </span>
                         </td>
-                        <td className="px-6 py-4 font-semibold text-white group-hover:text-purple-300 transition-colors">
+                        <td className="px-6 py-4 font-black leaderboard-row-text group-hover:text-[var(--ae-periwinkle)] transition-colors">
                           {entry.username}
                         </td>
                         <td className="px-6 py-4">
                            <div className="flex items-center">
-                             <div className="w-24 h-1.5 bg-white/10 rounded-full mr-3 overflow-hidden">
+                             <div className="w-24 h-2 app-soft-surface rounded-full mr-3 overflow-hidden border">
                                <div 
-                                  className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
+                                  className="h-full bg-[var(--ae-blue)] rounded-full"
                                   style={{ width: `${Math.round(entry.averageScore)}%` }}
                                />
                              </div>
-                             <span className="font-medium text-gray-200">{Math.round(entry.averageScore)}%</span>
+                             <span className="font-bold leaderboard-row-text">{Math.round(entry.averageScore)}%</span>
                            </div>
                         </td>
-                        <td className="px-6 py-4 text-gray-400 font-medium">
+                        <td className="px-6 py-4 leaderboard-row-muted font-bold">
                           {entry.totalAttempts}
                         </td>
                         <td className="px-6 py-4 text-right">
-                          <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white/10 text-white font-medium">
+                          <span className="inline-flex items-center justify-center w-8 h-8 rounded-full app-soft-surface leaderboard-row-muted font-black border">
                              {entry.modulesCompleted}
                           </span>
                         </td>

@@ -14,8 +14,8 @@ const TopInstructors = () => {
     <section className="mt-24">
 
       <div className="flex justify-between items-center mb-10">
-        <h2 className="text-white text-xl font-semibold">Top Instructors</h2>
-        <span className="text-sm text-gray-400 cursor-pointer">See All</span>
+        <h2 className="text-[var(--text-color)] text-xl font-semibold">Top Instructors</h2>
+        <span className="text-sm text-[var(--text-color)]/40 cursor-pointer">See All</span>
       </div>
 
       <div className="grid md:grid-cols-5 gap-8">
@@ -26,11 +26,11 @@ const TopInstructors = () => {
               className="w-full h-32 object-cover rounded-lg mb-3"
             />
 
-            <h3 className="text-white text-sm font-medium">
+            <h3 className="text-[var(--text-color)] text-sm font-medium">
               {inst.name}
             </h3>
 
-            <p className="text-xs text-gray-400 mb-2">
+            <p className="text-xs text-[var(--text-color)]/50 mb-2">
               {inst.role}
             </p>
 
@@ -38,7 +38,7 @@ const TopInstructors = () => {
               <span className="flex items-center gap-1 text-yellow-400">
                 <FaStar /> {inst.rating}
               </span>
-              <span className="text-gray-400">{inst.students}</span>
+              <span className="text-[var(--text-color)]/50">{inst.students}</span>
             </div>
           </div>
         ))}

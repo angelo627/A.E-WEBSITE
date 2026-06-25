@@ -50,77 +50,79 @@ export default function ResetPassword() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#050020] flex items-center justify-center px-4 py-20 font-outfit">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen w-full ae-brand-page flex items-center justify-center px-4 py-20 font-outfit">
+      <div className="w-full max-w-lg">
         {/* Brand */}
         <div className="flex justify-center mb-10">
           <div className="inline-flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center shadow-lg shadow-violet-500/30">
-              <svg viewBox="0 0 24 24" className="w-5 h-5 text-white fill-current">
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-              </svg>
-            </div>
-            <span className="text-white font-bold text-lg tracking-tight">A.E Platform</span>
+             <div className="w-9 h-9 rounded-xl ae-brand-button flex items-center justify-center shadow-lg">
+                <svg viewBox="0 0 24 24" className="w-5 h-5 text-white fill-current">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+              </div>
+            <span className="text-[var(--text-color)] font-black text-lg tracking-tight uppercase">A.E Platform</span>
           </div>
         </div>
 
-        <div className="bg-white/[0.03] border border-white/10 rounded-3xl p-8 md:p-10 backdrop-blur-xl shadow-2xl">
+        <div className="ae-brand-card border border-transparent rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--ae-blue)]/5 rounded-bl-[4rem] -mr-16 -mt-16 pointer-events-none" />
+
           {!done ? (
             <>
               {/* Header */}
-              <div className="mb-8 text-center">
-                <div className="w-14 h-14 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mx-auto mb-4">
-                  <FiLock className="w-7 h-7 text-violet-400" />
+              <div className="mb-10 text-center">
+                <div className="w-16 h-16 rounded-2xl bg-[var(--ae-blue)]/10 border border-[var(--ae-blue)]/20 flex items-center justify-center mx-auto mb-6">
+                  <FiLock className="w-8 h-8 text-[var(--ae-blue)]" />
                 </div>
-                <h1 className="text-2xl font-extrabold text-white">Set a new password</h1>
-                <p className="text-gray-400 text-sm mt-2">Choose something strong that you'll remember.</p>
+                <h1 className="text-3xl sm:text-4xl font-black text-[var(--text-color)] italic tracking-tighter uppercase mb-3">Reset <span className="text-[var(--ae-blue)]">Access</span></h1>
+                <p className="text-[var(--text-color)]/60 text-sm font-medium italic leading-relaxed">Choose something strong that you'll remember.</p>
               </div>
 
               {/* Error */}
               {error && (
-                <div className="flex items-center gap-3 bg-rose-500/10 border border-rose-500/20 rounded-2xl px-4 py-3 mb-6">
-                  <FiAlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
-                  <p className="text-sm text-rose-300">{error}</p>
+                <div className="flex items-center gap-4 bg-red-500/5 border-l-4 border-red-500 rounded-xl px-5 py-4 mb-8">
+                  <FiAlertCircle className="w-5 h-5 text-red-500 shrink-0" />
+                  <p className="text-sm font-bold text-red-500 italic uppercase tracking-tight">{error}</p>
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 {/* New Password */}
                 <div className="space-y-1.5">
-                  <label htmlFor="rp-password" className="block text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                    New Password
+                  <label htmlFor="rp-password" className="block text-[10px] font-black text-[var(--text-color)]/40 uppercase tracking-[0.15em] ml-1">
+                    New Security Key
                   </label>
-                  <div className="relative">
+                  <div className="relative group">
                     <input
                       id="rp-password"
                       type={showPw ? "text" : "password"}
                       placeholder="Min. 8 characters"
                       value={password}
                       onChange={(e) => { setError(null); setPassword(e.target.value); }}
-                      className="w-full rounded-2xl bg-white/5 border border-white/10 focus:border-violet-500/60 focus:bg-white/10 focus:ring-2 focus:ring-violet-500/20 outline-none px-4 py-3.5 pr-12 text-white placeholder:text-gray-600 transition-all text-sm"
+                      className="w-full rounded-2xl bg-[var(--bg-color)]/50 border-0 focus:bg-[var(--bg-color)] focus:ring-4 focus:ring-[var(--ae-blue)]/5 outline-none px-6 py-4.5 pr-14 text-[var(--text-color)] placeholder:text-[var(--text-color)]/10 transition-all font-semibold text-[15px] shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] group-hover:bg-[var(--bg-color)]"
                     />
-                    <button type="button" onClick={() => setShowPw(v => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300">
-                      {showPw ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                    <button type="button" onClick={() => setShowPw(v => !v)} className="absolute right-5 top-1/2 -translate-y-1/2 text-[var(--text-color)]/20 hover:text-[var(--ae-blue)] transition-colors">
+                      {showPw ? <FiEyeOff className="w-5 h-5" /> : <FiEye className="w-5 h-5" />}
                     </button>
                   </div>
                 </div>
 
                 {/* Confirm Password */}
                 <div className="space-y-1.5">
-                  <label htmlFor="rp-confirm" className="block text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                    Confirm Password
+                  <label htmlFor="rp-confirm" className="block text-[10px] font-black text-[var(--text-color)]/40 uppercase tracking-[0.15em] ml-1">
+                    Confirm Key
                   </label>
-                  <div className="relative">
+                  <div className="relative group">
                     <input
                       id="rp-confirm"
                       type={showConfirm ? "text" : "password"}
-                      placeholder="Repeat your password"
+                      placeholder="Repeat your key"
                       value={confirm}
                       onChange={(e) => { setError(null); setConfirm(e.target.value); }}
-                      className="w-full rounded-2xl bg-white/5 border border-white/10 focus:border-violet-500/60 focus:bg-white/10 focus:ring-2 focus:ring-violet-500/20 outline-none px-4 py-3.5 pr-12 text-white placeholder:text-gray-600 transition-all text-sm"
+                      className="w-full rounded-2xl bg-[var(--bg-color)]/50 border-0 focus:bg-[var(--bg-color)] focus:ring-4 focus:ring-[var(--ae-blue)]/5 outline-none px-6 py-4.5 pr-14 text-[var(--text-color)] placeholder:text-[var(--text-color)]/10 transition-all font-semibold text-[15px] shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] group-hover:bg-[var(--bg-color)]"
                     />
-                    <button type="button" onClick={() => setShowConfirm(v => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300">
-                      {showConfirm ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                    <button type="button" onClick={() => setShowConfirm(v => !v)} className="absolute right-5 top-1/2 -translate-y-1/2 text-[var(--text-color)]/20 hover:text-[var(--ae-blue)] transition-colors">
+                      {showConfirm ? <FiEyeOff className="w-5 h-5" /> : <FiEye className="w-5 h-5" />}
                     </button>
                   </div>
                 </div>
@@ -128,15 +130,12 @@ export default function ResetPassword() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full rounded-2xl bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-bold py-4 transition-all duration-200 shadow-lg shadow-violet-500/25 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full rounded-2xl ae-brand-button text-white shadow-xl hover:shadow-2xl font-black py-5 transition-all duration-500 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3 hover:-translate-y-1 active:translate-y-0 uppercase tracking-[0.2em] italic"
                 >
                   {loading ? (
                     <>
-                      <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                      </svg>
-                      Resetting…
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Updating Access…
                     </>
                   ) : (
                     "Reset My Password →"
@@ -144,19 +143,19 @@ export default function ResetPassword() {
                 </button>
               </form>
 
-              <p className="mt-6 text-center text-sm text-gray-500">
-                <Link to="/login" className="text-violet-400 hover:text-violet-300 font-medium transition-colors">
+              <p className="mt-10 text-center text-xs font-black text-[var(--text-color)]/30 uppercase tracking-widest italic">
+                <Link to="/login" className="text-[var(--ae-blue)] hover:text-[var(--ae-plum-deep)] transition-colors underline decoration-[var(--ae-blue)]/20 underline-offset-4 ml-1">
                   ← Back to Sign In
                 </Link>
               </p>
             </>
           ) : (
-            <div className="text-center py-6">
-              <div className="w-16 h-16 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center mx-auto mb-5">
-                <FiCheckCircle className="w-8 h-8 text-emerald-400" />
+            <div className="text-center py-10">
+              <div className="w-20 h-20 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-6">
+                <FiCheckCircle className="w-10 h-10 text-emerald-400" />
               </div>
-              <h2 className="text-xl font-bold text-white mb-2">Password reset! 🎉</h2>
-              <p className="text-gray-400 text-sm">Redirecting you to sign in…</p>
+              <h2 className="text-2xl font-black text-[var(--text-color)] mb-3 uppercase italic underline decoration-emerald-500/20 underline-offset-8 tracking-tight">Access Restored! 🎉</h2>
+              <p className="text-[var(--text-color)]/60 text-sm font-medium italic">Redirecting you to sign in…</p>
             </div>
           )}
         </div>

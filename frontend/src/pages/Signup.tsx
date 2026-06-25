@@ -2,10 +2,9 @@ import { useState, type ChangeEvent, type ReactElement } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { apiFetch } from "../lib/api";
 import { FaGoogle, FaFacebook, FaMicrosoft } from "react-icons/fa";
-import { FiEye, FiEyeOff, FiAlertCircle, FiCheckCircle } from "react-icons/fi";
-import classImg from "/class.png";
+import { FiEye, FiEyeOff, FiAlertCircle, FiCheckCircle, FiArrowRight } from "react-icons/fi";
 
-const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:5000/api";
+const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:5050/api";
 
 type SignupData = {
   firstName: string;
@@ -45,8 +44,8 @@ const InputField = ({
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   extra?: React.ReactNode;
 }) => (
-  <div className="space-y-1.5">
-    <label htmlFor={id} className="block text-xs font-semibold text-gray-400 uppercase tracking-wider">
+  <div>
+    <label htmlFor={id} className="block text-xs font-bold uppercase tracking-wider mb-2" style={{ color: "var(--label-text)" }}>
       {label}
     </label>
     <div className="relative">
@@ -57,7 +56,13 @@ const InputField = ({
         value={value}
         onChange={onChange}
         autoComplete={id}
-        className="w-full rounded-2xl bg-white/5 border border-white/10 focus:border-violet-500/60 focus:bg-white/10 focus:ring-2 focus:ring-violet-500/20 outline-none px-4 py-3.5 text-white placeholder:text-gray-600 transition-all text-sm pr-12"
+        className="w-full rounded-xl px-4 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-[#33418f]/20 transition-all"
+        style={{
+          background: "var(--input-bg)",
+          border: "1.5px solid var(--input-border)",
+          color: "var(--input-text)",
+          paddingRight: extra ? "3rem" : undefined,
+        }}
       />
       {extra}
     </div>
@@ -140,17 +145,12 @@ const Signup = (): ReactElement => {
     }
   };
 
-  const ToggleBtn = ({
-    show,
-    onToggle,
-  }: {
-    show: boolean;
-    onToggle: () => void;
-  }) => (
+  const ToggleBtn = ({ show, onToggle }: { show: boolean; onToggle: () => void }) => (
     <button
       type="button"
       onClick={onToggle}
-      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+      className="absolute right-4 top-1/2 -translate-y-1/2 hover:text-[#33418f] transition-colors"
+      style={{ color: "var(--muted-text)" }}
       aria-label={show ? "Hide password" : "Show password"}
     >
       {show ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
@@ -158,127 +158,159 @@ const Signup = (): ReactElement => {
   );
 
   return (
-    <div className="min-h-screen w-full bg-[#050020] flex items-stretch overflow-hidden">
-      {/* ── Left: Form Panel ── */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12 lg:px-16 xl:px-24 z-10">
-        <div className="w-full max-w-lg">
+    <div className="min-h-screen w-full flex overflow-hidden">
 
-          {/* Brand */}
-          <div className="mb-8">
-            <div className="inline-flex items-center gap-3 mb-2">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center shadow-lg shadow-violet-500/30">
-                <svg viewBox="0 0 24 24" className="w-5 h-5 text-white fill-current">
-                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                </svg>
+      {/* ── Left: Decorative Brand Panel (always dark gradient) ── */}
+      <div
+        className="hidden lg:flex flex-col justify-between w-[38%] xl:w-[42%] shrink-0 relative overflow-hidden p-12"
+        style={{ background: "linear-gradient(160deg, #1e1735 0%, #251d3f 45%, #33418f 100%)" }}
+      >
+        {/* Blobs */}
+        <div className="absolute top-[-80px] left-[-80px] w-[350px] h-[350px] rounded-full opacity-20" style={{ background: "radial-gradient(circle, #9aa8e7, transparent)" }} />
+        <div className="absolute bottom-[-60px] right-[-60px] w-[280px] h-[280px] rounded-full opacity-15" style={{ background: "radial-gradient(circle, #e3b5ee, transparent)" }} />
+
+        {/* Brand */}
+        <div className="relative z-10 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.2)" }}>
+            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current text-white">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+            </svg>
+          </div>
+          <span className="text-white font-black text-xl tracking-tight">A.E Platform</span>
+        </div>
+
+        {/* Features list */}
+        <div className="relative z-10 my-auto">
+          <p className="text-white/40 text-xs uppercase tracking-[0.3em] font-semibold mb-6">Why join us?</p>
+          <div className="space-y-5">
+            {[
+              { icon: "🚀", title: "Accelerated Learning", desc: "Structured AI/ML cohorts built by industry experts." },
+              { icon: "🏆", title: "Earn Credentials", desc: "Blockchain-verified certificates upon completion." },
+              { icon: "🌐", title: "Global Network", desc: "Connect with 2,400+ engineers worldwide." },
+            ].map(({ icon, title, desc }) => (
+              <div key={title} className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center text-xl" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)" }}>
+                  {icon}
+                </div>
+                <div>
+                  <p className="text-white font-bold text-sm mb-0.5">{title}</p>
+                  <p className="text-white/50 text-xs leading-relaxed">{desc}</p>
+                </div>
               </div>
-              <span className="text-white font-bold text-lg tracking-tight">A.E Platform</span>
+            ))}
+          </div>
+
+          {/* Stats */}
+          <div className="flex gap-6 mt-10 pt-8" style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+            {[{ n: "2.4k+", l: "Members" }, { n: "50+", l: "Modules" }, { n: "100%", l: "Free" }].map(({ n, l }) => (
+              <div key={l}>
+                <p className="text-white font-black text-xl">{n}</p>
+                <p className="text-white/40 text-[10px] uppercase tracking-widest font-semibold">{l}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <p className="relative z-10 text-white/25 text-xs tracking-widest uppercase">
+          Join the next generation of algorithmic thinkers
+        </p>
+      </div>
+
+      {/* ── Right: Form Panel (theme-aware) ── */}
+      <div
+        className="flex-1 overflow-y-auto flex flex-col justify-center px-6 py-10 sm:px-10 lg:px-14 xl:px-20"
+        style={{ background: "var(--auth-form-bg)" }}
+      >
+        <div className="w-full max-w-lg mx-auto">
+
+          {/* Mobile logo */}
+          <div className="flex items-center gap-3 mb-8 lg:hidden">
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "#33418f" }}>
+              <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current text-white">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+              </svg>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-white mt-6 leading-tight">
-              Create your account ✨
-            </h1>
-            <p className="text-gray-400 mt-2 text-sm">Join thousands of learners today. It's free.</p>
+            <span className="font-black text-lg tracking-tight uppercase" style={{ color: "var(--text-color)" }}>A.E Platform</span>
           </div>
 
           {/* ── Success State ── */}
           {success ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <div className="w-16 h-16 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center mb-4">
-                <FiCheckCircle className="w-8 h-8 text-emerald-400" />
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <div className="w-20 h-20 rounded-full flex items-center justify-center mb-6 animate-bounce" style={{ background: "rgba(34,197,94,0.1)", border: "2px solid rgba(34,197,94,0.3)" }}>
+                <FiCheckCircle className="w-10 h-10 text-green-500" />
               </div>
-              <h2 className="text-xl font-bold text-white mb-2">Account Created! 🎉</h2>
-              <p className="text-gray-400 text-sm mb-1">Please check your email to verify your account.</p>
-              <p className="text-gray-600 text-xs">Redirecting to login…</p>
+              <h2 className="text-2xl font-black mb-2" style={{ color: "var(--text-color)" }}>Account Created! 🎉</h2>
+              <p className="text-sm mb-1" style={{ color: "var(--muted-text)" }}>Your journey begins shortly.</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-[#33418f]">Redirecting to login...</p>
             </div>
           ) : (
             <>
-              {/* ── Social Buttons ── */}
-              <div className="flex flex-col sm:flex-row gap-3 mb-7">
-                {/* Google — real OAuth */}
+              {/* Heading */}
+              <div className="mb-6">
+                <h1 className="text-3xl font-black leading-tight tracking-tight mb-1" style={{ color: "var(--text-color)" }}>
+                  Create your account ✨
+                </h1>
+                <p className="text-sm font-medium" style={{ color: "var(--muted-text)" }}>
+                  Join thousands of engineers on their AI journey
+                </p>
+              </div>
+
+              {/* Social Buttons - icon only */}
+              <div className="flex items-center gap-3 mb-5">
                 <a
                   href={`${API_BASE}/auth/google`}
-                  className="flex-1 flex items-center justify-center gap-2.5 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 backdrop-blur-sm px-4 py-3 transition-all duration-200 group"
+                  title="Continue with Google"
+                  className="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95"
+                  style={{ background: "var(--social-btn-bg)", border: "1.5px solid var(--input-border)" }}
                 >
-                  <FaGoogle className="text-[#EA4335]" />
-                  <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">Google</span>
+                  <FaGoogle className="text-[#EA4335]" size={18} />
                 </a>
-                {/* Facebook — coming soon */}
                 <button
                   type="button"
-                  onClick={() => setError("Facebook login coming soon! Use Google or email for now.")}
-                  className="flex-1 flex items-center justify-center gap-2.5 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 backdrop-blur-sm px-4 py-3 transition-all duration-200 group"
+                  title="Continue with Facebook"
+                  onClick={() => setError("Facebook coming soon!")}
+                  className="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95"
+                  style={{ background: "var(--social-btn-bg)", border: "1.5px solid var(--input-border)" }}
                 >
-                  <FaFacebook className="text-[#0866FF]" />
-                  <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">Facebook</span>
+                  <FaFacebook className="text-[#0866FF]" size={18} />
                 </button>
-                {/* Microsoft — coming soon */}
                 <button
                   type="button"
-                  onClick={() => setError("Microsoft login coming soon! Use Google or email for now.")}
-                  className="flex-1 flex items-center justify-center gap-2.5 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 backdrop-blur-sm px-4 py-3 transition-all duration-200 group"
+                  title="Continue with Microsoft"
+                  onClick={() => setError("Microsoft coming soon!")}
+                  className="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95"
+                  style={{ background: "var(--social-btn-bg)", border: "1.5px solid var(--input-border)" }}
                 >
-                  <FaMicrosoft className="text-[#00A4EF]" />
-                  <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">Microsoft</span>
+                  <FaMicrosoft className="text-[#00A4EF]" size={18} />
                 </button>
               </div>
 
-              {/* ── Divider ── */}
-              <div className="flex items-center gap-4 mb-6">
-                <div className="flex-1 h-px bg-white/10" />
-                <span className="text-xs font-medium text-gray-500 uppercase tracking-widest whitespace-nowrap">or register with email</span>
-                <div className="flex-1 h-px bg-white/10" />
+              {/* Divider */}
+              <div className="flex items-center gap-3 mb-5">
+                <div className="flex-1 h-px" style={{ background: "var(--divider-color)" }} />
+                <span className="text-[10px] font-semibold uppercase tracking-widest whitespace-nowrap" style={{ color: "var(--muted-text)" }}>or register with email</span>
+                <div className="flex-1 h-px" style={{ background: "var(--divider-color)" }} />
               </div>
 
-              {/* ── Error Alert ── */}
+              {/* Error */}
               {error && (
-                <div className="flex items-center gap-3 bg-rose-500/10 border border-rose-500/20 rounded-2xl px-4 py-3 mb-5">
-                  <FiAlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
-                  <p className="text-sm text-rose-300">{error}</p>
+                <div className="flex items-center gap-3 px-4 py-3 rounded-xl mb-4 border-l-4 border-red-500" style={{ background: "rgba(239,68,68,0.08)" }}>
+                  <FiAlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+                  <p className="text-sm font-semibold text-red-500">{error}</p>
                 </div>
               )}
 
-              {/* ── Form ── */}
+              {/* Form */}
               <form onSubmit={createAccount} className="space-y-4">
-                {/* First + Last Name */}
                 <div className="grid grid-cols-2 gap-3">
-                  <InputField
-                    id="firstName"
-                    label="First Name"
-                    type="text"
-                    placeholder="Enter your first name"
-                    value={data.firstName}
-                    onChange={handleInputChange("firstName")}
-                  />
-                  <InputField
-                    id="lastName"
-                    label="Last Name"
-                    type="text"
-                    placeholder="Enter your last name"
-                    value={data.lastName}
-                    onChange={handleInputChange("lastName")}
-                  />
+                  <InputField id="firstName" label="First Name" type="text" placeholder="David" value={data.firstName} onChange={handleInputChange("firstName")} />
+                  <InputField id="lastName" label="Last Name" type="text" placeholder="Smith" value={data.lastName} onChange={handleInputChange("lastName")} />
                 </div>
 
-                {/* Username */}
-                <InputField
-                  id="username"
-                  label="Username"
-                  type="text"
-                  placeholder="Enter your username"
-                  value={data.username}
-                  onChange={handleInputChange("username")}
-                />
+                <InputField id="username" label="Username" type="text" placeholder="Choose a username" value={data.username} onChange={handleInputChange("username")} />
 
-                {/* Email */}
-                <InputField
-                  id="email"
-                  label="Email Address"
-                  type="email"
-                  placeholder="Enter your email address"
-                  value={data.email}
-                  onChange={handleInputChange("email")}
-                />
+                <InputField id="email" label="Email Address" type="email" placeholder="Enter email address" value={data.email} onChange={handleInputChange("email")} />
 
-                {/* Password + Confirm */}
                 <div className="grid grid-cols-2 gap-3">
                   <InputField
                     id="password"
@@ -287,95 +319,47 @@ const Signup = (): ReactElement => {
                     placeholder="Min. 8 chars"
                     value={data.password}
                     onChange={handleInputChange("password")}
-                    extra={
-                      <ToggleBtn show={showPassword} onToggle={() => setShowPassword((v) => !v)} />
-                    }
+                    extra={<ToggleBtn show={showPassword} onToggle={() => setShowPassword((v) => !v)} />}
                   />
                   <InputField
                     id="confirmPassword"
-                    label="Confirm Password"
+                    label="Confirm"
                     type={showConfirm ? "text" : "password"}
                     placeholder="Repeat password"
                     value={data.confirmPassword}
                     onChange={handleInputChange("confirmPassword")}
-                    extra={
-                      <ToggleBtn show={showConfirm} onToggle={() => setShowConfirm((v) => !v)} />
-                    }
+                    extra={<ToggleBtn show={showConfirm} onToggle={() => setShowConfirm((v) => !v)} />}
                   />
                 </div>
 
-                {/* Submit */}
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full rounded-2xl bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-bold py-4 mt-2 transition-all duration-200 shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
+                  className="w-full py-4 rounded-xl font-black text-white text-sm tracking-widest uppercase flex items-center justify-center gap-2 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl disabled:opacity-60 disabled:cursor-not-allowed"
+                  style={{ background: "linear-gradient(135deg, #33418f, #251d3f)", boxShadow: "0 4px 20px rgba(51,65,143,0.35)" }}
                 >
                   {loading ? (
                     <>
-                      <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                      </svg>
-                      Creating Account…
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Creating account...
                     </>
                   ) : (
-                    "Create Account →"
+                    <>
+                      Create Account
+                      <FiArrowRight className="w-4 h-4" />
+                    </>
                   )}
                 </button>
               </form>
 
-              {/* Footer */}
-              <p className="mt-6 text-center text-sm text-gray-500">
+              <p className="mt-6 text-center text-sm" style={{ color: "var(--muted-text)" }}>
                 Already have an account?{" "}
-                <Link to="/login" className="text-violet-400 hover:text-violet-300 font-semibold transition-colors">
+                <Link to="/login" className="font-bold text-[#33418f] hover:text-[var(--ae-plum-deep)] transition-colors underline underline-offset-2">
                   Sign in
                 </Link>
               </p>
             </>
           )}
-        </div>
-      </div>
-
-      {/* ── Right: Image Panel ── */}
-      <div className="hidden lg:block relative w-[42%] xl:w-[48%] shrink-0">
-        {/* Gradient overlays */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#050020] via-[#050020]/20 to-transparent z-10 pointer-events-none" />
-        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#050020] to-transparent z-10 pointer-events-none" />
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#050020] to-transparent z-10 pointer-events-none" />
-
-        <img
-          src={classImg}
-          alt="Students learning"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-
-        {/* Floating stats card */}
-        <div className="absolute top-12 right-10 z-20">
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-5 shadow-2xl min-w-[180px]">
-            <p className="text-4xl font-extrabold text-white">2.4k+</p>
-            <p className="text-gray-400 text-sm mt-1">Active learners</p>
-            <div className="flex items-center gap-1 mt-3">
-              {[...Array(5)].map((_, i) => (
-                <svg key={i} className="w-3.5 h-3.5 text-amber-400 fill-current" viewBox="0 0 24 24">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                </svg>
-              ))}
-              <span className="text-gray-400 text-xs ml-1">5.0</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Floating bottom badge */}
-        <div className="absolute bottom-12 right-10 z-20 max-w-[220px]">
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-5 shadow-2xl">
-            <div className="w-10 h-10 rounded-2xl bg-violet-500/20 border border-violet-500/30 flex items-center justify-center mb-3">
-              <svg className="w-5 h-5 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-              </svg>
-            </div>
-            <p className="text-white font-semibold text-sm">Certified Learning</p>
-            <p className="text-gray-500 text-xs mt-1">Earn certificates upon completion</p>
-          </div>
         </div>
       </div>
     </div>

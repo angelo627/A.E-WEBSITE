@@ -35,10 +35,11 @@ export default function OAuthCallback() {
       id: userId,
       firstName,
       lastName: params.get("lastName") ?? "",
-      username: params.get("username") ?? email,
+      username: params.get("username") ?? "",
       email,
       role: role as AuthUser["role"],
       status: (status as AuthUser["status"]) ?? "ACTIVE",
+      avatarUrl: params.get("avatarUrl") ?? undefined,
     };
 
     // login() writes to localStorage synchronously before updating React state.
@@ -54,7 +55,7 @@ export default function OAuthCallback() {
   }, [login, navigate]);
 
   return (
-    <div className="min-h-screen bg-[#050020] flex items-center justify-center">
+    <div className="min-h-screen ae-brand-page flex items-center justify-center">
       <div className="text-center">
         <div className="w-14 h-14 border-4 border-violet-500/30 border-t-violet-500 rounded-full animate-spin mx-auto mb-5 shadow-[0_0_20px_rgba(139,92,246,0.4)]" />
         <p className="text-white font-semibold text-lg">Signing you in…</p>

@@ -69,10 +69,10 @@ const StatBlock = ({
       transition={{ duration: 0.6, delay }}
       className="flex gap-1 sm:gap-2 lg:gap-5 group"
     >
-      <div className="text-3xl md:text-6xl font-normal text-white leading-none group-hover:text-purple-400 transition-colors duration-300">
+      <div className="text-3xl md:text-6xl font-normal text-[var(--text-color)] leading-none group-hover:text-[var(--ae-blue)] transition-colors duration-300">
         <AnimatedCounter value={value} format={format} />
       </div>
-      <div className="text-[10px] text-start sm:text-base md:text-2xl text-white/60 font-regular leading-tight">
+      <div className="text-[10px] text-start sm:text-base md:text-2xl text-[var(--text-color)]/70 font-regular leading-tight">
         {label.split(/\\n|\n/).map((line, i) => (
           <div key={i}>{line}</div>
         ))}
@@ -93,11 +93,11 @@ export default function WhoWeAre() {
       aria-labelledby="who-we-are"
     >
       {/* Background linear */}
-      <div className="absolute inset-0 -z-10 bg-linear-to-b from-transparent via-purple-900/5 to-transparent" />
+      <div className="absolute inset-0 -z-10 bg-linear-to-b from-transparent via-[var(--ae-lavender)]/20 to-transparent" />
         
       {/* Content container */}
       <div className="max-w-7xl mx-auto flex flex-col gap-15">
-        <h1 className="text-4xl md:text-5xl text-start text-white font-semibold">
+        <h1 className="text-4xl md:text-5xl text-start text-[var(--text-color)] font-semibold">
           Who Are We?
         </h1>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10 md:gap-16 lg:gap-20 items-center">
@@ -145,12 +145,12 @@ export default function WhoWeAre() {
               <div />
             </div>
 
-            <div className="space-y-7 pt-4 border-t border-white/10">
+            <div className="space-y-7 pt-4 border-t border-[var(--ae-border)]">
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={textInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
-                className="text-white/70 leading-relaxed w-full text-start text-lg md:text-xl lg:text-[24px]"
+                className="text-[var(--text-color)]/80 leading-relaxed w-full text-start text-lg md:text-xl lg:text-[24px]"
               >
                 Simplify your workflow with our intuitive task management tool, designed to help you stay on top of your daily
                 responsibilities and long-term goals.
@@ -160,7 +160,7 @@ export default function WhoWeAre() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={textInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                 transition={{ duration: 0.6, delay: 0.5 }}
-                className="text-white/90 leading-relaxed w-full text-start text-lg md:text-xl lg:text-[24px]"
+                className="text-[var(--text-color)] leading-relaxed w-full text-start text-lg md:text-xl lg:text-[24px]"
               >
                 Streamline Your Workflow, Achieve More.
               </motion.p>
@@ -170,7 +170,7 @@ export default function WhoWeAre() {
       </div>
 
       {/* Bottom fade */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-linear-to-t from-black/50 to-transparent -z-20" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-linear-to-t from-[var(--bg-color)] to-transparent -z-20" />
       
     </section>
   );

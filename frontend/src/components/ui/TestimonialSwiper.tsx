@@ -84,13 +84,13 @@ export default function TestimonialSwiper() {
       className="relative w-full py-4 sm:py-5 md:py-8 px-4 sm:px-6 overflow-visible"
     >
       {/* decorative blue radial glow in center (enhances the blob) */}
-      <div className="pointer-events-none absolute -left-65.5 top-[18%] z-0 h-122.25 w-120.75 -translate-y-1/2 rounded-full bg-[#5F00FF] mix-blend-normal blur-[250px]" />
-      <div className="pointer-events-none absolute -right-65.5 top-[18%] z-0 h-122.25 w-120.75 -translate-y-1/2 rounded-full bg-[#5F00FF] mix-blend-normal blur-[250px]" />
+      <div className="pointer-events-none absolute -left-65.5 top-[18%] z-0 h-122.25 w-120.75 -translate-y-1/2 rounded-full bg-[var(--ae-periwinkle)] mix-blend-normal blur-[250px] opacity-30" />
+      <div className="pointer-events-none absolute -right-65.5 top-[18%] z-0 h-122.25 w-120.75 -translate-y-1/2 rounded-full bg-[var(--ae-periwinkle)] mix-blend-normal blur-[250px] opacity-30" />
 
       <div className="max-w-7xl mx-auto relative z-10">
         <FadeInWhenVisible delay={0.05}>
           <div className="text-center mb-10 sm:mb-12">
-            <h2 className="mx-auto w-full pt- max-w-210.25 text-xl font-semibold leading-none tracking-[-0.06em] text-center bg-[linear-gradient(270deg,#9623CF_0%,#070121_147.96%)] bg-clip-text text-transparent sm:text-3xl md:text-[40.3857px] md:leading-12.75 md:tracking-[-2.44078px]">
+            <h2 className="mx-auto w-full pt- max-w-210.25 text-xl font-semibold leading-none text-center auth-gradient-text sm:text-3xl md:text-[40.3857px] md:leading-12.75 tracking-tight">
               World Algorithmic Explorers Learning Streak Rank
             </h2>
           </div>
@@ -116,13 +116,13 @@ export default function TestimonialSwiper() {
                 <SwiperSlide key={t.id}>
                   <div className="relative w-full">
                     <article
-                      className="relative grid grid-cols-1 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] items-stretch gap-5 md:gap-20 rounded-4xl bg-white/6 backdrop-blur-lg min-h-80 sm:min-h-136 md:min-h-136 p-4 sm:p-8 md:p-10 w-full mx-auto"
+                      className="relative grid grid-cols-1 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] items-stretch gap-5 md:gap-20 rounded-4xl ae-brand-card shadow-sm border border-[var(--ae-border)] min-h-80 sm:min-h-136 md:min-h-136 p-4 sm:p-8 md:p-10 w-full mx-auto"
                     >
                       {/* Left image column */}
                       <div className="relative w-full lg:w-83 h-full shrink-0 self-stretch">
                         <div className="relative rounded-3xl overflow-hidden">
                           {/* Purple gradient overlay on image */}
-                          <div className="absolute inset-0 bg-linear-to-br from-purple-600/60 via-purple-500/40 to-transparent z-10 mix-blend-multiply" />
+                          <div className="absolute inset-0 bg-linear-to-br from-[var(--ae-blue)]/10 via-[var(--ae-lavender)]/5 to-transparent z-10 mix-blend-multiply" />
                           <img
                             src={t.image}
                             alt={t.name}
@@ -132,7 +132,7 @@ export default function TestimonialSwiper() {
                       </div>
 
                       {/* Right text column */}
-                      <div className="relative w-full h-full self-stretch grid min-h-full grid-rows-[auto_1fr_auto] text-start text-white">
+                      <div className="relative w-full h-full self-stretch grid min-h-full grid-rows-[auto_1fr_auto] text-start text-[var(--text-color)]">
                         {/* Large quote mark */}
                         <div className="mb-4">
                           <img src="/quotes.png" alt="" className="w-8.5 h-8.5 rotate-180"/>
@@ -140,7 +140,7 @@ export default function TestimonialSwiper() {
 
                         {/* paragraph text */}
                         <div className="flex w-full flex-col justify-center space-y-3 md:space-y-5 lg:max-w-2xl">
-                          <p className="text-xl lg:text-2xl font-normal leading-loose text-[#FFFFFFBF]">
+                          <p className="text-xl lg:text-2xl font-normal leading-loose text-[var(--text-color)]/70">
                             {t.text}
                           </p>
                         </div>
@@ -149,10 +149,10 @@ export default function TestimonialSwiper() {
                         <div className="w-full lg:max-w-3xl pt-4 md:pt-6">
                           <div className="flex items-center justify-between">
                             <div className="space-y-2">
-                              <div className="font-semibold text-white text-xl sm:text-2xl lg:text-3xl">
+                              <div className="font-semibold text-[var(--text-color)] text-xl sm:text-2xl lg:text-3xl">
                                 {t.name}
                               </div>
-                              <div className="text-[10px] font-medium sm:text-base md:text-lg text-white/60">
+                              <div className="text-[10px] font-medium sm:text-base md:text-lg text-[var(--text-color)]/70">
                                 {t.title}
                               </div>
                             </div>
@@ -165,7 +165,7 @@ export default function TestimonialSwiper() {
                                          transition-all duration-300 group/btn shrink-0
                                          hover:scale-110 cursor-pointer"
                             >
-                              <img src="/next-arrow.png" alt='arrow' className="h-5 md:h-7 lg:h-13 text-white transition-transform group-hover/btn:translate-x-0.5" />
+                              <img src="/next-arrow.png" alt='arrow' className="h-5 md:h-7 lg:h-13 transition-transform group-hover/btn:translate-x-0.5 filter invert" />
                             </button>
                           </div>
                         </div>
@@ -184,8 +184,8 @@ export default function TestimonialSwiper() {
                   onClick={() => swiperInstance?.slideToLoop(idx)}
                   className={`transition-all duration-300 rounded-full cursor-pointer ${
                     activeIndex === idx
-                      ? "w-8 h-1.5 bg-white/60"
-                      : "w-1.5 h-1.5 bg-white/20 hover:bg-white/30"
+                      ? "w-8 h-1.5 bg-[var(--ae-blue)]"
+                      : "w-1.5 h-1.5 bg-gray-300 hover:bg-gray-400"
                   }`}
                   aria-label={`Go to testimonial ${idx + 1}`}
                 />

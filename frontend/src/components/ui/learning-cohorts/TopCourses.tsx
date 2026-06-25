@@ -20,13 +20,13 @@ const TopCourses = () => {
     <section className="mt-24">
 
       <div className="flex justify-between items-center mb-10">
-        <h2 className="text-white text-xl font-semibold">Top Courses</h2>
-        <span className="text-sm text-gray-400 cursor-pointer">See All</span>
+        <h2 className="text-[var(--text-color)] text-xl font-semibold">Top Courses</h2>
+        <span className="text-sm text-[var(--text-color)]/40 cursor-pointer">See All</span>
       </div>
 
       <div className="grid md:grid-cols-4 gap-8">
         {courses.map((course, i) => (
-          <div key={i} className="bg-[#0b0120] rounded-xl overflow-hidden">
+          <div key={i} className="ae-brand-card border border-[var(--ae-border)] rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all">
             <img
               src={course.image}
               className="w-full h-36 object-cover"
@@ -37,7 +37,7 @@ const TopCourses = () => {
                 {course.title}
               </h3>
 
-              <p className="text-xs text-gray-400 mb-2">
+              <p className="text-xs text-[var(--text-color)]/60 mb-2">
                 By {course.author}
               </p>
 
@@ -45,14 +45,14 @@ const TopCourses = () => {
                 {[...Array(5)].map((_, i) => (
                   <FaStar key={i} className="mr-1" />
                 ))}
-                <span className="text-gray-400 ml-2">(1200 Ratings)</span>
+                <span className="text-[var(--text-color)]/50 ml-2">(1200 Ratings)</span>
               </div>
 
-              <p className="text-xs text-gray-400 mb-2">
+              <p className="text-xs text-[var(--text-color)]/50 mb-2">
                 22 Total Hours · 155 Lectures · Beginner
               </p>
 
-              <p className="text-white font-semibold">{course.price}</p>
+              <p className="text-[var(--text-color)] font-semibold">{course.price}</p>
             </div>
           </div>
         ))}

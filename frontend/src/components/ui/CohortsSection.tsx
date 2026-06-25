@@ -3,7 +3,7 @@ import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, FreeMode } from "swiper/modules";
-import { Search, ArrowRight, Palette, Server, Code, Brain, BarChart3, Binary } from "lucide-react";
+import { Search, Palette, Server, Code, Brain, BarChart3, Binary, Rocket } from "lucide-react";
 
 const FadeInWhenVisible = ({
   children,
@@ -40,133 +40,94 @@ const cohorts = [
 
 export default function CohortsSection() {
   return (
-    <section className="relative z-20 px-4 sm:px-6 pt-12 pb-6 sm:pt-16 md:pt-24 text-white">
+    <section className="relative z-20 px-4 sm:px-6 pt-12 pb-6 sm:pt-16 md:pt-24 text-[var(--text-color)] font-outfit">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <FadeInWhenVisible delay={0.2}>
-          <header className="text-center mb-10 sm:mb-12 md:mb-16">
-            <h1 className="mx-auto mb-4 sm:mb-6 w-full max-w-134.5 text-center font-semibold text-4xl sm:text-5xl md:text-[72.8527px] md:leading-23 md:tracking-[-4.40297px] bg-[linear-gradient(270deg,#6635C4_0%,#050020_147.96%)] bg-clip-text text-transparent">
-              Learning Cohorts
+          <header className="text-center mb-10 sm:mb-12 md:mb-20">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--ae-blue)]/10 border border-[var(--ae-blue)]/20 mb-6 mx-auto">
+              <Rocket className="w-4 h-4 text-[var(--ae-blue)]" />
+              <span className="text-[10px] font-black text-[var(--ae-blue)] uppercase tracking-[0.2em]">Live Tracks</span>
+            </div>
+            <h1 className="mx-auto mb-6 w-full text-center font-black text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-[var(--text-color)] leading-[0.9] italic tracking-tighter uppercase">
+              Learning <span className="text-[var(--ae-blue)]">Cohorts</span>
             </h1>
-            <p className="text-white/90 text-xs sm:text-base md:text-xl max-w-2xl mx-auto leading-relaxed px-4">
-              Phasellus accumsan imperdiet tempor. <br />
-              Cras tincidunt, arcu nec eleifend porttitor, orci est vehicula
+            <p className="text-[var(--text-color)]/60 text-sm sm:text-base md:text-xl max-w-2xl mx-auto leading-relaxed font-medium italic">
+              Master industry-leading skills with expert guidance and hands-on projects through our specialized learning cohorts.
             </p>
           </header>
         </FadeInWhenVisible>
 
         {/* Search Bar */}
         <FadeInWhenVisible delay={0.3}>
-          <div className="w-full flex justify-center">
-            <div className="flex w-full max-w-127
-          h-13 sm:h-15
-          gap-2.5
-          ">
-              <div
-              className="
-          flex flex-row items-center
-          w-full
-          py-2.5 sm:py-2.5
-          pr-2.5 sm:pr-2.5
-          pl-4 sm:pl-6.75
-          rounded-[15px]
-          bg-linear-to-r from-[#060221] from-[-14.09%] to-[#201239] to-100%
-          shadow-[inset_0_0_17.2px_#023053]
-        "
-            >
-              <input
-                type="text"
-                placeholder="Search for a course"
-                className="
-            flex-1
-            bg-transparent
-            text-sm sm:text-base
-            text-white
-            placeholder-white/40
-            focus:outline-none
-            pr-4
-          "
-              />
-
-              
-            </div>
-            {/* Search Icon Bubble */}
-              <div
-                className="
-            h-full w-15 
-            rounded-[15px]
-            flex items-center justify-center
-          
-          bg-[linear-gradient(90deg,#060221_-14.09%,#201239_100%)]
-          shadow-[inset_0_0_17.2px_#023053]
-          "
-              >
+          <div className="w-full flex justify-center px-4 sm:px-0 mb-12 sm:mb-16 md:mb-24 group">
+            <div className="flex w-full max-w-2xl gap-3 relative">
+              <div className="flex flex-row items-center w-full py-4 sm:py-5 pr-14 pl-8 rounded-3xl ae-brand-card shadow-2xl border border-[var(--ae-border)] bg-[var(--bg-color)]/50 focus-within:border-[var(--ae-blue)] focus-within:ring-4 focus-within:ring-[var(--ae-blue)]/5 transition-all">
+                <input
+                  type="text"
+                  placeholder="Search for a specialized course..."
+                  className="flex-1 bg-transparent text-sm sm:text-base md:text-lg text-[var(--text-color)] placeholder-[var(--text-color)]/30 focus:outline-none font-bold italic"
+                />
+              </div>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center ae-brand-button shadow-lg shadow-[var(--ae-blue)]/20 flex-shrink-0 cursor-pointer">
                 <Search className="w-5 h-5 text-white" />
               </div>
             </div>
-            
           </div>
         </FadeInWhenVisible>
 
         {/* Swiper */}
         <FadeInWhenVisible delay={0.4}>
-          <div className="relative w-full flex justify-center items-center min-h-80 sm:min-h-125">
-            {/* Center fixed person */}
-            <div className="absolute z-20 top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center px-2 sm:px-0">
-              <div className="relative flex h-[180px] w-[180px] items-center justify-center rounded-full bg-[#7B37D9] shadow-[0_0_56px_#9326D1] sm:h-[245px] sm:w-[245px] md:h-72.75 md:w-72.75 md:shadow-[0_0_94px_#9326D1]">
-                <div className="relative flex h-[150px] w-[150px] items-center justify-center overflow-hidden rounded-full bg-white shadow-[0_0_32px_rgba(0,19,34,0.08)] sm:h-[205px] sm:w-[205px] md:h-61.25 md:w-61.25 md:shadow-[0_0_51.2px_rgba(0,19,34,0.08)]">
+          <div className="relative w-full flex justify-center items-center min-h-[350px] sm:min-h-[450px] md:min-h-[600px]">
+            {/* Center fixed Logo */}
+            <div className="absolute z-20 top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center px-3 sm:px-0">
+              <div className="relative flex h-[140px] w-[140px] items-center justify-center rounded-full bg-[var(--ae-blue)] shadow-[0_0_56px_rgba(51,65,143,0.3)] sm:h-[180px] sm:w-[180px] md:h-[245px] md:w-[245px] lg:h-[290px] lg:w-[290px]">
+                <div className="relative flex h-[115px] w-[115px] items-center justify-center overflow-hidden rounded-full bg-white shadow-2xl sm:h-[145px] sm:w-[145px] md:h-[205px] md:w-[205px] lg:h-[240px] lg:w-[240px] group cursor-pointer">
                   <img
                     src="/favicon.png"
-                    alt="center-person"
-                    className="h-[70px] w-[92px] object-contain sm:h-[92px] sm:w-[120px] md:h-[115.76px] md:w-[151.94px]"
+                    alt="AE Logo"
+                    className="h-[55px] w-[70px] object-contain sm:h-[70px] sm:w-[92px] md:h-[92px] md:w-[120px] lg:h-[115px] lg:w-[150px] group-hover:scale-110 transition-transform duration-500"
                   />
                 </div>
               </div>
 
               <Link
                 to="/signup"
-                className="mt-5 flex h-[54px] w-[176px] items-center justify-center gap-2.5 rounded-[16px] bg-linear-to-r from-[#951DC8] from-0% to-[#1C044E] to-100% px-3.5 text-[16px] font-normal leading-6 tracking-[-0.4px] text-white shadow-[inset_0_0_25.025px_rgba(0,121,221,0.7)] transition-transform hover:scale-[1.03] sm:mt-8.5 sm:h-19.25 sm:w-[220.73px] sm:gap-[12.83px] sm:rounded-[19.25px] sm:px-[12.83px] sm:text-[25.6714px] sm:leading-8 sm:tracking-[-0.641785px]"
+                className="ae-brand-button mt-8 h-[60px] sm:h-[75px] w-[180px] sm:w-[240px] flex items-center justify-center gap-3 rounded-[20px] sm:rounded-[24px] text-base sm:text-lg font-black uppercase tracking-widest text-white transition-all hover:shadow-2xl hover:-translate-y-1 active:translate-y-0 italic"
               >
-                Enroll now
-                <ArrowRight className="h-4 w-4 -rotate-45 stroke-[2.08807px] sm:h-[16.33px] sm:w-[16.33px]" />
+                Enroll Now →
               </Link>
             </div>
 
             {/* Background moving slides */}
             <Swiper
               modules={[Autoplay, FreeMode]}
-              spaceBetween={40}
+              spaceBetween={50}
               slidesPerView={1.5}
               centeredSlides={true}
               loop={true}
               loopAdditionalSlides={3}
               freeMode={{ enabled: true, momentum: false }}
-              speed={8000}
+              speed={10000}
               autoplay={{
                 delay: 0,
                 disableOnInteraction: false,
-                pauseOnMouseEnter: false,
               }}
-              allowTouchMove={false}
               breakpoints={{
-                480: { slidesPerView: 2, spaceBetween: 50 },
-                640: { slidesPerView: 3, spaceBetween: 60 },
-                1024: { slidesPerView: 5, spaceBetween: 80 },
+                640: { slidesPerView: 2.5 },
+                1024: { slidesPerView: 5 },
               }}
-              className="cohorts-swiper w-full pointer-events-none"
+              className="w-full h-full opacity-30 select-none pointer-events-none"
             >
-              {[...cohorts, ...cohorts, ...cohorts].map((item, index) => {
+              {[...cohorts, ...cohorts].map((item, idx) => {
                 const Icon = item.icon;
                 return (
-                  <SwiperSlide
-                    key={index}
-                    className="flex items-center justify-center"
-                  >
-                    <div className="flex flex-col items-center opacity-50">
-                      <div className="w-16 h-16 sm:w-17 sm:h-17 md:w-18 md:h-18 lg:w-19 lg:h-19 rounded-full bg-white/10 backdrop-blur-lg border border-white/20 flex items-center justify-center mb-2 sm:mb-3">
-                        <Icon className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 text-white/70" />
+                  <SwiperSlide key={idx} className="flex items-center justify-center">
+                    <div className="flex flex-col items-center">
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-[2rem] bg-[var(--ae-blue)]/5 backdrop-blur-md border border-[var(--ae-blue)]/10 flex items-center justify-center mb-6">
+                        <Icon className="w-10 h-10 sm:w-12 md:w-14 text-[var(--ae-blue)]" />
                       </div>
-                      <p className="text-center text-[10px] sm:text-xs md:text-sm text-white/60 max-w-20 sm:max-w-25 md:max-w-30 leading-tight">
+                      <p className="text-center text-[10px] sm:text-xs md:text-sm text-[var(--text-color)]/30 font-black uppercase tracking-[0.2em] max-w-[120px] leading-tight">
                         {item.title}
                       </p>
                     </div>

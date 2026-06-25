@@ -74,5 +74,30 @@ export const usersController = {
       message: "User access updated successfully.",
       data: user
     });
+  }),
+
+  getPublicProfile: asyncHandler(async (req: Request, res: Response) => {
+    const username = req.params.username as string;
+    console.log(`[DEBUG] Fetching profile for: "${username}"`);
+    const profile = await usersService.getUserProfileByUsername(username);
+
+    return res.status(200).json({
+      message: "Profile fetched successfully.",
+      data: profile
+    });
+  }),
+
+  updateMyProfile: asyncHandler(async (req: Request, res: Response) => {
+    const body = req.body as Record<string, any>;
+    const updatedUser = await usersService.updateProfile(req.user!.sub, {
+      bio: body.bio,
+      location: body.location,
+      avatarUrl: body.avatarUrl
+    });
+
+    return res.status(200).json({
+      message: "Profile updated successfully.",
+      data: updatedUser
+    });
   })
 };

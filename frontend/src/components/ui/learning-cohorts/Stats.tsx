@@ -7,7 +7,7 @@ function Stats() {
   ];
 
   return (
-    <section className="w-full bg-[#050030] border-t border-white/10 flex justify-center">
+    <section className="w-full ae-brand-page border-t border-[var(--ae-border)] flex justify-center text-[var(--text-color)]">
 
       <div className="w-full max-w-7xl px-6 py-12 grid grid-cols-2 md:grid-cols-4 text-center">
 
@@ -15,11 +15,11 @@ function Stats() {
           <div key={i} className="relative">
 
             {i !== stats.length - 1 && (
-              <div className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 w-px h-12 bg-white/20" />
+              <div className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 w-px h-12 bg-[var(--ae-border)]" />
             )}
 
-            <h3 className="text-2xl font-semibold">{stat.value}</h3>
-            <p className="text-xs text-gray-300 mt-1">{stat.label}</p>
+            <h3 className="text-2xl font-semibold text-[var(--text-color)]">{stat.value}</h3>
+            <p className="text-xs text-[var(--text-color)]/60 mt-1">{stat.label}</p>
 
           </div>
         ))}

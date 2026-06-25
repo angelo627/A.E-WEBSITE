@@ -1,7 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Navbar from "./components/ui/learning-cohorts/Navbar";
+import AnnouncementBanner from "./components/ui/announcement/AnnouncementBanner";
 
 // Public Pages
 import HomePage from "./pages/HomePage";
@@ -11,6 +13,8 @@ import ModulesPage from "./pages/ModulesPage";
 import ProductsPage from "./pages/ProductsPage";
 import TestimonialsPage from "./pages/TestimonialsPage";
 import ContactPage from "./pages/ContactPage";
+import CommunityPage from "./pages/CommunityPage";
+import ProfilePage from "./pages/ProfilePage";
 
 // Generic Pages included initially
 import Guru from "./pages/Guru";
@@ -23,6 +27,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import OAuthCallback from "./pages/OAuthCallback";
 import DashboardPage from "./pages/DashboardPage";
+import PostDetailsPage from "./pages/PostDetailsPage";
 import ModuleDetailPage from "./pages/ModuleDetailPage";
 import QuizPage from "./pages/QuizPage";
 import LeaderboardPage from "./pages/LeaderboardPage";
@@ -35,12 +40,15 @@ import ManageProducts from "./pages/admin/ManageProducts";
 import ManageTestimonials from "./pages/admin/ManageTestimonials";
 import ManageTeam from "./pages/admin/ManageTeam";
 import ViewUsers from "./pages/admin/ViewUsers";
+import ManageAnnouncements from "./pages/admin/ManageAnnouncements";
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
         <Navbar />
+        <AnnouncementBanner />
 
         <Routes>
           {/* PUBLIC ROUTES */}
@@ -51,6 +59,8 @@ function App() {
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/testimonials" element={<TestimonialsPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/community" element={<CommunityPage />} />
+          <Route path="/profile/:username" element={<ProfilePage />} />
           <Route path="/guru" element={<Guru />} />
           <Route path="/guru-circle" element={<GuruCircle />} />
           <Route path="/login" element={<Login />} />
@@ -89,6 +99,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <LeaderboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/community/:id"
+            element={
+              <ProtectedRoute>
+                <PostDetailsPage />
               </ProtectedRoute>
             }
           />
@@ -150,9 +168,18 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/admin/announcements"
+            element={
+              <ProtectedRoute requireAdmin>
+                <ManageAnnouncements />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </BrowserRouter>
-    </AuthProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

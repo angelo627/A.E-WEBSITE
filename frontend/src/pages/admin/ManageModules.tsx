@@ -190,10 +190,10 @@ const itemVariants = {
 const getResourceIcon = (type: string) => {
   switch(type) {
     case "VIDEO": return <FileVideo className="w-5 h-5 text-blue-400" />;
-    case "LINK": return <LinkIcon className="w-5 h-5 text-emerald-400" />;
+    case "LINK": return <LinkIcon className="w-5 h-5 text-emerald-600 font-bold" />;
     case "DOCUMENT": return <FileText className="w-5 h-5 text-indigo-400" />;
     case "NOTE": return <StickyNote className="w-5 h-5 text-amber-400" />;
-    default: return <FileText className="w-5 h-5 text-gray-400" />;
+    default: return <FileText className="w-5 h-5 text-[var(--muted-text)] font-medium" />;
   }
 };
 
@@ -444,9 +444,8 @@ export default function ManageModules() {
   };
 
   return (
-    <div className="pt-24 px-6 min-h-screen bg-[#050020] text-white overflow-hidden relative font-outfit">
-      <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
+    <div className="pt-40 px-6 md:pt-48 md:px-10 min-h-screen ae-brand-page text-[var(--text-color)] pb-20 overflow-hidden relative font-outfit">
+      
 
       <motion.div 
         className="max-w-7xl mx-auto relative z-10 pb-20 space-y-8"
@@ -455,30 +454,30 @@ export default function ManageModules() {
         animate="visible"
       >
         <motion.section variants={itemVariants} className="flex items-center gap-4 mb-4">
-          <div className="p-3 bg-blue-500/20 rounded-xl shadow-[0_0_30px_rgba(59,130,246,0.3)] border border-blue-500/30">
+          <div className="p-3 bg-blue-50 rounded-xl shadow-sm border border-blue-100">
             <BookOpen className="w-8 h-8 text-blue-400" />
           </div>
           <div>
-            <h1 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent italic">
+            <h1 className="text-3xl md:text-4xl font-black text-[var(--text-color)] italic">
               Manage Modules
             </h1>
-            <p className="text-gray-400 text-sm md:text-base mt-2">
+            <p className="text-[var(--muted-text)] font-medium text-sm md:text-base mt-2">
               Create, update, publish, and structure your learning resources.
             </p>
           </div>
         </motion.section>
 
-        <motion.section variants={itemVariants} className="bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] shadow-2xl rounded-3xl p-6 md:p-8 relative">
+        <motion.section variants={itemVariants} className="ae-brand-card border border-[var(--ae-border)] shadow-sm rounded-3xl p-6 md:p-8 relative">
           <AnimatePresence>
             {submitError && (
               <motion.div 
                 initial={{ opacity: 0, y: -10 }} 
                 animate={{ opacity: 1, y: 0 }} 
                 exit={{ opacity: 0, y: -10 }}
-                className="flex items-center gap-3 bg-rose-500/10 border border-rose-500/20 rounded-xl p-4 mb-6 shadow-lg shadow-rose-500/5"
+                className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-xl p-4 mb-6 shadow-sm"
               >
-                <AlertCircle className="w-5 h-5 text-rose-400" />
-                <p className="text-sm font-medium text-rose-200">{submitError}</p>
+                <AlertCircle className="w-5 h-5 text-red-500 font-bold" />
+                <p className="text-sm font-medium text-red-800 font-bold">{submitError}</p>
               </motion.div>
             )}
             {successMessage && (
@@ -486,23 +485,23 @@ export default function ManageModules() {
                 initial={{ opacity: 0, y: -10 }} 
                 animate={{ opacity: 1, y: 0 }} 
                 exit={{ opacity: 0, y: -10 }}
-                className="flex items-center gap-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 mb-6 shadow-lg shadow-emerald-500/5"
+                className="flex items-center gap-3 bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-6 shadow-sm"
               >
-                <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                <p className="text-sm font-medium text-emerald-200">{successMessage}</p>
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 font-bold" />
+                <p className="text-sm font-medium text-emerald-800 font-bold">{successMessage}</p>
               </motion.div>
             )}
           </AnimatePresence>
 
           <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-            {isEditing ? <Edit3 className="w-5 h-5 text-blue-400" /> : <Plus className="w-5 h-5 text-emerald-400" />}
+            {isEditing ? <Edit3 className="w-5 h-5 text-blue-400" /> : <Plus className="w-5 h-5 text-emerald-600 font-bold" />}
             {isEditing ? "Edit Tracking Module" : "Create New Module"}
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs uppercase tracking-wider font-bold text-gray-500 mb-2" htmlFor="module-title">
+                <label className="block text-xs uppercase tracking-wider font-bold text-[var(--muted-text)] font-medium mb-2" htmlFor="module-title">
                   Title
                 </label>
                 <input
@@ -515,12 +514,12 @@ export default function ManageModules() {
                       handleChange("slug", slugify(form.title));
                     }
                   }}
-                  className="w-full rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 focus:bg-white/10 outline-none px-4 py-3 transition-colors placeholder:text-gray-600"
+                  className="w-full rounded-xl bg-[var(--bg-color)]/50 border border-[var(--ae-border)] focus:border-[var(--ae-blue)] focus:ring-[var(--ae-blue)]/20 outline-none px-4 text-[var(--text-color)] font-medium py-3 transition-colors placeholder:text-[var(--text-color)]/30"
                   placeholder="e.g. Introduction to React"
                 />
               </div>
               <div>
-                <label className="block text-xs uppercase tracking-wider font-bold text-gray-500 mb-2" htmlFor="module-slug">
+                <label className="block text-xs uppercase tracking-wider font-bold text-[var(--muted-text)] font-medium mb-2" htmlFor="module-slug">
                   Slug (URL-friendly)
                 </label>
                 <input
@@ -528,14 +527,14 @@ export default function ManageModules() {
                   type="text"
                   value={form.slug}
                   onChange={(event) => handleChange("slug", slugify(event.target.value))}
-                  className="w-full rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 focus:bg-white/10 outline-none px-4 py-3 transition-colors placeholder:text-gray-600"
+                  className="w-full rounded-xl bg-[var(--bg-color)]/50 border border-[var(--ae-border)] focus:border-[var(--ae-blue)] focus:ring-[var(--ae-blue)]/20 outline-none px-4 text-[var(--text-color)] font-medium py-3 transition-colors placeholder:text-[var(--text-color)]/30"
                   placeholder="e.g. intro-to-react"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs uppercase tracking-wider font-bold text-gray-500 mb-2" htmlFor="module-short-description">
+              <label className="block text-xs uppercase tracking-wider font-bold text-[var(--muted-text)] font-medium mb-2" htmlFor="module-short-description">
                 Short Description
               </label>
               <textarea
@@ -543,13 +542,13 @@ export default function ManageModules() {
                 rows={2}
                 value={form.shortDescription}
                 onChange={(event) => handleChange("shortDescription", event.target.value)}
-                className="w-full rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 focus:bg-white/10 outline-none px-4 py-3 transition-colors placeholder:text-gray-600 resize-none font-outfit"
+                className="w-full rounded-xl bg-[var(--bg-color)]/50 border border-[var(--ae-border)] focus:border-[var(--ae-blue)] focus:ring-[var(--ae-blue)]/20 outline-none px-4 text-[var(--text-color)] font-medium py-3 transition-colors placeholder:text-[var(--text-color)]/30 resize-none font-outfit"
                 placeholder="Brief summary for list views..."
               />
             </div>
 
             <div>
-              <label className="block text-xs uppercase tracking-wider font-bold text-gray-500 mb-2" htmlFor="module-description">
+              <label className="block text-xs uppercase tracking-wider font-bold text-[var(--muted-text)] font-medium mb-2" htmlFor="module-description">
                 Full Description
               </label>
               <textarea
@@ -557,14 +556,14 @@ export default function ManageModules() {
                 rows={4}
                 value={form.description}
                 onChange={(event) => handleChange("description", event.target.value)}
-                className="w-full rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 focus:bg-white/10 outline-none px-4 py-3 transition-colors placeholder:text-gray-600 resize-none font-outfit"
+                className="w-full rounded-xl bg-[var(--bg-color)]/50 border border-[var(--ae-border)] focus:border-[var(--ae-blue)] focus:ring-[var(--ae-blue)]/20 outline-none px-4 text-[var(--text-color)] font-medium py-3 transition-colors placeholder:text-[var(--text-color)]/30 resize-none font-outfit"
                 placeholder="Detailed explanation of the module contents..."
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label className="block text-xs uppercase tracking-wider font-bold text-gray-500 mb-2" htmlFor="module-order">
+                <label className="block text-xs uppercase tracking-wider font-bold text-[var(--muted-text)] font-medium mb-2" htmlFor="module-order">
                   Sort Order
                 </label>
                 <input
@@ -572,12 +571,12 @@ export default function ManageModules() {
                   type="number"
                   value={form.order}
                   onChange={(event) => handleChange("order", event.target.value)}
-                  className="w-full rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 focus:bg-white/10 outline-none px-4 py-3 transition-colors placeholder:text-gray-600"
+                  className="w-full rounded-xl bg-[var(--bg-color)]/50 border border-[var(--ae-border)] focus:border-[var(--ae-blue)] focus:ring-[var(--ae-blue)]/20 outline-none px-4 text-[var(--text-color)] font-medium py-3 transition-colors placeholder:text-[var(--text-color)]/30"
                   placeholder="0"
                 />
               </div>
               <div>
-                <label className="block text-xs uppercase tracking-wider font-bold text-gray-500 mb-2" htmlFor="module-minutes">
+                <label className="block text-xs uppercase tracking-wider font-bold text-[var(--muted-text)] font-medium mb-2" htmlFor="module-minutes">
                   Estimated Minutes
                 </label>
                 <input
@@ -585,7 +584,7 @@ export default function ManageModules() {
                   type="number"
                   value={form.estimatedMinutes}
                   onChange={(event) => handleChange("estimatedMinutes", event.target.value)}
-                  className="w-full rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 focus:bg-white/10 outline-none px-4 py-3 transition-colors placeholder:text-gray-600"
+                  className="w-full rounded-xl bg-[var(--bg-color)]/50 border border-[var(--ae-border)] focus:border-[var(--ae-blue)] focus:ring-[var(--ae-blue)]/20 outline-none px-4 text-[var(--text-color)] font-medium py-3 transition-colors placeholder:text-[var(--text-color)]/30"
                   placeholder="e.g. 120"
                 />
               </div>
@@ -597,13 +596,13 @@ export default function ManageModules() {
                     onChange={(event) => handleChange("isPublished", event.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-white/10 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
-                  <span className="ml-3 text-sm font-medium text-gray-300 group-hover:text-white transition-colors">Publish Directly</span>
+                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--card-bg)] after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+                  <span className="ml-3 text-sm font-medium text-[var(--muted-text)] font-medium group-hover:text-[var(--text-color)] font-bold transition-colors">Publish Directly</span>
                 </label>
               </div>
             </div>
 
-            <div className="space-y-4 pt-6 border-t border-white/10">
+            <div className="space-y-4 pt-6 border-t border-[var(--ae-border)]">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <h3 className="text-xl font-bold flex items-center gap-2">
                   <ListVideo className="w-5 h-5 text-indigo-400" />
@@ -612,7 +611,7 @@ export default function ManageModules() {
                 <button
                   type="button"
                   onClick={addResource}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white hover:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all font-medium text-sm border border-blue-500/20"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-50 text-blue-600 hover:bg-[var(--ae-blue)] hover:text-white hover:shadow-md transition-all font-medium text-sm border border-blue-500/20"
                 >
                   <Plus className="w-4 h-4" /> Add Resource
                 </button>
@@ -626,17 +625,17 @@ export default function ManageModules() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     key={resource.key} 
-                    className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 space-y-4 hover:border-white/20 transition-colors"
+                    className="rounded-2xl border border-[var(--ae-border)] ae-brand-card shadow-sm p-5 space-y-4 hover:border-[var(--ae-blue)]/30 transition-colors"
                   >
                     <div className="flex items-center justify-between pb-2 border-b border-white/5">
-                      <p className="text-xs uppercase tracking-widest font-bold text-gray-500 flex items-center gap-2">
+                      <p className="text-xs uppercase tracking-widest font-bold text-[var(--muted-text)] font-medium flex items-center gap-2">
                         {getResourceIcon(resource.type)} Resource #{index + 1}
                       </p>
                       <button
                         type="button"
                         onClick={() => removeResource(index)}
                         disabled={form.resources.length === 1}
-                        className="p-1.5 rounded-lg bg-rose-500/10 text-rose-400 hover:bg-rose-500 hover:text-white disabled:opacity-30 disabled:hover:bg-rose-500/10 disabled:hover:text-rose-400 transition-colors"
+                        className="p-1.5 rounded-lg bg-rose-500/10 text-red-500 font-bold hover:bg-rose-500 hover:text-[var(--text-color)] font-bold disabled:opacity-30 disabled:hover:bg-rose-500/10 disabled:hover:text-red-500 font-bold transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -648,16 +647,16 @@ export default function ManageModules() {
                         placeholder="Resource Title"
                         value={resource.title}
                         onChange={(event) => handleResourceChange(index, "title", event.target.value)}
-                        className="rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 outline-none px-4 py-2.5 transition-colors placeholder:text-gray-600"
+                        className="rounded-xl bg-[var(--card-bg)] border border-[var(--ae-border)] focus:border-[var(--ae-blue)] focus:ring-[var(--ae-blue)]/20 outline-none px-4 text-[var(--text-color)] font-medium py-2.5 transition-colors placeholder:text-[var(--muted-text)]/60"
                       />
                       <select
                         value={resource.type}
                         onChange={(event) => handleResourceChange(index, "type", event.target.value)}
-                        className="rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 outline-none px-4 py-2.5 transition-all appearance-none cursor-pointer text-white"
+                        className="rounded-xl bg-[var(--card-bg)] border border-[var(--ae-border)] focus:border-[var(--ae-blue)] focus:ring-[var(--ae-blue)]/20 outline-none px-4 text-[var(--text-color)] font-medium py-2.5 transition-all appearance-none cursor-pointer text-[var(--text-color)] font-bold"
                         style={{ backgroundImage: `url('data:image/svg+xml;utf8,<svg fill="none" stroke="%239CA3AF" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>')`, backgroundPosition: 'right 0.75rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1em 1em', paddingRight: '2.5rem' }}
                       >
                         {RESOURCE_TYPES.map((type) => (
-                          <option key={type} value={type} className="text-gray-900 bg-white">
+                          <option key={type} value={type} className="text-[var(--text-color)] bg-[var(--card-bg)]">
                             {type}
                           </option>
                         ))}
@@ -667,7 +666,7 @@ export default function ManageModules() {
                         placeholder="Sort Order"
                         value={resource.sortOrder}
                         onChange={(event) => handleResourceChange(index, "sortOrder", event.target.value)}
-                        className="rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 outline-none px-4 py-2.5 transition-colors placeholder:text-gray-600"
+                        className="rounded-xl bg-[var(--card-bg)] border border-[var(--ae-border)] focus:border-[var(--ae-blue)] focus:ring-[var(--ae-blue)]/20 outline-none px-4 text-[var(--text-color)] font-medium py-2.5 transition-colors placeholder:text-[var(--muted-text)]/60"
                       />
                     </div>
 
@@ -677,10 +676,10 @@ export default function ManageModules() {
                         placeholder={resource.type === "VIDEO" ? "Video URL (YouTube or Upload)" : "URL / Destination"}
                         value={resource.url}
                         onChange={(event) => handleResourceChange(index, "url", event.target.value)}
-                        className="flex-1 rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 outline-none px-4 py-2.5 transition-colors placeholder:text-gray-600"
+                        className="flex-1 rounded-xl bg-[var(--card-bg)] border border-[var(--ae-border)] focus:border-[var(--ae-blue)] focus:ring-[var(--ae-blue)]/20 outline-none px-4 text-[var(--text-color)] font-medium py-2.5 transition-colors placeholder:text-[var(--muted-text)]/60"
                       />
                       {resource.type === "VIDEO" && (
-                        <label className={`flex items-center justify-center px-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 cursor-pointer transition-all ${uploadingVideoIndex === index ? "opacity-50 pointer-events-none" : ""}`}>
+                        <label className={`flex items-center justify-center px-4 rounded-xl border border-[var(--ae-border)] bg-[var(--card-bg)] hover:bg-[var(--bg-color)] cursor-pointer transition-all ${uploadingVideoIndex === index ? "opacity-50 pointer-events-none" : ""}`}>
                           {uploadingVideoIndex === index ? (
                             <Loader2 className="w-5 h-5 animate-spin text-blue-400" />
                           ) : (
@@ -701,7 +700,7 @@ export default function ManageModules() {
                       placeholder="Content / Notes (optional, required for NOTE)"
                       value={resource.content}
                       onChange={(event) => handleResourceChange(index, "content", event.target.value)}
-                      className="w-full rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 outline-none px-4 py-2.5 transition-colors placeholder:text-gray-600 resize-none font-outfit"
+                      className="w-full rounded-xl bg-[var(--card-bg)] border border-[var(--ae-border)] focus:border-[var(--ae-blue)] focus:ring-[var(--ae-blue)]/20 outline-none px-4 text-[var(--text-color)] font-medium py-2.5 transition-colors placeholder:text-[var(--muted-text)]/60 resize-none font-outfit"
                     />
                   </motion.article>
                 ))}
@@ -712,7 +711,7 @@ export default function ManageModules() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex items-center gap-2 px-8 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 hover:shadow-[0_0_20px_rgba(59,130,246,0.4)] disabled:opacity-50 disabled:hover:bg-blue-600 disabled:hover:shadow-none transition-all font-bold text-white shadow-lg shadow-blue-500/20"
+                className="flex items-center gap-2 px-8 py-3.5 rounded-xl bg-[var(--ae-blue)] hover:bg-[var(--ae-blue)]/90 hover:shadow-[0_0_20px_rgba(59,130,246,0.4)] disabled:opacity-50 disabled:hover:bg-blue-600 disabled:hover:shadow-none transition-all font-bold text-white shadow-lg shadow-blue-500/20"
               >
                 {isSubmitting ? (
                   <><Loader2 className="w-5 h-5 animate-spin" /> Saving...</>
@@ -724,7 +723,7 @@ export default function ManageModules() {
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all font-medium text-white"
+                  className="flex items-center gap-2 px-6 py-3.5 rounded-xl bg-[var(--card-bg)] hover:bg-[var(--bg-color)] border border-[var(--ae-border)] transition-all font-bold text-[var(--label-text)] text-[var(--text-color)] font-bold"
                 >
                   <X className="w-5 h-5" /> Cancel Edit
                 </button>
@@ -733,13 +732,13 @@ export default function ManageModules() {
           </form>
         </motion.section>
 
-        <motion.section variants={itemVariants} className="bg-white/[0.02] backdrop-blur-xl border border-white/[0.05] rounded-3xl p-6 md:p-8 shadow-2xl">
+        <motion.section variants={itemVariants} className="ae-brand-card border border-[var(--ae-border)] shadow-sm rounded-3xl p-6 md:p-8 shadow-2xl">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-bold flex items-center gap-2">
               <BookOpen className="w-6 h-6 text-indigo-400" />
               Existing Modules
             </h2>
-            <span className="bg-white/10 text-white px-3 py-1 rounded-full text-xs font-bold tracking-wider">
+            <span className="bg-[var(--card-bg)]/10 text-[var(--text-color)] font-bold px-3 py-1 rounded-full text-xs font-bold tracking-wider">
                {modules.length} Total
             </span>
           </div>
@@ -753,12 +752,12 @@ export default function ManageModules() {
           
           {!isLoading && error ? (
             <div className="flex flex-col items-center py-12 text-center">
-              <AlertCircle className="w-12 h-12 text-rose-400 mb-4" />
-              <p className="text-rose-200 mb-4">{error}</p>
+              <AlertCircle className="w-12 h-12 text-red-500 font-bold mb-4" />
+              <p className="text-red-800 font-bold mb-4">{error}</p>
               <button
                 type="button"
                 onClick={() => void loadModules()}
-                className="px-6 py-2.5 bg-rose-500 hover:bg-rose-400 rounded-xl font-medium shadow-lg shadow-rose-500/20"
+                className="px-6 py-2.5 bg-red-500 hover:bg-red-600 rounded-xl font-medium shadow-lg shadow-rose-500/20"
               >
                 Retry Request
               </button>
@@ -767,8 +766,8 @@ export default function ManageModules() {
           
           {!isLoading && !error && modules.length === 0 ? (
             <div className="text-center py-12">
-               <BookOpen className="w-12 h-12 mx-auto text-gray-500 mb-4 opacity-50" />
-               <p className="text-gray-400">No modules found. Create one above.</p>
+               <BookOpen className="w-12 h-12 mx-auto text-[var(--muted-text)] font-medium mb-4 opacity-50" />
+               <p className="text-[var(--muted-text)] font-medium">No modules found. Create one above.</p>
             </div>
           ) : null}
 
@@ -782,26 +781,26 @@ export default function ManageModules() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.98 }}
                     key={moduleItem.id}
-                    className={`group bg-white/[0.02] border border-white/[0.08] hover:border-indigo-500/30 rounded-2xl p-5 transition-all duration-300 relative overflow-hidden flex flex-col md:flex-row gap-6 md:items-center justify-between ${editingModuleId === moduleItem.id ? 'ring-2 ring-blue-500 ring-offset-2 ring-offset-[#050020]' : ''}`}
+                    className={`group ae-brand-card border border-[var(--ae-border)] shadow-sm hover:border-[var(--ae-blue)]/30 rounded-2xl p-5 transition-all duration-300 relative overflow-hidden flex flex-col md:flex-row gap-6 md:items-center justify-between ${editingModuleId === moduleItem.id ? 'ring-2 ring-[var(--ae-blue)] ring-offset-2 ring-offset-[var(--bg-color)]' : ''}`}
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/0 via-indigo-500/0 to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                     
                     <div className="flex-1 z-10 w-full min-w-0">
                       <div className="flex items-center gap-3 mb-2">
-                        <span className={`text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-md ${moduleItem.isPublished ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'}`}>
+                        <span className={`text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-md ${moduleItem.isPublished ? 'bg-emerald-500/10 text-emerald-600 font-bold border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'}`}>
                           {moduleItem.isPublished ? "Published" : "Draft"}
                         </span>
-                        <span className="text-xs text-gray-500 font-medium whitespace-nowrap">
+                        <span className="text-xs text-[var(--muted-text)] font-medium font-medium whitespace-nowrap">
                            Order: {moduleItem.order}
                         </span>
-                        <span className="text-xs text-gray-500 font-medium whitespace-nowrap">
+                        <span className="text-xs text-[var(--muted-text)] font-medium font-medium whitespace-nowrap">
                            {moduleItem.resources.length} Resources
                         </span>
                       </div>
-                      <h3 className="text-lg md:text-xl font-bold text-white group-hover:text-indigo-300 transition-colors truncate italic">
+                      <h3 className="text-lg md:text-xl font-bold text-[var(--text-color)] font-bold group-hover:text-indigo-300 transition-colors truncate italic">
                         {moduleItem.title}
                       </h3>
-                      <p className="text-sm text-gray-400 mt-1 truncate font-mono">
+                      <p className="text-sm text-[var(--muted-text)] font-medium mt-1 truncate font-mono">
                         /{moduleItem.slug}
                       </p>
                     </div>
@@ -810,7 +809,7 @@ export default function ManageModules() {
                       <button
                         type="button"
                         onClick={() => startEdit(moduleItem)}
-                        className="flex items-center justify-center p-3 rounded-xl bg-blue-500/10 text-blue-400 hover:bg-blue-500 hover:text-white transition-all shadow-lg hover:shadow-blue-500/30 group/btn"
+                        className="flex items-center justify-center p-3 rounded-xl bg-blue-500/10 text-blue-400 hover:bg-[var(--ae-blue)] hover:text-white transition-all shadow-lg hover:shadow-blue-500/30 group/btn"
                         title="Edit Module"
                       >
                         <Edit3 className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
@@ -818,7 +817,7 @@ export default function ManageModules() {
                       <button
                         type="button"
                         onClick={() => void handleDelete(moduleItem.id)}
-                        className="flex items-center justify-center p-3 rounded-xl bg-rose-500/10 text-rose-400 hover:bg-rose-500 hover:text-white transition-all shadow-lg hover:shadow-rose-500/30 group/btn"
+                        className="flex items-center justify-center p-3 rounded-xl bg-rose-500/10 text-red-500 font-bold hover:bg-rose-500 hover:text-[var(--text-color)] font-bold transition-all shadow-lg hover:shadow-rose-500/30 group/btn"
                         title="Delete Module"
                       >
                         <Trash2 className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />

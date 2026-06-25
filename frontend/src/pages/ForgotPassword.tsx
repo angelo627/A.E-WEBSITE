@@ -30,69 +30,68 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#050020] flex items-center justify-center px-4 py-20 font-outfit">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen w-full ae-brand-page flex items-center justify-center px-4 py-20 font-outfit">
+      <div className="w-full max-w-lg">
         {/* Brand */}
         <div className="flex justify-center mb-10">
           <div className="inline-flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center shadow-lg shadow-violet-500/30">
-              <svg viewBox="0 0 24 24" className="w-5 h-5 text-white fill-current">
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-              </svg>
-            </div>
-            <span className="text-white font-bold text-lg tracking-tight">A.E Platform</span>
+             <div className="w-9 h-9 rounded-xl ae-brand-button flex items-center justify-center shadow-lg">
+                <svg viewBox="0 0 24 24" className="w-5 h-5 text-white fill-current">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+              </div>
+            <span className="text-[var(--text-color)] font-black text-lg tracking-tight uppercase">A.E Platform</span>
           </div>
         </div>
 
-        <div className="bg-white/[0.03] border border-white/10 rounded-3xl p-8 md:p-10 backdrop-blur-xl shadow-2xl">
+        <div className="ae-brand-card border border-transparent rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--ae-blue)]/5 rounded-bl-[4rem] -mr-16 -mt-16 pointer-events-none" />
+
           {!sent ? (
             <>
               {/* Header */}
-              <div className="mb-8 text-center">
-                <div className="w-14 h-14 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mx-auto mb-4">
-                  <FiMail className="w-7 h-7 text-violet-400" />
+              <div className="mb-10 text-center">
+                <div className="w-16 h-16 rounded-2xl bg-[var(--ae-blue)]/10 border border-[var(--ae-blue)]/20 flex items-center justify-center mx-auto mb-6">
+                  <FiMail className="w-8 h-8 text-[var(--ae-blue)]" />
                 </div>
-                <h1 className="text-2xl font-extrabold text-white">Forgot your password?</h1>
-                <p className="text-gray-400 text-sm mt-2 leading-relaxed">
+                <h1 className="text-3xl sm:text-4xl font-black text-[var(--text-color)] italic tracking-tighter uppercase mb-3">Forgot <span className="text-[var(--ae-blue)]">Key?</span></h1>
+                <p className="text-[var(--text-color)]/60 text-sm font-medium italic leading-relaxed">
                   No worries! Enter your email and we'll send you a reset link.
                 </p>
               </div>
 
               {/* Error */}
               {error && (
-                <div className="flex items-center gap-3 bg-rose-500/10 border border-rose-500/20 rounded-2xl px-4 py-3 mb-6">
-                  <FiAlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
-                  <p className="text-sm text-rose-300">{error}</p>
+                <div className="flex items-center gap-4 bg-red-500/5 border-l-4 border-red-500 rounded-xl px-5 py-4 mb-8">
+                  <FiAlertCircle className="w-5 h-5 text-red-500 shrink-0" />
+                  <p className="text-sm font-bold text-red-500 italic uppercase tracking-tight">{error}</p>
                 </div>
               )}
 
               {/* Form */}
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-1.5">
-                  <label htmlFor="fp-email" className="block text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  <label htmlFor="fp-email" className="block text-[10px] font-black text-[var(--text-color)]/40 uppercase tracking-[0.15em] ml-1">
                     Your Email Address
                   </label>
                   <input
                     id="fp-email"
                     type="email"
-                    placeholder="you@example.com"
+                    placeholder="name@example.com"
                     value={email}
                     onChange={(e) => { setError(null); setEmail(e.target.value); }}
-                    className="w-full rounded-2xl bg-white/5 border border-white/10 focus:border-violet-500/60 focus:bg-white/10 focus:ring-2 focus:ring-violet-500/20 outline-none px-4 py-3.5 text-white placeholder:text-gray-600 transition-all text-sm"
+                    className="w-full rounded-2xl bg-[var(--bg-color)]/50 border-0 focus:bg-[var(--bg-color)] focus:ring-4 focus:ring-[var(--ae-blue)]/5 outline-none px-6 py-4.5 text-[var(--text-color)] placeholder:text-[var(--text-color)]/10 transition-all font-semibold text-[15px] shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full rounded-2xl bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-bold py-4 transition-all duration-200 shadow-lg shadow-violet-500/25 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full rounded-2xl ae-brand-button text-white shadow-xl hover:shadow-2xl font-black py-5 transition-all duration-500 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3 hover:-translate-y-1 active:translate-y-0 uppercase tracking-[0.2em] italic"
                 >
                   {loading ? (
                     <>
-                      <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                      </svg>
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       Sending…
                     </>
                   ) : (
@@ -101,9 +100,9 @@ export default function ForgotPassword() {
                 </button>
               </form>
 
-              <p className="mt-6 text-center text-sm text-gray-500">
+              <p className="mt-10 text-center text-xs font-black text-[var(--text-color)]/30 uppercase tracking-widest italic">
                 Remembered it?{" "}
-                <Link to="/login" className="text-violet-400 hover:text-violet-300 font-semibold transition-colors">
+                <Link to="/login" className="text-[var(--ae-blue)] hover:text-[var(--ae-plum-deep)] transition-colors underline decoration-[var(--ae-blue)]/20 underline-offset-4 ml-1">
                   Sign in
                 </Link>
               </p>
@@ -111,17 +110,16 @@ export default function ForgotPassword() {
           ) : (
             /* Success State */
             <div className="text-center py-6">
-              <div className="w-16 h-16 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center mx-auto mb-5">
-                <FiCheckCircle className="w-8 h-8 text-emerald-400" />
+              <div className="w-20 h-20 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-6">
+                <FiCheckCircle className="w-10 h-10 text-emerald-400" />
               </div>
-              <h2 className="text-xl font-bold text-white mb-2">Check your inbox!</h2>
-              <p className="text-gray-400 text-sm leading-relaxed mb-6">
-                If an account exists for <span className="text-violet-400 font-medium">{email}</span>, you'll receive a password reset link shortly.
+              <h2 className="text-2xl font-black text-[var(--text-color)] mb-3 uppercase italic tracking-tight underline decoration-emerald-500/20 underline-offset-8">Check Inbox! 📬</h2>
+              <p className="text-[var(--text-color)]/60 text-base leading-relaxed mb-8 font-medium italic">
+                If an account exists for <span className="text-[var(--ae-blue)] font-bold">{email}</span>, you'll receive a password reset link shortly.
               </p>
-              <p className="text-gray-600 text-xs mb-6">Didn't get it? Check your spam folder.</p>
               <Link
                 to="/login"
-                className="inline-block px-6 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-sm font-medium transition-colors"
+                className="inline-flex items-center justify-center px-10 py-4 rounded-2xl bg-[var(--bg-color)]/50 border border-transparent hover:border-[var(--ae-blue)]/10 text-[var(--ae-blue)] text-sm font-black uppercase tracking-widest transition-all italic underline decoration-[var(--ae-blue)]/20 underline-offset-4"
               >
                 ← Back to Sign In
               </Link>

@@ -1,11 +1,11 @@
-import { Request } from "express";
+import cloudinaryModule from "cloudinary";
 import multer from "multer";
-import { CloudinaryStorage } from "multer-storage-cloudinary";
+import cloudinaryStorage from "multer-storage-cloudinary";
 import { cloudinary } from "../config/cloudinary";
 
 // Storage for Team Member Photos
-const teamStorage = new CloudinaryStorage({
-  cloudinary: cloudinary,
+const teamStorage = cloudinaryStorage({
+  cloudinary: cloudinaryModule,
   params: {
     folder: "ae-website/team",
     allowed_formats: ["jpg", "png", "jpeg", "webp"],
@@ -14,14 +14,16 @@ const teamStorage = new CloudinaryStorage({
 });
 
 // Storage for Module Videos
-const videoStorage = new CloudinaryStorage({
-  cloudinary: cloudinary,
+const videoStorage = cloudinaryStorage({
+  cloudinary: cloudinaryModule,
   params: {
     folder: "ae-website/videos",
     resource_type: "video",
     allowed_formats: ["mp4", "mkv", "mov", "avi"]
   } as any
 });
+
+void cloudinary;
 
 export const uploadTeamPhoto = multer({
   storage: teamStorage,

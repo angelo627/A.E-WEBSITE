@@ -7,16 +7,16 @@ const Guru = () => {
     <>
       <GuriCircle />
 
-      <main className="min-h-screen bg-linear-to-br from-[#050022] via-[#0a003d] to-[#14005c] text-white px-6 py-10">
+      <main className="min-h-screen ae-brand-page text-white px-6 py-10">
         <div className="max-w-281.5 mx-auto ">
           <h1 className="text-white font-bold text-3xl my-5 text-center md:text-left">
-            The <span className="text-[#5F00FF]">Guru</span> Circle
+            The <span className="text-[var(--ae-blue)]">Guru</span> Circle
           </h1>
           {/* ================= TOP SECTION ================= */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 items-center">
             {/* LEFT IMAGE CARD */}
             <div className="flex justify-center md:justify-start">
-              <div className="bg-[#0c0035] border border-blue-500 p-3 rounded-xl w-full">
+              <div className="bg-[var(--ae-bg-deep)] border border-blue-500 p-3 rounded-xl w-full">
                 <div className="bg-gray-300 md:h-[180px] h-[400px] rounded-md w-full" />
               </div>
             </div>
@@ -71,7 +71,7 @@ const Guru = () => {
           </div>
 
           {/* ================= ELIGIBILITY CARD ================= */}
-          <div className="mt-12 bg-[#0c0035] border border-white/10 rounded-xl p-6 grid md:grid-cols-3 items-center gap-6 shadow-lg">
+          <div className="mt-12 bg-[var(--ae-bg-deep)] border border-white/10 rounded-xl p-6 grid md:grid-cols-3 items-center gap-6 shadow-lg">
             <div className="rounded-lg overflow-hidden md:col-span-1">
               <div className="rounded-md">
                 <img

@@ -23,6 +23,9 @@ import {
 } from "../features/testimonials/testimonials.routes";
 import { adminTeamRouter, publicTeamRouter } from "../features/team/team.routes";
 import { usersRouter } from "../features/users/users.routes";
+import { profileRouter } from "../features/users/profile.routes";
+import { communityRoutes } from "../features/community/community.routes";
+import announcementRouter from "../features/announcement/announcement.routes";
 
 const apiRouter = Router();
 const adminRouter = Router();
@@ -40,11 +43,14 @@ apiRouter.use("/public/products", publicProductsRouter);
 apiRouter.use("/public/testimonials", publicTestimonialsRouter);
 apiRouter.use("/public/team", publicTeamRouter);
 apiRouter.use("/leaderboard", leaderboardRouter);
+apiRouter.use("/profiles", profileRouter);
 
 apiRouter.use(authenticate);
 apiRouter.use("/dashboard", dashboardRouter);
 apiRouter.use("/modules", learnerModulesRouter);
 apiRouter.use("/quizzes", learnerQuizzesRouter);
+apiRouter.use("/community", communityRoutes);
+apiRouter.use("/announcements", announcementRouter);
 
 adminRouter.use(authorize("ADMIN", "SUPER_ADMIN"));
 adminRouter.use("/modules", adminModulesRouter);
@@ -57,3 +63,4 @@ adminRouter.use("/users", usersRouter);
 apiRouter.use("/admin", adminRouter);
 
 export { apiRouter };
+// trigger rebuild

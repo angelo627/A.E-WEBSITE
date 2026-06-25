@@ -15,15 +15,20 @@ function generateUsername(base: string): string {
   return `${slug}_${Math.random().toString(36).slice(2, 7)}`;
 }
 
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: env.googleClientId,
-      clientSecret: env.googleClientSecret,
-      callbackURL: `${env.appBaseUrl}/api/auth/google/callback`,
-      scope: ["profile", "email"]
-    },
-    async (_accessToken, _refreshToken, profile, done) => {
+export const isGoogleOAuthConfigured = Boolean(
+  env.googleClientId && env.googleClientSecret
+);
+
+if (isGoogleOAuthConfigured) {
+  passport.use(
+    new GoogleStrategy(
+      {
+        clientID: env.googleClientId,
+        clientSecret: env.googleClientSecret,
+        callbackURL: `${env.appBaseUrl}/api/auth/google/callback`,
+        scope: ["profile", "email"]
+      },
+      async (_accessToken, _refreshToken, profile, done) => {
       try {
         const email = profile.emails?.[0]?.value;
         const firstName = profile.name?.givenName ?? profile.displayName ?? "User";
@@ -97,9 +102,10 @@ passport.use(
       } catch (err) {
         return done(err as Error);
       }
-    }
-  )
-);
+      }
+    )
+  );
+}
 
 // Needed by passport even if we don't use sessions
 passport.serializeUser((user, done) => done(null, user));
